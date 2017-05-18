@@ -1,0 +1,77 @@
+Arcanys\EasyAppBundle\Entity\Invoicedraft:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\InvoicedraftRepository
+    id:
+        invoiceId:
+            type: integer
+            id: true
+            column: invoice_id
+            generator:
+                strategy: AUTO
+    fields:
+        idEntity:
+            type: integer
+            nullable: true
+        idVendor:
+            type: integer
+            nullable: true
+        checkNo:
+            type: string
+            length: 255
+            nullable: true
+        description:
+            type: text
+            nullable: true
+        status:
+            type: integer
+        managerApproval:
+            type: integer
+            nullable: true
+        chartOfAccounts:
+            type: integer
+            nullable: true
+        dueDate:
+            type: string
+            length: 255
+            nullable: true
+        invoicedate:
+            type: string
+            length: 255
+            nullable: true
+        invoicenumber:
+            type: string
+            length: 255
+            nullable: true
+        amount:
+            type: string
+            length: 255
+            nullable: true
+        deletestatus:
+            type: integer
+            nullable: true
+        readstatus:
+            type: integer
+            nullable: true
+        addedby:
+            type: integer
+        token:
+            type: string
+            length: 255
+        formtoken:
+            type: string
+            length: 255
+        dateadded:
+            type: datetime
+        dateupdated:
+            type: datetime
+            nullable: true
+        statusdraft:
+            type: integer
+            nullable: true
+        pagenumber:
+            type: integer
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

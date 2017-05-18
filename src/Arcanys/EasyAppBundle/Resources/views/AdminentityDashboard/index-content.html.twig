@@ -1,0 +1,443 @@
+<div class="right">
+    <div class="display-loader"></div>
+
+    <div class="account-info">
+        <div class="input-head">
+            <span class="name">Add New Entity</span>
+        </div>
+
+        <form method="post" action="{{ url('EA_admin_addentity') }}" class="form-entity">
+            <div class="fields">
+                <div class="full">
+                    <label for="textName">Name</label>
+                    <input type="text" name="entityname" id="textName" placeholder="Entity Name" class="validate[required]" />
+                    <span class="entityname-error field-error"></span>
+                </div>
+            </div>
+            <!-- START OF MULTIPLE BANK INFO ------------------------>
+            <!-- BANK 1 -->
+            <div id="tt" class="easyui-tabs" style="width:96%;">
+                <div title="Bank 1" style="padding:10px">
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBank">Bank</label>
+                            <input type="text" name="bankname[]" id="textBank" placeholder="Bank Name" class="textBank validate[required]" />
+                        </div>
+                        <div class="half">
+                            <label for="textBankContact">Bank Contact</label>
+                            <input type="text" name="bankcontact[]" id="textBankContact" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankPhoneNum">Bank Phone Number</label>
+                            <input type="text" name="bankphonenum[]" id="textBankPhoneNum" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankphone-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankEmail">Contact Email Address</label>
+                            <input type="text" name="bankemail[]" id="textBankEmail" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                            <span class="bankemail-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="forth">
+                            <label for="textBankAddress">Street Name</label>
+                            <input type="text" name="bankaddress[]" id="textBankAddress" placeholder="Street Name" class="textBankAddress validate[required]" />
+                            <span class="bankaddress-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textCity">City</label>
+                            <input type="text" name="city[]" id="textCity" placeholder="City" class="textCity validate[required]" />
+                            <span class="city-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textState">State</label>
+                            <select name="state[]" id="textState" class="textState validate[required]">
+                                <option value="">Select a state</option>
+                                {% for key,list in state %}
+                                    <option value="{{ key }}">{{ list }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="state-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textZipcode">Zip Code</label>
+                            <input type="text" name="zipcode[]" id="textZipcode" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                            <span class="zipcode-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankAccountNum">Bank Account No.</label>
+                            <input type="text" name="bankaccount[]" id="textBankAccountNum" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankacct-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankRoutingNum">Bank Routing No.</label>
+                            <input type="text" name="bankroute[]" min="8" maxlength="9" id="textBankRoutingNum" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                            <span class="bankroute-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textStartCheckNum">Starting Check No.</label>
+                            <input type="text" name="startbalance[]" id="textStartCheckNum" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                            <span class="startbalance-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textPresentBalance">Present Balance</label>
+                            <input type="text" name="curbalance[]" id="textPresentBalance" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                            <span class="curbalance-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <label for="textComments">Comments</label>
+                            <textarea name="comments[]" id="textComments" placeholder="Your comment here" class="textComments"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="token[]" class="token" value="{{ checknum1 }}" />
+                </div>
+                <!-- BANK 2 -->
+                <div title="Bank 2" style="padding:10px">
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBank2">Bank</label>
+                            <input type="text" name="bankname[]" id="textBank2" placeholder="Bank Name" class="textBank validate[required]" />
+                        </div>
+                        <div class="half">
+                            <label for="textBankContact2">Bank Contact</label>
+                            <input type="text" name="bankcontact[]" id="textBankContact2" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankPhoneNum">Bank Phone Number</label>
+                            <input type="text" name="bankphonenum[]" id="textBankPhoneNum" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankphone-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankEmail">Contact Email Address</label>
+                            <input type="text" name="bankemail[]" id="textBankEmail" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                            <span class="bankemail-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="forth">
+                            <label for="textBankAddress">Street Name</label>
+                            <input type="text" name="bankaddress[]" id="textBankAddress" placeholder="Street Name" class="textBankAddress validate[required]" />
+                            <span class="bankaddress-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textCity">City</label>
+                            <input type="text" name="city[]" id="textCity" placeholder="City" class="textCity validate[required]" />
+                            <span class="city-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textState">State</label>
+                            <select name="state[]" id="textState" class="textState validate[required]">
+                                <option value="">Select a state</option>
+                                {% for key,list in state %}
+                                    <option value="{{ key }}">{{ list }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="state-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textZipcode">Zip Code</label>
+                            <input type="text" name="zipcode[]" id="textZipcode" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                            <span class="zipcode-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankAccountNum2">Bank Account No.</label>
+                            <input type="text" name="bankaccount[]" id="textBankAccountNum2" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankacct-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankRoutingNum2">Bank Routing No.</label>
+                            <input type="text" name="bankroute[]" min="8" maxlength="9" id="textBankRoutingNum2" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                            <span class="bankroute-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textStartCheckNum2">Starting Check No.</label>
+                            <input type="text" name="startbalance[]" id="textStartCheckNum2" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                            <span class="startbalance-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textPresentBalance2">Present Balance</label>
+                            <input type="text" name="curbalance[]" id="textPresentBalance2" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                            <span class="curbalance-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <label for="textComments2">Comments</label>
+                            <textarea name="comments[]" id="textComments2" placeholder="Your comment here" class="textComments"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="token[]" class="token" value="{{ checknum2 }}" />
+                </div>
+                <!-- BANK 3 -->
+                <div title="Bank 3" style="padding:10px">
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBank">Bank</label>
+                            <input type="text" name="bankname[]" id="textBank3" placeholder="Bank Name" class="textBank validate[required]" />
+                        </div>
+                        <div class="half">
+                            <label for="textBankContact">Bank Contact</label>
+                            <input type="text" name="bankcontact[]" id="textBankContact3" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankPhoneNum">Bank Phone Number</label>
+                            <input type="text" name="bankphonenum[]" id="textBankPhoneNum" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankphone-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankEmail">Contact Email Address</label>
+                            <input type="text" name="bankemail[]" id="textBankEmail" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                            <span class="bankemail-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="forth">
+                            <label for="textBankAddress">Street Name</label>
+                            <input type="text" name="bankaddress[]" id="textBankAddress" placeholder="Street Name" class="textBankAddress validate[required]" />
+                            <span class="bankaddress-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textCity">City</label>
+                            <input type="text" name="city[]" id="textCity" placeholder="City" class="textCity validate[required]" />
+                            <span class="city-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textState">State</label>
+                            <select name="state[]" id="textState" class="textState validate[required]">
+                                <option value="">Select a state</option>
+                                {% for key,list in state %}
+                                    <option value="{{ key }}">{{ list }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="state-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textZipcode">Zip Code</label>
+                            <input type="text" name="zipcode[]" id="textZipcode" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                            <span class="zipcode-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankAccountNum">Bank Account No.</label>
+                            <input type="text" name="bankaccount[]" id="textBankAccountNum3" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankacct-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankRoutingNum">Bank Routing No.</label>
+                            <input type="text" name="bankroute[]" min="8" maxlength="9" id="textBankRoutingNum3" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                            <span class="bankroute-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textStartCheckNum">Starting Check No.</label>
+                            <input type="text" name="startbalance[]" id="textStartCheckNum3" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                            <span class="startbalance-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textPresentBalance">Present Balance</label>
+                            <input type="text" name="curbalance[]" id="textPresentBalance3" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                            <span class="curbalance-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <label for="textComments">Comments</label>
+                            <textarea name="comments[]" id="textComments3" placeholder="Your comment here" class="textComments"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="token[]" class="token" value="{{ checknum3 }}" />
+                </div>
+                <!-- BANK 4 -->
+                <div title="Bank 4" style="padding:10px">
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBank">Bank</label>
+                            <input type="text" name="bankname[]" id="textBank4" placeholder="Bank Name" class="textBank validate[required]" />
+                        </div>
+                        <div class="half">
+                            <label for="textBankContact">Bank Contact</label>
+                            <input type="text" name="bankcontact[]" id="textBankContact4" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankPhoneNum">Bank Phone Number</label>
+                            <input type="text" name="bankphonenum[]" id="textBankPhoneNum" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankphone-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankEmail">Contact Email Address</label>
+                            <input type="text" name="bankemail[]" id="textBankEmail" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                            <span class="bankemail-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="forth">
+                            <label for="textBankAddress">Street Name</label>
+                            <input type="text" name="bankaddress[]" id="textBankAddress" placeholder="Street Name" class="textBankAddress validate[required]" />
+                            <span class="bankaddress-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textCity">City</label>
+                            <input type="text" name="city[]" id="textCity" placeholder="City" class="textCity validate[required]" />
+                            <span class="city-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textState">State</label>
+                            <select name="state[]" id="textState" class="textState validate[required]">
+                                <option value="">Select a state</option>
+                                {% for key,list in state %}
+                                    <option value="{{ key }}">{{ list }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="state-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textZipcode">Zip Code</label>
+                            <input type="text" name="zipcode[]" id="textZipcode" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                            <span class="zipcode-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankAccountNum">Bank Account No.</label>
+                            <input type="text" name="bankaccount[]" id="textBankAccountNum4" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankacct-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankRoutingNum">Bank Routing No.</label>
+                            <input type="text" name="bankroute[]" min="8" maxlength="9" id="textBankRoutingNum4" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                            <span class="bankroute-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textStartCheckNum">Starting Check No.</label>
+                            <input type="text" name="startbalance[]" id="textStartCheckNum4" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                            <span class="startbalance-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textPresentBalance">Present Balance</label>
+                            <input type="text" name="curbalance[]" id="textPresentBalance4" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                            <span class="curbalance-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <label for="textComments">Comments</label>
+                            <textarea name="comments[]" id="textComments4" placeholder="Your comment here" class="textComments"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="token[]" class="token" value="{{ checknum4 }}" />
+                </div>
+                <!-- BANK 5 -->
+                <div title="Bank 5" style="padding:10px">
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBank">Bank</label>
+                            <input type="text" name="bankname[]" id="textBank5" placeholder="Bank Name" class="textBank validate[required]" />
+                        </div>
+                        <div class="half">
+                            <label for="textBankContact">Bank Contact</label>
+                            <input type="text" name="bankcontact[]" id="textBankContact5" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankPhoneNum">Bank Phone Number</label>
+                            <input type="text" name="bankphonenum[]" id="textBankPhoneNum" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankphone-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankEmail">Contact Email Address</label>
+                            <input type="text" name="bankemail[]" id="textBankEmail" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                            <span class="bankemail-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="forth">
+                            <label for="textBankAddress">Street Name</label>
+                            <input type="text" name="bankaddress[]" id="textBankAddress" placeholder="Street Name" class="textBankAddress validate[required]" />
+                            <span class="bankaddress-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textCity">City</label>
+                            <input type="text" name="city[]" id="textCity" placeholder="City" class="textCity validate[required]" />
+                            <span class="city-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textState">State</label>
+                            <select name="state[]" id="textState" class="textState validate[required]">
+                                <option value="">Select a state</option>
+                                {% for key,list in state %}
+                                    <option value="{{ key }}">{{ list }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="state-error field-error"></span>
+                        </div>
+                        <div class="forth">
+                            <label for="textZipcode">Zip Code</label>
+                            <input type="text" name="zipcode[]" id="textZipcode" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                            <span class="zipcode-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textBankAccountNum">Bank Account No.</label>
+                            <input type="text" name="bankaccount[]" id="textBankAccountNum5" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                            <span class="bankacct-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textBankRoutingNum">Bank Routing No.</label>
+                            <input type="text" name="bankroute[]" min="8" maxlength="9" id="textBankRoutingNum5" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                            <span class="bankroute-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="half">
+                            <label for="textStartCheckNum">Starting Check No.</label>
+                            <input type="text" name="startbalance[]" id="textStartCheckNum5" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                            <span class="startbalance-error field-error"></span>
+                        </div>
+                        <div class="half">
+                            <label for="textPresentBalance">Present Balance</label>
+                            <input type="text" name="curbalance[]" id="textPresentBalance5" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                            <span class="curbalance-error field-error"></span>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <label for="textComments">Comments</label>
+                            <textarea name="comments[]" id="textComments5" placeholder="Your comment here" class=""></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="token[]" class="token" value="{{ checknum5 }}" />
+                </div>
+            </div>
+            <br/>
+            <div class="fields">
+                <input type="submit" class="entity-btn2" value="Save" />
+            </div>
+        </form>
+    </div>
+
+</div>
+<div class="spacer"></div>

@@ -1,0 +1,63 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block container %}
+    <!-- Container -->
+    <div class="container">
+        <div class="blue-header forapproval">
+            <h4>For Approval</h4>
+            <table class="tbl-dashboard">
+                <tr>
+                    <th width="12%">Entity</th>
+                    <th width="12%">Vendor</th>
+                    <th width="20%">Description</th>
+                    <th width="10%">Invoice No.</th>
+                    <th width="8%" style="text-align:center">Invoice Date</th>
+                    <th width="8%" style="text-align:center">Due Date</th>
+                    <th width="19%" style="text-align:center">Status</th>
+                    <th width="11%" style="text-align:center">Amount</th>
+                </tr>
+                {% if search is empty %}
+                    <tr>
+                        <td colspan="11" align="center">No Invoice available</td>
+                    </tr>
+                {% else %}
+                    {% for list in search %}
+                        <tr id="list-{{ list.invoiceId }}">
+                            <td>{{ list.entityName|length > 13 ? list.entityName|slice(0, 13) ~ '...' : list.entityName }}</td>
+                            <td>{{ list.name|length > 13 ? list.name|slice(0, 13) ~ '...' : list.name }}</td>
+                            <td>{{ list.description|length > 30 ? list.description|slice(0, 30) ~ '...' : list.description }}</td>
+                            <td>
+                                {% if list.entityready == 0 %}
+                                    <a href="{{ url('pending_bankinfo_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>
+                                {% elseif list.entityready == 1 and list.printready == 1 %}
+                                    <a href="{{ url('EA_detail_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>
+                                {% endif %}
+                            </td>
+                            <td align="center">{{ list.invoicedate|date('m-d-Y') }}</td>
+                            <td align="center">{{ list.dueDate|date('m-d-Y') }}</td>
+                            <td align="center">
+                                {% if list.entityready == 0 %}
+                                    Select Bank Account for Payment
+                                {% elseif list.entityready == 1 and list.printready == 1 %}
+                                    Ready for Printing
+                                {% endif %}
+                            </td>
+                            <td align="left">
+                                {% if list.status == 44 %}
+                                    <span class="dollar-position">$</span> <span class="amt-position">{{ list.outstandingbalance|number_format(2, '.', ',')|length > 15 ? list.outstandingbalance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.outstandingbalance|number_format(2, '.', ',') }}</span>
+                                {% else %}
+                                    <span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',')|length > 15 ? list.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.amount|number_format(2, '.', ',') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+            <table>
+                <tr>
+                    <td style="border: 0">{{ knp_pagination_render(search) }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+Arcanys\EasyAppBundle\Entity\Entity:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        entityName:
+            type: string
+            length: 255
+            column: entity_name
+        bankName:
+            type: string
+            length: 255
+            nullable: true
+        bankContact:
+            type: string
+            length: 255
+            nullable: true
+        bankAcct:
+            type: string
+            length: 255
+            column: bank_acct
+            nullable: true
+        startBalance:
+            type: float
+            column: start_balance
+            nullable: true
+        routingBalance:
+            type: float
+            column: routing_balance
+            nullable: true
+        curBalance:
+            type: float
+            column: cur_balance
+            nullable: true
+        status:
+            type: string
+            length: 255
+            nullable: true
+        entityAddress:
+            type: string
+            length: 255
+            nullable: true
+        entityEmailaddress:
+            type: string
+            length: 255
+            nullable: true
+        entityContact:
+            type: string
+            length: 255
+            nullable: true
+        token:
+            type: string
+            length: 255
+            nullable: true
+        company:
+            type: string
+            column: company_id
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+        dateupdated:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

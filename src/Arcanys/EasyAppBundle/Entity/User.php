@@ -1,0 +1,461 @@
+<?php
+// src/Acme/UserBundle/Entity/User.php
+
+namespace Arcanys\EasyAppBundle\Entity;
+
+use FOS\UserBundle\Model\User as BaseUser;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Doctrine\ORM\Mapping as ORM;
+
+
+/**
+ * @ORM\HasLifecycleCallbacks
+ */
+class User extends BaseUser
+{
+    protected $id;
+
+    /**
+     * @var string
+     */
+    private $firstname;
+
+    /**
+     * @var string
+     */
+    private $lastname;
+
+    /**
+     * @var string
+     */
+    private $contactnum;
+
+    /**
+     * @var string
+     */
+    private $localcontact;
+
+    /**
+     * @var integer
+     */
+    private $status;
+
+    /**
+     * @var \DateTime
+     */
+    private $dateadded;
+
+    /**
+     * @var string
+     */
+    private $token;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $path;
+
+    /**
+     * @Assert\File(maxSize="150000")
+     */
+    private $file;
+
+    /**
+     * @var \DateTime
+     */
+    private $dateupdated;
+	
+	/**
+     * @var string
+     */
+    private $company;
+
+    public function __construct()
+    {
+        parent::__construct();
+        // your own logic
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set firstname
+     *
+     * @param string $firstname
+     * @return User
+     */
+    public function setFirstname($firstname)
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    /**
+     * Get firstname
+     *
+     * @return string 
+     */
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * Set lastname
+     *
+     * @param string $lastname
+     * @return User
+     */
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    /**
+     * Get lastname
+     *
+     * @return string 
+     */
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     * @return User
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer 
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set dateadded
+     *
+     * @param \DateTime $dateadded
+     * @return User
+     */
+    public function setDateadded($dateadded)
+    {
+        $this->dateadded = $dateadded;
+
+        return $this;
+    }
+
+    /**
+     * Get dateadded
+     *
+     * @return \DateTime 
+     */
+    public function getDateadded()
+    {
+        return $this->dateadded;
+    }
+
+    /**
+     * Set dateupdated
+     *
+     * @param \DateTime $dateupdated
+     * @return User
+     */
+    public function setDateupdated($dateupdated)
+    {
+        $this->dateupdated = $dateupdated;
+
+        return $this;
+    }
+
+    /**
+     * Get dateupdated
+     *
+     * @return \DateTime 
+     */
+    public function getDateupdated()
+    {
+        return $this->dateupdated;
+    }
+
+    /**
+     * Set contactnum
+     *
+     * @param string $contactnum
+     * @return User
+     */
+    public function setContactnum($contactnum)
+    {
+        $this->contactnum = $contactnum;
+
+        return $this;
+    }
+
+    /**
+     * Get contactnum
+     *
+     * @return string 
+     */
+    public function getContactnum()
+    {
+        return $this->contactnum;
+    }
+
+    public function prePersist()
+    {
+        if(!$this->dateadded) {
+            $this->setDateadded(new \DateTime);
+        }
+//        var_dump($this->getFile());
+    }
+
+    public function preUpdate()
+    {
+        if(!$this->dateupdated) {
+            $this->setDateupdated(new \DateTime);
+        }
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return User
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set path
+     *
+     * @param string $path
+     * @return User
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    /**
+     * Get path
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    public function getAbsolutePath()
+    {
+        return null === $this->path
+            ? null
+            : $this->getUploadRootDir().'/'.$this->path;
+    }
+
+    public function getWebPath()
+    {
+        return null === $this->path
+            ? null
+            : $this->getUploadDir().'/'.$this->path;
+    }
+
+    protected function getUploadRootDir()
+    {
+        // the absolute directory path where uploaded
+        // documents should be saved
+        return __DIR__.'/../../../../web/'.$this->getUploadDir();
+    }
+
+    protected function getUploadDir()
+    {
+        // get rid of the __DIR__ so it doesn't screw up
+        // when displaying uploaded doc/image in the view.
+        return 'uploads/imgs';
+    }
+
+    /**
+     * Sets file.
+     *
+     * @param UploadedFile $file
+     */
+    public function setFile($file = null)
+    {
+//        var_dump('asdasd');
+        $this->file = $file;
+        // check if we have an old image path
+        if (isset($this->path)) {
+            // store the old name to delete after the update
+            $this->temp = $this->path;
+            $this->path = null;
+        } else {
+            $this->path = 'initial';
+        }
+    }
+
+    /**
+     * Get file.
+     *
+     * @return UploadedFile
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+
+    public function preUpload()
+    {
+        if (null !== $this->getFile()) {
+            // do whatever you want to generate a unique name
+            $filename = sha1(uniqid(mt_rand(), true));
+            $this->path = $filename . '.' . $this->getFile()->guessExtension();
+        }
+    }
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload()
+    {
+        if (null === $this->getFile()) {
+            return;
+        }
+
+        // check if we have an old image
+        if (isset($this->temp)) {
+            // delete the old image
+            unlink($this->temp);
+            // clear the temp image path
+            $this->temp = null;
+        }
+
+        // you must throw an exception here if the file cannot be moved
+        // so that the entity is not persisted to the database
+        // which the UploadedFile move() method does
+        $this->getFile()->move(
+            $this->getUploadRootDir(),
+            $this->id.'.'.$this->getFile()->guessExtension()
+        );
+
+        $this->setFile(null);
+    }
+
+    /**
+     * Set localcontact
+     *
+     * @param integer $localcontact
+     * @return User
+     */
+    public function setLocalcontact($localcontact)
+    {
+        $this->localcontact = $localcontact;
+
+        return $this;
+    }
+
+    /**
+     * Get localcontact
+     *
+     * @return integer 
+     */
+    public function getLocalcontact()
+    {
+        return $this->localcontact;
+    }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string 
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+	
+	 /**
+     * Set company
+     *
+     * @param string $company
+     * @return User
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * Get company
+     *
+     * @return string 
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+}

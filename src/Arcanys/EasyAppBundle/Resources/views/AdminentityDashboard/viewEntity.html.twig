@@ -1,0 +1,385 @@
+{% extends 'ArcanysEasyAppBundle::admintemplate.html.twig' %}
+
+{% block title %}View Entity - {{ entity.entityName }}{% endblock %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/easyui/icon.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/easyui/easyui.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'entity' } %}
+{% endblock %}
+
+{% block adminnav %}
+    {% include 'ArcanysEasyAppBundle::navtab.html.twig' with { 'activetab' : 'entity' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container admin">
+            <div class="admin-container">
+                <!-- Left -->
+                <div class="left fl">
+                    {% block content_btn %}
+                        <div class="blue-header">
+                            <h4 class="fl">{% block content_tab_title %}Entities{% endblock %}</h4>
+                            <a href="{{ url('EA_admin_entity') }}" class="blue fr"><i class="icons add"></i><span>New Entity</span></a>
+                        </div>
+                    {% endblock %}
+                    <div class="table">
+                        <table class="list-entity">
+                            <tr class="head">
+                                <th>Name</th>
+                            </tr>
+                            {% if entity is empty %}
+                            <tr>
+                                <td colspan="2" align="center">No Entity available</td>
+                            </tr>
+                            {% else %}
+                                {% for list in ventity %}
+                                    <tr id="{{ list.id }}">
+                                        <td>{{ list.entityName|length > 21 ? list.entityName|slice(0, 21) ~ '...' : list.entityName }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right -->
+                {% include "ArcanysEasyAppBundle:AdminentityDashboard:viewEntity-content.html.twig" %}
+
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+{% block footerjavascript %}
+    <script>var tablink = '{{ url('tabentity_update') }}';</script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.easyui.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.validate.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/entity/entity-function.js') }}"></script>
+
+    <script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/plupload.full.min.js') }}"></script>
+    <script>
+        var plupParams = {
+            imgs: "{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}",
+            upload: "{{ url('EA_entity_upload') }}",
+            delete: "{{ url('EA_entity_delete_image') }}",
+            uploadVendor: "{{ url('EA_update_invoice_image_vendor') }}",
+            images: "{{ url('EA_entity_image') }}",
+            entityId: "{{ entity.id }}"
+        };
+
+        $(function() {
+            $("#invoice-thumbnails").owlCarousel({
+                navigation : true,
+                pagination: true,
+                slideSpeed : 300,
+                paginationSpeed : 400,
+                singleItem : true,
+                autoHeight : true,
+                items : 1,
+                lazyLoad : true
+            });
+
+            var container = document.getElementById('pl-container'),
+                    fileList = document.getElementById('filelist');
+
+            var uploader = new plupload.Uploader({
+                runtimes: 'html5',
+                browse_button: 'pickfiles',
+                drop_element : 'drop-target',
+                container: container,
+                url: plupParams.upload,
+                filters: {
+                    max_file_size: '10mb',
+                    mime_types: [
+                        {title: 'Image files', extensions: 'jpg,gif,png,pdf'}
+                    ]
+                },
+                init: {
+                    PostInit: function () {
+                        fileList.innerHTML = '';
+                    },
+                    BeforeUpload: function (up, file) {
+                        var pp = $('#tt').tabs('getSelected');
+                        var formId = pp.find('form').attr('id').split('-');
+                        var bankno = formId[1],
+                            token = pp.find('form').find('input[name="token"]').val();
+
+                        up.settings.multipart_params = {
+                            bankno : bankno,
+                            token : token,
+                            formtoken : $('.formtoken').val(),
+                            pagenumber : $('input.pagenumber').val(),
+                            entityId : plupParams.entityId
+                        };
+                    },
+                    FilesAdded: function (up, files) {
+                        fileList.innerHTML = '';
+
+                        plupload.each(files, function (file) {
+                            fileList.innerHTML += '<div id="' + file.id + '" class="file-info">' + file.name + ' <span></span></div>';
+                        });
+
+                        uploader.start();
+                    },
+                    UploadProgress: function (up, file) {
+                        if (document.getElementById(file.id)) {
+                            document.getElementById(file.id).getElementsByTagName('span')[0].innerHTML = '<progress max="100" value="' + file.percent + '">' + "</progress>";
+                        }
+                    },
+                    FileUploaded: function(up, file, info) {
+                        var response = $.parseJSON(info.response);
+                        if (!response.success) {
+                            fileList.innerHTML = response.msg;
+                            return;
+                        }
+
+                        var data = response.data,
+                                owl = $(".owl-carousel").data('owlCarousel'),
+                                content = "<div class=\"item imglist-" + data.id + "\">"
+                                        + "<span class=\"close\" data-id=\""
+                                        + data.id +"\">&times;</span><img class=\"lazyOwl\" data-src=\"" + plupParams.imgs + data.fileName
+                                        + "\" /></div>";
+                        owl.addItem(content, 0);
+
+                        $("#" + file.id).remove();
+                    },
+                    Error: function (up, err) {
+                        fileList.innerHTML = "\nError #" + err.code + ": " + err.message;
+                    }
+                }
+            });
+            uploader.init();
+
+            $(document).on('click', '.close', function(e) {
+                var id = $(this).data('id'),
+                        index = 0,
+                        owl = $(".owl-carousel").data('owlCarousel'),
+                        images = $('.lazyOwl');
+
+                for (var i = 0; i < images.length; i++) {
+                    if ($(images[i]).data('id') == id) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (confirm('Are you sure you want to delete this image?')) {
+                    $.ajax({
+                        type: 'POST',
+                        url: plupParams.delete,
+                        data: {
+                            id : id
+                        },
+                        success: function(data, textStatus, jQxhr) {
+                            if (data.success) {
+                                owl.removeItem(index);
+                            }
+                        },
+                        error: function(jqXhr, textStatus, errorThrown) {
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+            $('.list-entity tr').on('click', function(e) {
+                var getID = $(this).attr('id'),
+                    url   = "{{ url('EA_admin_viewentity') }}",
+                    view  = "{{ url('EA_admin_displayentity', { 'id' : 'idnumber' }) }}",
+                    view  = view.replace('idnumber', getID),
+                    data  = { id: getID },
+                    load  = $('.display-loader'),
+                    right = $('.account-info');
+
+                if ( history.pushState )
+                 window.history.pushState({}, document.title, view);
+
+                $(this).toggleClass('selected').siblings().removeClass('selected');
+
+                load.addClass('loader');
+                $.post(url, data, function(data) {
+                    if (load.hasClass('loader')) {
+                        load.removeClass('loader');
+                    }
+                    right.html(data);
+                });
+            });
+
+            $(document.body).on('click', '.remove-user', function(e) {
+                var getID = $(this).attr('id'),
+                    data  = { id: getID },
+                    url   = "{{ url('EA_admin_entitydelete', { 'id' : 'idnumber' }) }}",
+                    url   = url.replace('idnumber', getID);
+
+
+                    if (confirm('Are you sure you want to delete this entity?')) {
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: data,
+                            beforeSend: function() {
+                                $('.display-loader').html('deleting....');
+                            },
+                            success: function(datas) {
+                                $('.display-loader').html('');
+                                if (datas.id == '' || datas.id == null) {
+                                    window.location="{{ url('EA_admin_entity') }}";
+                                    console.log('sulod');
+                                } else {
+                                    var view  = "{{ url('EA_admin_displayentity', { 'id' : 'idnumber' }) }}",
+                                        view  = view.replace('idnumber', datas.id);
+                                    window.location = view;
+                                    console.log('sulod2');
+                                }
+                                console.log(datas.id);
+                            }
+                        });
+                    }
+
+                e.preventDefault();
+            });
+
+            var pluploader = {
+                refresh : function(images) {
+                    var owl = $(".owl-carousel").data('owlCarousel'),
+                            imgWrap = $('.img-wrap');
+
+                    imgWrap.empty();
+
+                    for (i in images) {
+                        var image = images[i];
+
+                        var content = "<div class=\"item imglist-" + image.id + "\">"
+                                + "<span class=\"close\" data-id=\""
+                                + image.id +"\">&times;</span><img class=\"lazyOwl\" data-src=\"" + plupParams.imgs + image.fileName
+                                + "\" /></div>";
+                        owl.addItem(content, 0);
+                    }
+                }
+            };
+
+            $('#tt').tabs({
+                border:false,
+                onSelect:function(title, file) {
+                    $('.tabentity-title').show();
+                    $('.submit-tabentity-btn').hide();
+                    $('.exit-tabentity-btn').hide();
+                    $('.tabentity-text').hide();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: plupParams.images,
+                        data: {
+                            bankno : (file + 1),
+                            entityId: plupParams.entityId
+                        },
+                        success: function(data, textStatus, jQxhr) {
+                            pluploader.refresh(data.images);
+                        },
+                        error: function(jqXhr, textStatus, errorThrown) {
+                        }
+                    });
+
+                    //
+
+                    /**
+                    setTimeout(function () {
+                        $('.file_upload').uploadify({
+                            'formData' : { 'token' : $('.token').val() },
+                            'swf'      : '{{ asset('bundles/arcanyseasyapp/swf/uploadify.swf') }}',
+                            'uploader' : '{{ url('EA_entity_upload') }}',
+                            'auto'     : true,
+                            'width'    : 140,
+                            'buttonImage' : '{{ asset('bundles/arcanyseasyapp/img/invoice-upload-btn.png') }}',
+                            'fileTypeDesc' : 'Image Files',
+                            'onUploadComplete' : function() {
+                                $('.no-img').hide();
+                                $.ajax({
+                                    type: 'POST', data: { 'token' : $('.token').val(), 'tabid' : $('.file_upload').data('id') },
+                                    url: '{{ url('EA_entityretrieve_img') }}',
+                                    success: function(msg) {
+                                        $.each( msg.name, function( key, value ) {
+                                            $('.display-thumb' + file).append(
+                                                '<li class="animated fadeInUp" style="padding: 3px;">' +
+                                                    '<a href="#" class="img-display">' +
+                                                    '<img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}' + value + '" />' +
+                                                    '</a>' +
+                                                '</li>'
+                                            );
+                                        });
+                                        $('.txImage').show();
+                                    }
+                                });
+                            },
+                            'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+                                alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
+                            }
+                        });
+                    }, 0);
+                     **/
+
+                }
+            });
+
+            /**
+            setTimeout(function () {
+                $('#file_upload1').uploadify({
+                    'formData' : { 'token' : $('.token').val() },
+                    'swf'      : '{{ asset('bundles/arcanyseasyapp/swf/uploadify.swf') }}',
+                    'uploader' : '{{ url('EA_entity_upload') }}',
+                    'auto'     : true,
+                    'width'    : 140,
+                    'buttonImage' : '{{ asset('bundles/arcanyseasyapp/img/invoice-upload-btn.png') }}',
+                    'fileTypeDesc' : 'Image Files',
+                    'onUploadComplete' : function(file) {
+                        $('.no-img').hide();
+                        $.ajax({
+                            type: 'POST', data: { 'token' : $('.token').val(), 'tabid' : $('.file_upload').data('id') },
+                            url: '{{ url('EA_entityretrieve_img') }}',
+                            success: function(msg) {
+                                $.each( msg.name, function( key, value ) {
+                                    $('.display-thumb0').append(
+                                        '<li class="animated fadeInUp" style="padding: 3px;">' +
+                                            '<a href="#" class="img-display">' +
+                                                '<img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}' + value + '" />' +
+                                            '</a>' +
+                                        '</li>'
+                                    );
+                                });
+                                $('.txImage').show();
+                            }
+                        });
+                    },
+                    'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+                        alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
+                    }
+                });
+            }, 0);
+             **/
+        });
+    </script>
+{% endblock %}

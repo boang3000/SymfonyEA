@@ -1,0 +1,154 @@
+<div class="container admin">
+    <div class="admin-container">
+        <!-- Left -->
+        <div class="left fl">
+            {% block content_btn %}
+                <div class="blue-header">
+                    <h4 class="fl">{% block content_tab_title %}Accounts{% endblock %}</h4>
+                    <a href="{% if app.user.roles[0] == 'ROLE_ADMIN' or app.user.roles[0] == 'ROLE_ACCOUNTANT' %}{{ url('EA_admin_addaccount') }}{% elseif app.user.roles[0] == 'ROLE_SUPER_ADMIN' %}{{ url('EA_superadmin_addaccount') }}{% endif %}" class="blue fr"><i class="icons add"></i><span>New Account</span></a>
+                </div>
+            {% endblock %}
+            <div class="table">
+                <table class="list-users">
+                    <tr class="head">
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                    </tr>
+                    {% if vusers is empty %}
+                        <tr><td colspan="2">No data available</td></tr>
+                    {% else %}
+                        {% for list in vusers %}
+                            <tr id="{{ list.id }}">
+                                <td>{{ list.firstname|length > 11 ? list.firstname|slice(0, 11) ~ '...' : list.firstname }} {{ list.lastname|length > 11 ? list.lastname|slice(0, 11) ~ '...' : list.lastname }}</td>
+                                <td>
+                                    {% if list.roles[0] == 'ROLE_SUPER_ADMIN' %}
+                                        Super Admin
+                                    {% elseif list.roles[0] == 'ROLE_ADMIN' %}
+                                        Admin
+                                    {% elseif list.roles[0] == 'ROLE_MANAGER' %}
+                                        Manager
+                                    {% elseif list.roles[0] == 'ROLE_ACCOUNTANT' %}
+                                        Accountant
+                                    {% endif %}
+                                </td>
+                                <td>{{ list.email|length > 21 ? list.email|slice(0, 21) ~ '...' : list.email }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <!-- Right -->
+        <div class="right">
+            <div class="display-loader"></div>
+            <div class="account-info">
+                <div class="input-head">
+                    {#<span class="name">{{ users.firstname|capitalize }} {{ users.lastname|capitalize }}</span>#}
+                    <span><a href="#" class="edit-user" id="{{ users.id }}"><i class="icons edit"></i>edit</a></span>
+                    <span><a href="{{ url('EA_admin_updatepassword', { 'id' : users.id }) }}" class="changepass"><i class="icons changepass"></i>change password</a></span>
+                    <span><a href="#" class="remove-user" id="{{ users.id }}"><i class="icons rem"></i>remove</a></span>
+                </div>
+                <form method="post" data-id="{{ users.id }}" action="{{ url('EA_admin_updateaccount', { 'id' : users.id }) }}" class="update-user-form">
+                    <div class="fields">
+                        <div class="half">
+                            <label for="">
+                                First Name
+                                <span class="txFirstname">{{ users.firstname|capitalize }}</span>
+                                <input value="{{ users.firstname }}" type="text" id="acme_user_registration_firstname" placeholder="Firstname" name="acme_user_registration[firstname]" maxlength="255" class="validate[required] firstname user-textfield" />
+                            </label>
+                        </div>
+                        <div class="half">
+                            <label for="">
+                                Last Name
+                                <span class="txLastname">{{ users.lastname|capitalize }}</span>
+                                <input value="{{ users.lastname }}" type="text" id="acme_user_registration_lastname" placeholder="Lastname" name="acme_user_registration[lastname]" maxlength="255" class="validate[required] lastname user-textfield" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <label for="">
+                                Email
+                                <span class="txEmail"><a href="mailto:{{ users.email }}">{{ users.email }}</a></span>
+                                <input value="{{ users.email }}" type="email" autocomplete="off" id="acme_user_registration_email" placeholder="Email" name="acme_user_registration[email]" class="validate[required] email emailadd user-textfield" />
+                                <span class="email-check"></span>
+                            </label>
+                        </div>
+                    </div>
+                    {% if app.user.roles[0] != 'ROLE_SUPER_ADMIN' %}
+                    <div class="fields">
+                        <div class="half">
+                            <label for="">
+                                Contact Number
+                                <span class="txContactnum">{{ users.contactnum }}</span>
+                                <input value="{{ users.contactnum }}" type="text" id="acme_user_registration_contactnum" placeholder="(000)0000000" name="acme_user_registration[contactnum]" maxlength="10" class="validate[required] contactnum user-textfield" />
+                                <span class="textContacterror"></span>
+                            </label>
+                        </div>
+                        <div class="half">
+                            <label for="">
+                                Ext. No.
+                                <span class="txLocalcontact">{{ users.localcontact }}</span>
+                                <input value="{{ users.localcontact }}" type="text" id="acme_user_registration_localcontact" placeholder="00000" name="acme_user_registration[localcontact]" maxlength="5" class="localcontact user-textfield" />
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="fields" style="{% if app.user.roles[0] == 'ROLE_SUPER_ADMIN' %}display:none{% endif %}">
+                        <div class="full">
+                            <label for="">
+                                Role
+                                <span class="txRoles">
+                                    {% if users.roles[0] == 'ROLE_ACCOUNTANT' %}
+                                        Accountant
+                                    {% elseif users.roles[0] == 'ROLE_MANAGER' %}
+                                        Manager
+                                    {% elseif ( users.roles[0] == 'ROLE_ADMIN' ) or ( users.roles[0] == 'ROLE_SUPER_ADMIN' ) %}
+                                        Admin
+                                    {% endif %}
+                                </span>
+                                <select id="acme_user_registration_roles" name="acme_user_registration[roles][]" multiple="multiple" class="validate[required] roles user-textfield">
+                                    <option {% if users.roles[0] == 'ROLE_ACCOUNTANT' %} selected="selected" {% endif %} value="ROLE_ACCOUNTANT">Accountant</option>
+                                    <option {% if users.roles[0] == 'ROLE_MANAGER' %} selected="selected" {% endif %} value="ROLE_MANAGER">Manager</option>
+                                    {% if app.user.roles[0] == 'ROLE_SUPER_ADMIN' %}<option {% if users.roles[0] == 'ROLE_ADMIN' %} selected="selected" {% endif %} value="ROLE_ADMIN">Admin</option>{% endif %}
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="full">
+                            <input type="hidden" name="token" class="token" value="{{ users.token }}" />
+                            <input type="hidden" id="acme_user_registration_enabled" name="acme_user_registration[enabled]" value="{{ users.enabled }}">
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <input type="submit" class="user-button" value="Save" />
+                    </div>
+                </form>
+
+                <br/>
+                <div class="full">
+                    <div class="pluploader">
+                        <div id="pl-container">
+                            <input id="pickfiles" type="image" src="{{ asset('bundles/arcanyseasyapp/img/upload-user.png') }}">
+                        </div>
+                        <div id="filelist" style="padding-bottom: 10px;">Your browser doesn't have HTML5 support.</div>
+                    </div>
+                    <div class="thumbnails">
+                        <div id="invoice-thumbnails" class="owl-carousel img-wrap">
+                            {% for list in userimg %}
+                                <div class="item imglist-{{ list.id }}">
+                                    <span class="close" data-id="{{ list.id }}">&times;</span>
+                                    <img class="lazyOwl" data-id="{{ list.id }}" data-src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,231 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block title %}View Vendor - {{ vendor.name|capitalize }}{% endblock %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'vendor' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    <div class="container">
+        <div class="content-details-wrapper">
+            <div class="content-details">
+                <div class="content-fields">
+                    <label>
+                        Vendor
+                        <span>{{ vendor.name|capitalize }}</span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        Contact Person
+                        <span>{{ vendor.contactPerson|capitalize }}</span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        Contact Information
+                        <span class="textPhone">{{ vendor.phoneNum }} <label>Ext: {{ vendor.localNum }}</label></span>
+                        <span>{{ vendor.email }}</span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        Address
+                        <span>{{ vendor.address }}</span>
+                        <span>{{ vendor.city }}, {{ vendor.state }} {{ vendor.zip }}</span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        Account Number
+                        <span>...{{ vendor.acctnumber|slice(-4) }}</span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        Payment Terms
+                        <span>
+                            {% if vendor.paymentterm == 1 %}
+                                Due upon receipt
+                            {% elseif vendor.paymentterm == 2 %}
+                                Net 10
+                            {% elseif vendor.paymentterm == 3 %}
+                                Net 15
+                            {% elseif vendor.paymentterm == 4 %}
+                                Net 30
+                            {% elseif vendor.paymentterm == 5 %}
+                                Net 45
+                            {% endif %}
+                        </span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        1099
+                        <span>
+                            {% if vendor.taxform == 1 %}
+                                <div class="check"></div>
+                            {% else %}
+                                <div class="uncheck"></div>
+                            {% endif %}
+                        </span>
+                    </label>
+                </div>
+                <div class="content-fields">
+                    <label>
+                        W9
+                        <span>
+                            {% if vendor.w9form == 1 %}
+                                <div class="check"></div>
+                            {% else %}
+                                <div class="uncheck"></div>
+                            {% endif %}
+                        </span>
+                    </label>
+                </div>
+
+                <div class="content-fields comments">
+                    <label>
+                        Comment
+                        <span>
+                            {% if comment is empty or comment is null or comment[0].comments|length == 0 or comment[0].comments|length < 5 %}
+                                No comment available
+                            {% else %}
+                                {{ comment[0].comments }}
+                            {% endif %}
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="content-list-invoices">
+
+                <div class="header-list-button fr" style="margin-bottom: 15px;">
+                    <a href="#" class="blue" id="export_button"></i>Export</a>
+                </div>
+                <div style="display: none">
+                    <form id="export_form" method="post" action="{{ url('EA_vendor_download', { 'id' : vendor.id }) }}">
+                        <input type='checkbox' name="header[invoicenum]" checked='checked' />
+                        <input type='checkbox' name="header[entity]" checked='checked' />
+                        <input type='checkbox' name="header[description]" checked='checked' />
+                        <input type='checkbox' name="header[bankname]" checked='checked' />
+                        <input type='checkbox' name="header[status]" checked='checked' />
+                        <input type='checkbox' name="header[acctnum]" checked='checked' />
+                        <input type='checkbox' name="header[checknum]" checked='checked' />
+                        <input type='checkbox' name="header[date]" checked='checked' />
+                        <input type='checkbox' name="header[amount]" checked='checked' />
+                    </form>
+                </div>
+                <table class="vendors-invoices tablesorter">
+                    <thead>
+                        <tr>
+                            <th width="7%"><input type='checkbox' class="headermain" rel="invoicenum" checked='checked' /> Invoice No.</th>
+                            <th width="12%"><input type='checkbox' class="headermain" rel="entity" checked='checked' /> Entity</th>
+                            <th width="16%"><input type='checkbox' class="headermain" rel="description" checked='checked' /> Description</th>
+                            <th width="15%"><input type='checkbox' class="headermain" rel="bankname" checked='checked' /> Bank Name</th>
+							<th width="10%" style="text-align:center"><input type='checkbox' class="headermain" rel="status" checked='checked' /> Status</th>
+                            <th width="10%" style="text-align:center"><input type='checkbox' class="headermain" rel="acctnum" checked='checked' /> Acct. No.</th>
+                            <th width="10%" style="text-align:center"><input type='checkbox' class="headermain" rel="checknum" checked='checked' /> Check No.</th>
+                            <th width="10%" style="text-align:center"><input type='checkbox' class="headermain" rel="date" checked='checked' /> Date</th>
+                            <th width="10%" style="text-align:center;padding-right:20px;"><input type='checkbox' class="headermain" rel="amount" checked='checked' /> Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if vvendor is empty %}
+                            <tr><td colspan="9" align="center">No related Invoices available.</td></tr>
+                        {% else %}
+                            {% for list in vvendor %}
+                                <tr>
+                                    <td><a href="{{ url('EA_detail_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a></td>
+                                    <td>{{ list.entityName|length > 20 ? list.entityName|slice(0, 20) ~ '...' : list.entityName }}</td>
+                                    <td>{{ list.description|length > 33 ? list.description|slice(0, 33) ~ '...' : list.description }}</td>
+                                    <td>{{ list.bankName|length > 22 ? list.bankName|slice(0, 22) ~ '...' : list.bankName }}</td>
+                                    <td align="center">
+										{% if list.status == 10 %}
+											Manual Payment
+										{% elseif list.status == 33 %}
+											Manual Payment
+										{% elseif list.status == 55 %}
+                                            Partial Payment
+                                        {% elseif list.status == 4 %}
+                                            Approved
+										{% endif %}
+									</td>
+									<td class="checknum" align="center">{{ list.bankAcct }}</td>
+                                    <td align="center">{{ list.checkNo|length > 14 ? list.checkNo|slice(0, 14) ~ '...' : list.checkNo }}</td>
+                                    <td align="center">{{ list.dateadded|date('m-d-Y') }}</td>
+                                    <td><span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',') }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+                <table><tr><td style="border:0;">{{ knp_pagination_render(vvendor) }}</td></tr></table>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="total-amount">
+            <div class="total-txt"><h2>Total</h2></div>
+            <div class="total-option">
+                <ul>
+                    <li><a href="#" class="getYear"><span class="year"></span> Year to Date</a></li>
+                    <li><a href="#" class="getMonth"><span class="year"></span> Month to Date</a></li>
+                    <li>
+                        <a href="#" class="dateTodate"><span class="month"></span>From Date to Date</a>
+                        <div class="month-to-date">
+                            <form method="post" action="{{ url('EA_vendor_datetodate_expense', { 'id' : vendor.id }) }}" class="month-go">
+                                <input type="text" id="from" name="from" placeholder="From" />
+                                <input type="text" id="to" name="to" placeholder="To" />
+                                <input type="submit" value="Go" />
+                                <input type="button" value="Cancel" />
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="total-sum">
+                <table>
+                    <tr>
+                        <td colspan="3" align="right">Balance <div class="total-balance">Not yet available</div></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="spacer"></div>
+    </div>
+{% endblock %}
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.tablesorter.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/registry/registry.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(".textPhone").text(function(i, text) {
+                text = text.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                return text;
+            });
+            $(".vendors-invoices").tablesorter({
+                headers: {
+                    0: { sorter: false },
+                    1: { sorter: false },
+                    2: { sorter: false },
+                    3: { sorter: false },
+                    4: { sorter: false },
+                    5: { sorter: false },
+                    6: { sorter: false }
+                }
+            });
+
+            getMonthValue('{{ url('EA_vendor_get_month_expense', { 'id' : vendor.id }) }}');
+            getYearValue('{{ url('EA_vendor_get_year_expense', { 'id' : vendor.id }) }}');
+            getMonthToMonthValue();
+        });
+    </script>
+{% endblock %}

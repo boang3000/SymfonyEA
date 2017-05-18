@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+
+    {# FILTER VIEW FOR ADMIN ONLY #}
+    {% set is_admin = false %}
+	{% set current_role = 'ROLE_USER' %}
+    {% if app.security.token.user.roles is iterable %}
+        {% for role in app.security.token.user.roles %}
+			{% if role == 'ROLE_ADMIN' or role == 'ROLE_SUPER_ADMIN'  %}
+                {% set is_admin = true %}
+				{% set current_role = role %}
+            {% endif %}
+			{% if role == 'ROLE_SUPER_ADMIN'  %}
+                {% set current_role = 'ROLE_SUPER_ADMIN' %}
+            {% endif %}
+			{% if role == 'ROLE_ADMIN'  %}
+                {% set current_role = 'ROLE_ADMIN' %}
+            {% endif %}
+			{% if role == 'ROLE_ACCOUNTANT'  %}
+                {% set current_role = 'ROLE_ACCOUNTANT' %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {# FILTER VIEW FOR ACCOUNTANT #}
+    {% set is_accountant = false %}
+    {% if app.security.token.user.roles is iterable %}
+        {% for roles in app.security.token.user.roles %}
+			{% if roles == 'ROLE_ACCOUNTANT'  %}
+                {% set is_accountant = true %}
+            {% endif %}
+		{% endfor %}
+    {% endif %}
+
+    {# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+    {% set is_admin_accountant = false %}
+    {% if app.security.token.user.roles is iterable %}
+        {% for roles in app.security.token.user.roles %}
+            {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+                {% set is_admin_accountant = true %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Easy AP | {% block title %}{% endblock %}</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+
+    {% block stylesheet %}
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/normalize.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/main.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/registry.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/extra.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/responsive.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/jquery_notification.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/validationEngine.jquery.css') }}">
+	{% endblock %}
+    {% block addtl_stylesheet %}{% endblock %}
+    {% block headjavascript %}
+        <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-1.11.0.min.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/jquery_notification_v.1.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/convertjson.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/main.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Header -->
+        {% block header %}
+        <div class="header">
+            <div class="logo">
+                <h1>
+                    <a href="#">Easy AP</a>
+                </h1>
+            </div>
+			{% if current_role != 'ROLE_SUPER_ADMIN' %}
+                {% block nav %}
+                    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : '' } %}
+                {% endblock %}
+            {% else %}
+                <ul class="cUL nav fl">
+                    <li class="nav1 super-admin"></li>
+                </ul>
+			{% endif %}
+
+            {% if current_role != 'ROLE_SUPER_ADMIN' %}
+            <div class="search-bar">
+                <form action="{{ url('search_index') }}" method="get" class="search">
+                    <a href="javascript: void(0)" class="icon" title="Advanced Search"></a>
+                </form>
+            </div>
+            {% endif %}
+            <div class="dropdown nav-right">
+                <a class="account" >
+                    <i class="icons gear"></i><span>My Account</span>
+                </a>
+                <div class="submenu">
+                    <ul class="cUL fr root">
+                        <li><a href="#">
+                                {% if (app.user.roles[0] == 'ROLE_SUPER_ADMIN') or (app.user.roles[0] == 'ROLE_ADMIN') %}
+                                    Admin
+                                {% elseif app.user.roles[0] == 'ROLE_ACCOUNTANT' %}
+                                    Accountant
+                                {% elseif app.user.roles[0] == 'ROLE_MANAGER' %}
+                                    Manager
+                                {% endif %}
+                            </a></li>
+                        {% if is_admin_accountant %}
+                            <li><a href="{{ url('EA_admin_addaccount') }}">{#<i class="icons gear"></i>#}{{ app.user.firstname|length > 20 ? app.user.firstname|slice(0, 20) ~ '...' : app.user.firstname }}</a></li>
+                        {% else %}
+                            <li><a href="{{ url('EA_admin_displayaccount', { 'id': app.user.id }) }}">{#<i class="icons gear"></i>#}{{ app.user.firstname|length > 20 ? app.user.firstname|slice(0, 20) ~ '...' : app.user.firstname }}</a></li>
+                        {% endif %}
+                        <li><a href="{{ url('fos_user_security_logout') }}">{#<i class="icons logout"></i>#}Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            {% if current_role != 'ROLE_SUPER_ADMIN' %}
+            <div class="advanced-search">
+                <form action="{{ url('EA_index_invoice') }}" method="post" class="search">
+                    <input type="hidden" name="filter">
+                    <input type="hidden" name="invoicesUrl" value="{{ url('EA_index_invoice') }}">
+                    <input type="hidden" name="entitiesUrl" value="{{ url('EA_admin_entity_registry') }}">
+                    <input type="hidden" name="registryUrl" value="{{ url('EA_master_registry') }}">
+                    <div class="btn-group">
+                        <select name='module' required='true'>
+                            <option value="">Filter By</option>
+                            <option selected>Invoices</option>
+                            <option>Entities</option>
+                            <option>Registry</option>
+                        </select>
+                        <button id="add-searchfield" type="button" class="btn">Add more</button>
+                        <button type="submit" class="btn">Advanced Search</button>
+                    </div>
+                    <div id="search-form"></div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% endblock %}
+
+        {% block header_second %}
+			{% block revenuenav %}
+			{% endblock %}       
+		{% endblock %}
+
+        {% block container %}{% endblock %}
+
+        <!-- Footer -->
+        {% block footer %}
+        <div class="footer">
+            <p class="copyright">Copyright &copy; Easy AP, All Rights Reserved</p>
+        </div>
+        {% endblock %}
+    </div>
+    {% block footerjavascript %}{% endblock %}
+</body>
+</html>

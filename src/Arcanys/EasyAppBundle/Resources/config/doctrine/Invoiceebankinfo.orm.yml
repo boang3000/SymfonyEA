@@ -1,0 +1,18 @@
+Arcanys\EasyAppBundle\Entity\Invoiceebankinfo:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\InvoiceebankinfoRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        invoiceinfoId:
+            type: integer
+        entitybankinfoId:
+            type: integer
+        entityId:
+            type: integer
+    lifecycleCallbacks: {  }

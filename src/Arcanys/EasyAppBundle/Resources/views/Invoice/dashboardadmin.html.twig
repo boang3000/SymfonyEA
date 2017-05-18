@@ -1,0 +1,68 @@
+<div class="container">
+    <div class="blue-header forapproval">
+        <h4>For Approval</h4>
+        <table class="tbl-dashboard">
+            <tr>
+                <th width="14%">Entity</th>
+                <th width="11%">Prepared by:</th>
+                <th width="14%">Vendor</th>
+                <th width="20%">Description</th>
+                <th width="8%" style="text-align:center">Invoice Date</th>
+                <th width="8%" style="text-align:center">Due Date</th>
+                <th width="15%" style="text-align:center">Status</th>
+                <th width="10%" style="text-align:right">Amount</th>
+            </tr>
+            {% if adminslist is empty %}
+                <tr>
+                    <td colspan="7" align="center">No Invoice available</td>
+                </tr>
+            {% else %}
+                {% for list in adminslist %}
+                    <tr id="list-{{ list.invoiceId }}">
+                        <td><a href="{{ url('EA_information_invoice', { 'id' : list.invoiceId }) }}">{{ list.entityName|length > 25 ? list.entityName|slice(0, 25) ~ '...' : list.entityName }}</a></td>
+                        <td>{{ list.firstname }} {{ list.lastname }}</td>
+                        <td>{{ list.name|length > 15 ? list.name|slice(0, 15) ~ '...' : list.name }}</td>
+                        <td>{{ list.description|length > 35 ? list.description|slice(0, 35) ~ '...' : list.description }}</td>
+                        <td align="center">{{ list.invoicedate|date("m-d-Y") }}</td>
+                        <td align="center">{{ list.dueDate|date("m-d-Y") }}</td>
+                        <td align="center">
+                            {% if (list.status == 0) or (list.status == 1) or (list.status == 11) %}
+                                Pending
+                            {% elseif (list.status == 2) or (list.status == 22) %}
+                                Not Approved
+                            {% elseif (list.outstandingbalance is null) and (list.status == 3) or (list.status == 33) %}
+                                Manual Payment
+                            {% elseif list.status == 44 or list.status == 5 %}
+                                Partial Payment
+                            {% endif %}
+                        </td>
+                        <td align="left">
+                            {% if list.status == 3 or list.status == 33 or list.status == 1 or list.status == 0 %}
+                                {% if list.outstandingbalance is not null %}
+                                    <span class="dollar-position">$</span>
+                                    <span class="amt-position">{{ list.outstandingbalance|number_format(2, '.', ',') }}</span>
+                                {% else %}
+                                    <span class="dollar-position">$</span>
+                                    <span class="amt-position">{{ list.amount|number_format(2, '.', ',') }}</span>
+                                {% endif %}
+                            {% else %}
+                                {% if list.status == 44 and list.outstandingbalance == 0 %}
+                                    <span class="dollar-position">$</span>
+                                    <span class="amt-position">{% if list.remainingbalance is not null %}{{ list.remainingbalance|number_format(2, '.', ',') }}{% endif %}</span>
+                                {% else %}
+                                    <span class="dollar-position">$</span>
+                                    <span class="amt-position">{{ list.outstandingbalance|number_format(2, '.', ',') }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        <table>
+            <tr>
+                <td style="border: 0">{{ knp_pagination_render(adminslist) }}</td>
+            </tr>
+        </table>
+    </div>
+</div>

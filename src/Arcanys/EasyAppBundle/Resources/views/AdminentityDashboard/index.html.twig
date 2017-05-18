@@ -1,0 +1,157 @@
+{% extends 'ArcanysEasyAppBundle::admintemplate.html.twig' %}
+
+{% block title %}Add Entities{% endblock %}
+{% block addtl_stylesheet %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/easyui/icon.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/easyui/easyui.css') }}">
+{% endblock %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'entity' } %}
+{% endblock %}
+
+{% block adminnav %}
+    {% include 'ArcanysEasyAppBundle::navtab.html.twig' with { 'activetab' : 'entity' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container admin">
+            <div class="admin-container">
+                <!-- Left -->
+                <div class="left fl">
+                    {% block content_btn %}
+                        <div class="blue-header">
+                            <h4 class="fl">{% block content_tab_title %}Entities{% endblock %}</h4>
+                            <a href="{{ url('EA_admin_entity') }}" class="blue fr"><i class="icons add"></i><span>New Entity</span></a>
+                        </div>
+                    {% endblock %}
+                    <div class="table">
+                        <table class="list-entity">
+                            <tr class="head">
+                                <th>Name</th>
+                            </tr>
+                            {% if entity is empty %}
+                                <tr>
+                                    <td colspan="2" align="center">No Entity available</td>
+                                </tr>
+                            {% else %}
+                                {% for list in entity %}
+                                    <tr id="{{ list.id }}">
+                                        <td>{{ list.entityName|length > 21 ? list.entityName|slice(0, 21) ~ '...' : list.entityName }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right -->
+                {% include "ArcanysEasyAppBundle:AdminentityDashboard:index-content.html.twig" %}
+
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+{% block footerjavascript %}
+	<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.easyui.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/entity/entity-function.js') }}"></script>
+
+    <script type="text/javascript">
+        $(function() {
+            getBankName("{{ url('entity_search_bankname') }}");
+            createNewEntity("{{ url('EA_admin_displayentity', { 'id' : 'idnumber' }) }}");
+            $('.list-entity tr').on('click', function(e) {
+                var getID = $(this).attr('id'),
+                    url   = "{{ url('EA_admin_viewentity') }}",
+                    view  = "{{ url('EA_admin_displayentity', { 'id' : 'idnumber' }) }}",
+                    view  = view.replace('idnumber', getID),
+                    data  = { id: getID },
+                    load  = $('.display-loader'),
+                    right = $('.account-info');
+
+                if ( history.pushState )
+                    window.history.pushState({}, document.title, view);
+
+                $(this).toggleClass('selected').siblings().removeClass('selected');
+
+                load.addClass('loader');
+                $.post(url, data, function(data) {
+                    if (load.hasClass('loader')) {
+                        load.removeClass('loader');
+                    }
+                    right.html(data);
+                });
+            });
+
+            $(document.body).on('click', '.remove-user', function(e) {
+                var getID = $(this).attr('id'),
+                    data  = { id: getID },
+                    url   = "{{ url('EA_admin_entitydelete', { 'id' : 'idnumber' }) }}",
+                    url   = url.replace('idnumber', getID);
+
+                if (confirm('Are you sure you want to delete this entity?')) {
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: data,
+                        beforeSend: function() { $('.display-loader').html('deleting....'); },
+                        success: function(datas) {
+                            $('.display-loader').html('');
+                            if (datas.id == '' || datas.id == null) {
+                                window.location="{{ url('EA_admin_entity') }}";
+                            } else {
+                                var view  = "{{ url('EA_admin_displayentity', { 'id' : 'idnumber' }) }}",
+                                    view  = view.replace('idnumber', datas.id);
+                                window.location = view;
+                            }
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+
+            $('#tt').tabs({
+                closable: true,
+                onSelect: function(title) {
+                    var getID = title.slice(5),
+                        urlAdd = '{{ url('tabentity_create') }}';
+                    if ( getID.length > 2 ) {
+                        getID = 1;
+                    }
+                    /*if (getID == 1) {
+                        createNewTabEntity(urlAdd);
+                        console.log(getID);
+                    } else if (getID == 2) {
+                        createNewTabEntity(urlAdd);
+                        console.log(getID);
+                    } else if (getID == 3) {
+                        createNewTabEntity(urlAdd);
+                        console.log(getID);
+                    } else if (getID == 4) {
+                        createNewTabEntity(urlAdd);
+                        console.log(getID);
+                    } else if (getID == 5) {
+                        createNewTabEntity(urlAdd);
+                        console.log(getID);
+                    }*/
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

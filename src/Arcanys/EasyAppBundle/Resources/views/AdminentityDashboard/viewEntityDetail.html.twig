@@ -1,0 +1,135 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block title %}View Entity - {{ entity.0.entityName|capitalize }}{% endblock %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/easyui/easyui.css') }}">
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'entity' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container">
+            <div class="content-details-wrapper">
+                <div class="content-details">
+                    {% include "ArcanysEasyAppBundle:AdminentityDashboard:viewEntityDetail-content.html.twig" %}
+                </div>
+
+                <div class="content-list-invoices">
+                    <table class="vendors-invoices tablesorter">
+                        <thead>
+                        <tr>
+                            <th width="8%">Date</th>
+                            <th width="9%">Invoice No.</th>
+                            <th width="15%">Vendor</th>
+                            <th width="25%">Description</th>
+                            <th width="12%" style="text-align:center">Expenses</th>
+                            <th width="12%" style="text-align:center">Revenue</th>
+                            <th width="12%" style="text-align:center;padding-right:20px">Capital</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if ventity is empty %}
+                            <tr><td colspan="7" align="center">No related Invoices available.</td></tr>
+                        {% else %}
+                            {% for list in ventity %}
+                                <tr>
+                                    <td>{{ list.dateadded }}</td>
+                                    <td>{% if list.invoiceId is defined %}<a href="{{ url('EA_detail_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}{% endif %}</a></td>
+                                    <td>{% if list.name is defined %}{{ list.name|length > 20 ? list.name|slice(0, 20) ~ '...' : list.name }}{% endif %}</td>
+                                    <td>{{ list.description|length > 45 ? list.description|slice(0, 45) ~ '...' : list.description }}</td>
+                                    <td>{% if list.amount is defined %}<span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',') }}</span>{% endif %}</td>
+                                    <td>{% if list.rev is defined %}<span class="dollar-position">$</span> <span class="amt-position">{{ list.rev|number_format(2, '.', ',') }}</span>{% endif %}</td>
+                                    <td>{% if list.cap is defined %}<span class="dollar-position">$</span> <span class="amt-position">{{ list.cap|number_format(2, '.', ',') }}</span>{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                    <table><tr><td style="border:0">{{ knp_pagination_render(ventity) }}</td></tr></table>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="total-amount">
+                <div class="total-txt"><h2>Total</h2></div>
+                <div class="total-option">
+                    <ul>
+                        <li><a href="#" class="getYear"><span class="year"></span> Year to Date</a></li>
+                        <li><a href="#" class="getMonth"><span class="year"></span> Month to Date</a></li>
+                        <li>
+                            <a href="#" class="dateTodate"><span class="month"></span>From Date to Date</a>
+                            <div class="month-to-date">
+                                <form method="post" action="{{ url('EA_entity_datetodate_expense', { 'id' : entity.0.id }) }}" class="month-go">
+                                    <input type="text" id="from" name="from" placeholder="From" />
+                                    <input type="text" id="to" name="to" placeholder="To" />
+                                    <input type="submit" value="Go" />
+                                    <input type="button" value="Cancel" />
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="total-sum">
+                    <table>
+                        <tr>
+                            <td align="right">Expense <div class="total-expense">Not yet available</div></td>
+                            <td align="right">Revenue <div class="total-revenue">Not yet available</div></td>
+                            <td align="right">Capital <div class="total-capital">Not yet available</div></td>
+                        </tr>
+                        <!--<tr>
+                            <td colspan="3" align="right">Balance <div class="total-balance">Not yet available</div></td>
+                        </tr>-->
+                    </table>
+                </div>
+                <div class="spacer"></div>
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.tablesorter.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/registry/registry.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.easyui.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(".vendors-invoices").tablesorter({
+                headers: {
+                    0: { sorter: false },
+                    2: { sorter: false },
+                    3: { sorter: false },
+                    4: { sorter: false },
+                    5: { sorter: false },
+                    6: { sorter: false }
+                }
+            });
+            $(".textPhone").text(function(i, text) {
+                text = text.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                return text;
+            });
+            $('.bank-acct').each(function() {
+                var bankaccount     = $(this),
+                    getbankaccount  = bankaccount.html(),
+                    renewNum        = (getbankaccount.length - 4)+1,
+                    string          = '';
+
+                for ( var i = 0; i < renewNum; i++) {
+                    string = getbankaccount.charAt(i);
+                    string = string.replace(string, '#');
+                }
+                bankaccount.html('...' + getbankaccount.slice(-4));
+            });
+            getMonthValue('{{ url('EA_entity_get_month_expense', { 'id' : entity.0.id }) }}');
+            getYearValue('{{ url('EA_entity_get_year_expense', { 'id' : entity.0.id }) }}');
+            getMonthToMonthValue();
+        });
+    </script>
+{% endblock %}

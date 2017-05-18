@@ -1,0 +1,6 @@
+You have an invoice to be approved.<br />
+{% for invoice in invoiceNo %}
+    {{ invoice }} <br />
+{% endfor %}
+<br />
+{{ app.request.getSchemeAndHttpHost() }}

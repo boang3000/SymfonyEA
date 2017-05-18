@@ -1,0 +1,25 @@
+Arcanys\EasyAppBundle\Entity\Userimage:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\UserimageRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        userid:
+            type: integer
+        filename:
+            type: string
+            length: 255
+        path:
+            type: string
+            length: 255
+        token:
+            type: string
+            length: 255
+        status:
+            type: integer
+    lifecycleCallbacks: {  }

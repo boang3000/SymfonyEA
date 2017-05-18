@@ -1,0 +1,5 @@
+{% if is_admin_accountant %}
+    <li class="{% if activetab == 'revenue' %} active {% endif %}"><a href="{{ url('Revenue_index_revenue') }}">Revenue</a></li>
+    <li class="{% if activetab == 'wire' %} active {% endif %}"><a href="{{ url('Revenue_index_wire') }}">Wire</a></li>
+	<li class="{% if activetab == 'inter' %} active {% endif %}"><a href="{{ url('Revenue_index_inter') }}">Entity Capital Transfer</a></li>
+{% endif %}

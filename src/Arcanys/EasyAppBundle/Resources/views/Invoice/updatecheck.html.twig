@@ -1,0 +1,366 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Invoice Dashboard' %}
+
+{# FILTER VIEW FOR ADMIN #}
+{% set is_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/select2.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" >
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'invoice' } %}
+{% endblock %}
+
+{% block container %}
+    {#{{ dump(invoice.idVendor) }}#}
+    <!-- Container -->
+    {% if is_accountant %}
+        <form method="post" data-status="{{ invoice.status }}" action="{{ url('EA_updatec_invoice', { 'id' : invoice.invoiceId }) }}" enctype="multipart/form-data" class="form-invoice">
+            <div class="container">
+                <div class="breadcrumbs">
+                    <ul class="cUL">
+                        <li><a href="{{ url('EA_index_invoice') }}" class="backtoinvoice">Back to Invoices</a></span></li>
+                    </ul>
+                </div>
+                <div class="invoice">
+                    <div class="display-status invoice-status"></div>
+                    <div class="contents">
+                        <div class="top clearfix">
+                            <div class="editable_in entity">
+                                <em>Entity:</em>
+                                <div>
+                                    <select name="entity" class="cs-select cs-skin-border entity-select validate[required]" tabindex="1">
+                                        <option value="">Select Entity</option>
+                                        {% if entity is empty %}
+                                            Entity not available
+                                        {% else %}
+                                            {% for e_list in entity %}
+                                                <option value="{{ e_list.id }}" {% if e_list.id == invoice.idEntity %}selected{% endif %}>{{ e_list.entityName }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="error-message" style="display:block">
+                                    <span class="red display-message" style="display:none;">$ {{ getentity.curBalance|number_format(2, '.', ',') }}</span>
+                                    <span class="red display-message-ba checknum" style="margin-left:20px;display:none;">{{ getentity.bankAcct }}</span>
+                                    <a href="#inline_content" class="info-popup" style="display:none;"><span class="icons info"></span></a>
+                                </div>
+                            </div>
+                            <div class="editable_in check">
+                                {#<em>check no:</em>
+                                {% if invoice.status == 3 %}
+                                    <input type="text" name="checknumber" value="{{ invoice.checkNo }}" class="checknumber validate[required]" placeholder="0" maxlength="10" />
+                                {% else %}
+                                    <div class="checknumber check-number-view">
+                                        {{ invoice.checkNo }}
+                                        <input type="hidden" name="checknumber" value="{{ invoice.checkNo }}" class="checknumber" />
+                                    </div>
+                                {% endif %}#}
+                            </div>
+                        </div>
+                        <div class="mid_1 clearfix">
+                            <div class="editable_in pay">
+                                <em>Pay To The Order Of:</em>
+                                <select name="vendor" class="cs-select cs-skin-border vendor-select validate[required]" tabindex="3">
+                                    <option value="">Select Pay Order</option>
+                                    {% if vendor is empty %}
+                                        Vendor not available
+                                    {% else %}
+                                        {% for v_list in vendor %}
+                                            <option value="{{ v_list.id }}" {% if v_list.id == invoice.idVendor %}selected{% endif %}>{{ v_list.name }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="editable_in price">
+                                <em>$</em>
+                                <input type="text" name="amount" value="{{ invoice.amount|number_format(2, '.', ',') }}" placeholder="0.00" class="cur-ammount validate[required]" id="input-cur-amount" tabindex="4" />
+                                <span class="amt-validate"></span>
+                            </div>
+                            <div class="editable_in money-char">
+                                <span class="numbertowords" id="output-cur-amount"></span><span class="cents-amt"></span>
+                            </div>
+                        </div>
+                        <div class="mid_1 clearfix">
+                            <div class="bank-name bank-name-details">{% if getentity is empty %}Entity not available{% else %}{{ getentity.bankName }}{% endif %}</div>
+                            <div class="editable_in datepick invoice-dates">
+                                <div class="editable_in price">
+                                    <label>Invoice No.</label>
+                                    <input type="text" name="invoiceamount" value="{{ invoice.invoicenumber }}" class="invoiceamount validate[required]" placeholder="0" maxlength="14" tabindex="5" />
+                                    <span class="invoiceamount-status"></span>
+                                </div>
+                                <div class="input-append date datepicker no-padding" data-date-format="mm/dd/yyyy">
+                                    <label>Invoice Date</label>
+                                    <input name="invoicedate" class="input-medium invoicedate validate[required]" value="{{ invoice.invoicedate }}" size="16" type="text" tabindex="6" />
+                                    <span class="add-on"></span>
+                                </div>
+                                <div class="input-append date datepicker no-padding" data-date-format="mm/dd/yyyy">
+                                    <label>Date due</label>
+                                    <input name="datedue" class="input-medium date-due-input validate[required]" value="{{ invoice.dueDate|date("m/d/Y") }}" size="16" type="text" tabindex="6" />
+                                    <input name="vendordate" class="vendordate" type="hidden" value="{% if getvendor is not null %}{% if getvendor.paymentterm == 1 %}any{% elseif getvendor.paymentterm == 2 %}10{% elseif getvendor.paymentterm == 3 %}15{% elseif getvendor.paymentterm == 4 %}30{% else %}45{% endif %}{% endif %}" />
+                                    <span class="add-on"></span>
+                                </div>
+                            </div>
+                            <div class="editable_in manager-wrapper">
+                                <div class="select-container">
+                                    <select name="managerapproval" class="cs-select cs-skin-border manager-select validate[required]" tabindex="7">
+                                        <option value="">Select Manager</option>
+                                        <option value="99999" selected>No Manager</option>
+                                        {% if user is empty %}
+                                            User not available
+                                        {% else %}
+                                            {% for u_list in user %}
+                                                {% if u_list.id == 99999 %}
+                                                    <option value="99999" selected>No Manager</option>
+                                                {% endif %}
+                                                <option value="{{ u_list.id }}" {% if u_list.id == invoice.managerApproval %}selected{% endif %}>{{ u_list.firstname }} {{ u_list.lastname }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                    <em>Manager Approval:<span></span></em>
+                                </div>
+                                <div class="editable_in manager-sign">
+                                    <em>Manager Approval:</em>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mid_1 clearfix">
+                            <div class="bank-name"></div>
+                            <div class="vendor-details editable_in datepick sig1" style="display:block">
+                                <div class="vendorname">
+                                    <label></label>
+                                    <span>{% if getvendor is empty %}Vendor not available{% else %}{{ getvendor.name }}{% endif %}</span>
+                                </div>
+                                <div class="vendoraddress">
+                                    <label></label>
+                                    <span>
+                                        {% if getvendor is empty %}
+                                            Vendor not available
+                                        {% else %}
+                                            {{ getvendor.address }}<br/>
+                                            {% if getvendor.city is not empty %}
+                                                {{ getvendor.city }}, {{ getvendor.state }} {{ getvendor.zip }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="textareas clearfix">
+                            <label>Description:</label>
+                            <textarea name="description" class="description" tabindex="8">{{ invoice.description }}</textarea>
+                            <input type="hidden" name="token" class="token" value="{{ invoice.token }}" />
+                        </div>
+                        <div class="editable_in chart">
+                            <div class="chart-accounts-display">
+                                <em>Chart of Accounts</em>
+                                <select name="chartofaccounts" class="cs-select chartofaccounts-select cs-skin-border validate[required]">
+                                    <option value="">Select Accounts</option>
+                                    {% if charts is empty %}
+                                        Charts of accounts not available
+                                    {% else %}
+                                        {% for list in charts %}
+                                            <option value="{{ list.id }}" {% if list.id == invoice.chartOfAccounts %}selected{% endif %}>{{ list.accountnumber }} {{ list.accountname }} {{ list.chartname }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="chart-accounts-option">
+                                <ul class="chart-accounts-list">
+                                    <li>
+                                        <a href="#" class="chart-add"><i class="chartaccounts-icon add-icon"></i></a>
+                                        <div class="chartaccounts-form chartaccounts-form-add">
+                                            <input type="text" name="acctnum" class="chartaccounts-input acctnum" maxlength="12" placeholder="Account Number" />
+                                            <span class="charts-info acctnum-add-info"></span>
+                                            <input type="text" name="acctname" class="chartaccounts-input acctname" maxlength="25" placeholder="Account Name" />
+                                            <span class="charts-info acctname-add-info"></span>
+                                            <input type="text" name="addchart" class="chartaccounts-input typeofaccount" maxlength="25" placeholder="Type of Account" />
+                                            <span class="charts-info chart-add-info"></span>
+                                            <input type="button" class="chartaccounts-button charts-add-btn" value="Add" />
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="chart-modify"><i class="chartaccounts-icon modify-icon"></i></a>
+                                        <div class="chartaccounts-form chartaccounts-form-modify">
+                                            <div class="modify-chart-list">
+                                                <ul>
+                                                    {% if charts is empty %}
+                                                        <li class="empty-data" data-info="1">No charts of accounts available</li>
+                                                    {% else %}
+                                                        {% for list in charts %}
+                                                            <li data-id="{{ list.id }}" id="chart-parent-{{ list.id }}">
+                                                                <label class="chartname-{{ list.id }}">{{ list.chartname }}</label>
+                                                                <div class="edit-field-charts">
+                                                                    <input type="text" name="acctnum" value="{{ list.accountnumber }}" data-id="{{ list.id }}" class="chartaccounts-input acctnum" maxlength="12" placeholder="Account Number" />
+                                                                    <span class="charts-info acctnum-add-info" data-id="{{ list.id }}"></span>
+                                                                    <input type="text" name="acctname" value="{{ list.accountname }}" data-id="{{ list.id }}" class="chartaccounts-input acctname" maxlength="25" placeholder="Account Name" />
+                                                                    <span class="charts-info acctname-add-info" data-id="{{ list.id }}"></span>
+                                                                    <input type="text" name="editchart" value="{{ list.chartname }}" data-id="{{ list.id }}" class="chartaccounts-input typeofaccount" maxlength="25" placeholder="Type of Account" />
+                                                                    <span class="charts-info chart-edit-info" data-id="{{ list.id }}"></span>
+
+                                                                    <input type="button" class="chartaccounts-button charts-edit-btn" data-id="{{ list.id }}" value="Edit" />
+                                                                    <input type="button" class="chartaccounts-button charts-cancel-btn" data-id="{{ list.id }}" value="Cancel" />
+                                                                </div>
+                                                                <a href="#" class="modify-chart-btn" data-id="{{ list.id }}"><i class="chart-btn-icon modify"></i></a>
+                                                                <a href="#" class="delete-chart-btn" data-id="{{ list.id }}"><i class="chart-btn-icon delete"></i></a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                            <span class="charts-info chart-modify-info"></span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="textareas clearfix">
+                            <label><strong>Comments:</strong></label>
+                            <ul class="comment-list">
+                                <li></li>
+                                {% if comment is empty %}
+                                {% else %}
+                                    {% for list in comment %}
+                                        {% set role     = list.roles[0] %}
+                                        {% if role == 'ROLE_SUPER_ADMIN' or role == 'ROLE_ADMIN' %}
+                                            {% set setrole = 'Admin' %}
+                                            {% set styles = 'admin' %}
+                                            {% set username = '' %}
+                                            {% set data = list.comments %}
+                                        {% elseif role == 'ROLE_ACCOUNTANT' %}
+                                            {% set setrole = '[Acct]' %}
+                                            {% set styles = 'acct' %}
+                                            {% set username = list.firstname %}
+                                            {% set data = list.comments %}
+                                        {% elseif role == 'ROLE_MANAGER' %}
+                                            {% set setrole = '[Mgr]' %}
+                                            {% set styles = 'mgr' %}
+                                            {% set username = list.firstname %}
+                                            {% set data = list.comments %}
+                                        {% endif %}
+                                        {% if data is not empty %}
+                                            <li><strong><label class="{{ styles }}">{{ setrole }} {{ username }}:</label></strong> {{ data }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                            <div class="textarea-info display-conditions">
+                                <i class="information icon"></i><label> Please leave a comment regarding the <a href="#">Partial Payment</a> of this invoice</label>
+                            </div>
+                            <textarea name="comments" class="comment-txbox" tabindex="10"></textarea>
+                            <span class="comment-notification"></span>
+                        </div>
+                        <div class="editable_in submit">
+                            <input style="display:none" type="button" class="comment-btn" data-id="{{ invoice.invoiceId }}" data-role="{{ app.user.roles[0] }}" data-name="{{ app.user.firstname }}" value="post comment">
+                        </div>
+                    </div>
+                </div>
+                <div class="right-invoice">
+                    <div class="pluploader">
+                        <div id="pl-container">
+                            <input id="pickfiles" type="image" src="{{ asset('bundles/arcanyseasyapp/img/invoice-upload-btn.png') }}">
+                        </div>
+                        <div id="filelist" style="padding-bottom: 10px;">Your browser doesn't have HTML5 support.</div>
+                    </div>
+                    <div class="thumbnails">
+                        <div id="invoice-thumbnails" class="owl-carousel img-wrap">
+                            {% for list in inimg %}
+                                <div class="item imglist-{{ list.id }}">
+                                    <span class="close" data-id="{{ list.id }}">&times;</span>
+                                    <img class="lazyOwl" data-id="{{ list.id }}" data-src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="invoice-footer">
+                    <input type="submit" name="submitapproval" value="Submit for Approval" class="submitforapproval blue">
+                </div>
+                <div class="spacer"></div>
+            </div>
+        </form>
+        <div style='display:none'>
+            <div id='inline_content' style='padding:10px; background:#fff;'>
+                <p>This is the last 4 digits of the bank account number.</p>
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+
+{% block footerjavascript %}
+    <script>var link = "{{ url('EA_index_invoice') }}",vendorlink = "{{ url('EA_vendor_details') }}";</script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/invoice/updatechk.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/chartofaccounts.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/select2.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/toword.js') }}"></script>
+
+    <script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/plupload.full.min.js') }}"></script>
+    <script>
+        var vendorOptions = '';
+        {% for v_list in vendor %}
+            vendorOptions += "<option value=\"{{ v_list.id }}\">{{ v_list.name }}</option>";
+        {% endfor %}
+
+        var plupParams = {
+            url : {
+                imgs: "{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}",
+                upload: "{{ url('EA_update_upload_invoice', { 'id' : invoice.invoiceId }) }}",
+                delete: "{{ url('EA_delete_image') }}",
+                uploadVendor: "{{ url('EA_update_invoice_image_vendor') }}"
+            }
+        };
+    </script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/pluploader.js') }}"></script>
+
+    <script type="text/javascript">
+        $(function() {
+            $(".vendor-select").select2("val", "{{ invoice.idVendor }}");
+            addChartdata('.charts-add-btn', '{{ url('Chartsofaccounts_add') }}');
+            modifyChartdata('{{ url('Chartsofaccounts_modify') }}');
+            addComment('{{ url('EA_invoice_postcomment') }}', '{{ app.user.id }}');
+            updateFormInvoice();
+            venderSelect('{{ url('EA_vendor_details') }}');
+            entitySelect('{{ url('EA_checkentity_balance') }}');
+            currentAmt('{{ url('validate_invoice_duplicate') }}');
+            checkInvoiceAmt('{{ url('validate_vendor_check_duplicate') }}');
+
+            $(document.body).on('click', '.delete-chart-btn', function(e) {
+                var getID = $(this).data('id');
+
+                if ( confirm('Are you sure you want to delete this chart of accounts\' data? ') ) {
+                    $.ajax({
+                        type: 'POST', url: '{{ url('Chartsofaccounts_delete') }}', data: { id: getID }, dataType: 'json',
+                        beforeSend: function() { $('.modify-chart-list li#chart-parent-' + getID).addClass('loader-list'); },
+                        success: function(data) {
+                            if ( data.info == 1 ) {
+                                $('.modify-chart-list ul').append('<li class="empty-data" data-info="1">' + data.msg + '</li>');
+                            }
+                            $('.modify-chart-list li#chart-parent-' + getID).removeClass('loader-list');
+                            $('.chartofaccounts-select option[value="' + getID + '"]').remove();
+                            $('.modify-chart-list li#chart-parent-' + getID).fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+        });
+    </script>
+{% endblock %}

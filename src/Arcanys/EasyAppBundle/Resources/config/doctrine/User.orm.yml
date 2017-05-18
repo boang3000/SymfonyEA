@@ -1,0 +1,53 @@
+Arcanys\EasyAppBundle\Entity\User:
+    type:  entity
+    repositoryClass: Arcanys\EasyAppBundle\Entity\UserRepository
+    table: fos_user
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+
+    fields:
+        firstname:
+            type: string
+            length: 255
+            nullable: true
+        lastname:
+            type: string
+            length: 255
+            nullable: true
+        contactnum:
+            type: string
+            length: 255
+            nullable: true
+        localcontact:
+            type: integer
+            nullable: true
+        status:
+            type: integer
+            nullable: true
+        token:
+            type: string
+            length: 255
+            nullable: true
+        name:
+            type: string
+            length: 255
+            nullable: true
+        path:
+            type: string
+            length: 255
+            nullable: true
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+        company:
+            type: string
+            column: company_id
+    lifecycleCallbacks:
+        prePersist: [ prePersist ]
+        preUpdate: [ preUpdate ]

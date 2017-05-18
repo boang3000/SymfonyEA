@@ -1,0 +1,251 @@
+{% extends 'ArcanysEasyAppBundle::admintemplate.html.twig' %}
+
+{% block title %}View Account{% endblock %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN'  %}
+            {% set is_admin = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/colorbox.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/uploadify.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'account' } %}
+{% endblock %}
+
+{% block adminnav %}
+    {% include 'ArcanysEasyAppBundle::navtab.html.twig' with { 'activetab' : 'account' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% include "ArcanysEasyAppBundle:AdminaccountDashboard:adminsection.html.twig" %}
+{% endblock %}
+{% block footerjavascript %}
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine-en.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.colorbox-min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.uploadify.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            specialCharAlphaNumeric2('.firstname');
+            specialCharAlphaNumeric2('.lastname');
+            numbersOnly('.contactnum');
+            numbersOnly('#acme_user_registration_localcontact');
+            jQuery(".update-user-form").validationEngine();
+            $('select#acme_user_registration_roles').hide();
+            $('select#acme_user_registration_roles').removeAttr( "multiple" );
+            $(".changepass").colorbox({iframe:true, width:"40%", height:"75%"});
+            $(".txContactnum").text(function(i, text) {
+                text = text.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                return text;
+            });
+
+            var getCurrentID  = '{{ users.id }}';
+            $('.list-users #'+getCurrentID).addClass('selected');
+
+            $('.list-users tr').on('click', function(e) {
+                var getID = $(this).attr('id'),
+                    url   = "{{ url('EA_admin_viewaccount') }}",
+                    view  = "{{ url('EA_admin_displayaccount', { 'id' : 'idnumber' }) }}",
+                    view  = view.replace('idnumber', getID),
+                    data  = { id: getID },
+                    load  = $('.display-loader'),
+                    right = $('.account-info');
+
+                if ( history.pushState )
+                    window.history.pushState({}, document.title, view);
+
+                $(this).toggleClass('selected').siblings().removeClass('selected');
+
+                load.addClass('loader');
+                $.post(url, data, function(data) {
+                    if (load.hasClass('loader')) {
+                        load.removeClass('loader');
+                    }
+                    right.html(data);
+                });
+            });
+
+            $(document.body).on('blur', '.emailadd', function(e) {
+                var getData = $(this).val(),
+                    data    = { keyword: getData },
+                    url     = '{{ url('check_email') }}';
+                if (getData) {
+                    $.ajax({
+                        type: 'POST',
+                        data: data,
+                        url: url,
+                        beforeSend: function() {
+                            $('.email-check').html('validating...').show();
+                        },
+                        success: function(datas) {
+                            if (datas.info == 0) {
+                                $('.email-check').html(datas.email).show();
+                            } else if (datas.info == 1) {
+                                $('.email-check').html(datas.email).show();
+                                return false;
+                            }
+                            console.log(datas);
+                        }
+                    });
+                } else if (getData == '') {
+                    $('.email-check').html();
+                }
+            });
+
+            $('.fileImgUpload').hide();
+            $(document.body).on('click', '.edit-user', function(e) {
+                var getID = $(this).attr('id');
+
+                $('.fields span').hide();
+                $('.txImage').show();
+                $('.fields .user-textfield, .fields .user-button, .fileImgUpload, .uploadify-button-text').show();
+                e.preventDefault();
+            });
+
+            $(document.body).on('submit', '.update-user-form', function(e) {
+                var url         = $(this).attr('action'),
+                    firstname   = $('.firstname').val(),
+                    lastname    = $('.lastname').val(),
+                    email       = $('.email').val(),
+                    contactnum  = $('.contactnum').val(),
+                    localcontact= $('.localcontact').val(),
+                    roles       = $('.roles').val(),
+                    getID       = $(this).data('id'),
+                    data        = {
+                        firstname : firstname,
+                        lastname : lastname,
+                        email : email,
+                        contactnum : contactnum,
+                        localcontact : localcontact,
+                        roles : roles
+                    };
+
+                if ( firstname === '' ) {
+                    return false;
+                } else if ( lastname === '' ) {
+                    return false;
+                } else if ( contactnum === '' ) {
+                    return false;
+                } else if (contactnum.length <= 9) {
+                    $('.textContacterror').html('This field should be 10 digits').show();
+                    setTimeout(function() {
+                        $('.textContacterror').fadeOut(function() {
+                            $(this).hide();
+                        });
+                    }, 4000);
+                    return false;
+                } else if ( email === '' || !IsEmail(email) ) {
+                    return false;
+                } else if (!IsEmail(email)) {
+                    return false;
+                } else if ($('.email-check').html() == 'Email already exist!') {
+                    return false;
+                } else {
+                    $.post(url, data, function() {
+                        showNotification({
+                            message: "The Account has been updated.",
+                            type: "success",
+                            autoClose: true,
+                            duration: 5
+                        });
+                    });
+
+                    if (roles == 'ROLE_ADMIN' || roles == 'ROLE_SUPER_ADMIN') {
+                        roles = 'Admin';
+                    } else if (roles == 'ROLE_MANAGER') {
+                        roles = 'Manager';
+                    } else if (roles == 'ROLE_ACCOUNTANT') {
+                        roles = 'Accountant';
+                    }
+
+                    $('.txFirstname').html(firstname);
+                    $('.txLastname').html(lastname);
+                    $('.txEmail').html(email);
+                    $('.txContactnum').html(contactnum).text(function(i, text) {
+                        text = text.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                        return text;
+                    });
+                    $('.txLocalcontact').html(localcontact);
+                    $('.txRoles').html(roles);
+                    $('.list-users tr#' + getID + ' td:first-child').html(firstname + ' ' + lastname);
+                    $('.list-users tr#' + getID + ' td:nth-child(2)').html(roles);
+                    $('.list-users tr#' + getID + ' td:last-child').html(email);
+
+                    $('.fields span, .fileImgUpload').show();
+                    $('.fields .user-textfield, .fields .user-button, .email-check, .fileImgUpload').hide();
+                    $('.textContacterror').html('');
+                }
+                e.preventDefault();
+            });
+
+            $(document.body).on('click', '.remove-user', function(e) {
+                var getID = $(this).attr('id'),
+                    url   = '{{ url('EA_admin_delete') }}',
+                    data  = { id: getID };
+
+                if (confirm('Are you sure you want to delete this?')) {
+                    $.ajax({
+                        type: "POST", url: url, data: data,
+                        beforeSend: function() {
+                            $('.display-loader').html('deleting....');
+                        },
+                        success: function(datas) {
+                            $('.display-loader').html('');
+                            if (datas.id == '' || datas.id == null) {
+                                window.location="{{ url('EA_admin_addaccount') }}";
+                                console.log('sulod');
+                            } else {
+                                var view  = "{{ url('EA_admin_displayaccount', { 'id' : 'idnumber' }) }}",
+                                    view  = view.replace('idnumber', datas.id);
+                                window.location = view;
+                                console.log('sulod2');
+                            }
+                            console.log(datas.id);
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+
+            var getIDUpload = $('#file_upload').data('id');
+            setTimeout(function () {
+                $('#file_upload').uploadify({
+                    'auto'     : true,
+                    'multi'    : false,
+                    'width'    : 150,
+                    'buttonImage' : '{{ asset('bundles/arcanyseasyapp/img/upload-user.png') }}',
+                    'fileTypeDesc' : 'Image Files',
+                    'fileTypeExts' : '*.png',
+                    'fileSizeLimit' : '500KB',
+                    'formData' : { 'id' : getIDUpload },
+                    'swf'      : '{{ asset('bundles/arcanyseasyapp/swf/uploadify.swf') }}',
+                    'uploader' : '{{ url('EA_admin_editupload') }}',
+                    'onUploadComplete' : function(file) {
+                        $.ajax({
+                            type: 'POST', data: { 'token' : $('.token').val() }, url: '{{ url('EA_userretrieve_img') }}',
+                            beforeSend: function() {
+
+                            },
+                            success: function(msg) {
+                                $('.txImage').html('<img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}' + msg.name + '" />');
+    //                            console.log(JSON.stringify(msg));
+                                $('.fields span, .fileImgUpload').show();
+                                $('.fields .user-textfield, .fields .user-button, .email-check, .fileImgUpload').hide();
+                            }
+                        });
+                    }
+                });
+            }, 0);
+        });
+    </script>
+{% endblock %}

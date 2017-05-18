@@ -1,0 +1,578 @@
+<!-- BANK 1 -->
+<div id="tt" class="easyui-tabs" style="width:96%;">
+    <div title="{% if bankinfo|length >= 1 %}
+                    {% if bankinfo[0].bankName is not empty or bankinfo[0].bankName is not null %}
+                        {% if bankinfo[0].entityTabname is not null %}
+                            {{ bankinfo[0].entityTabname }}
+                        {% else %}
+                            ZZ{{ bankinfo[0].bankAcct|slice(-4) }}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    Bank 1
+                {% endif %}" style="padding:10px">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">
+                    Bank Name
+                    <span>{% if bankinfo|length >= 1 %}{{ bankinfo[0].bankName }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankContact">
+                    Bank Contact
+                    <span>{% if bankinfo|length >= 1 %}{{ bankinfo[0].bankContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">
+                    Bank Phone Number
+                    <span class="textPhone">{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">
+                    Contact Email Address
+                    <span>{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityEmailaddress }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAddress">
+                    Bank Address
+                    <span>
+                        {% if bankinfo|length >= 1 %}
+                            {{ bankinfo[0].entityAddress }} {{ bankinfo[0].entityCity }} {{ bankinfo[0].entityState }} {{ bankinfo[0].entityZip }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAccountNum">
+                    Bank Account No.
+                    <span {% if bankinfo|length >= 1 %}class="bank-acct"{% endif %}>{% if bankinfo|length >= 1 %}{{ bankinfo[0].bankAcct }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankRoutingNum">
+                    Bank Routing No.
+                    <span>{% if bankinfo|length >= 1 %}{{ bankinfo[0].routingBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textStartCheckNum">
+                    Starting Check No.
+                    <span>{% if bankinfo|length >= 1 %}{{ bankinfo[0].startBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textPresentBalance">
+                    Present Balance
+                    <span>{% if bankinfo|length >= 1 %}$ {{ bankinfo[0].curBalance|number_format(2, '.', ',') }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">
+                    Comments
+                    <span>
+                        {% if bankinfo|length >= 1 %}
+                            {% if bankinfo[0].comments is empty or bankinfo[0].comments|length < 5 %}
+                                No comments available
+                            {% else %}
+                                {{ bankinfo[0].comments }}
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <div class="thumbnails">
+                    <ul id="thumbs" class="display-thumb display-thumb1 create-image">
+                        {% if entimg is empty %}
+                            <li>No image available</li>
+                        {% else %}
+                            {% for list in entimg %}
+                                <li class="imglist-{{ list.id }}">
+                                    <a class="img-display" href="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}">
+                                        <img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- BANK 2 -->
+    <div title="{% if bankinfo|length >= 2 %}
+                    {% if bankinfo[1].bankName is not empty or bankinfo[1].bankName is not null %}
+                        {% if bankinfo[1].entityTabname is not null %}
+                            {{ bankinfo[1].entityTabname }}
+                        {% else %}
+                            ZZ{{ bankinfo[1].bankAcct|slice(-4) }}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    Bank 2
+                {% endif %}" style="padding:10px">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">
+                    Bank Name
+                    <span>{% if bankinfo|length >= 2 %}{{ bankinfo[1].bankName }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankContact">
+                    Bank Contact
+                    <span>{% if bankinfo|length >= 2 %}{{ bankinfo[1].bankContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">
+                    Bank Phone Number
+                    <span class="textPhone">{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">
+                    Contact Email Address
+                    <span>{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityEmailaddress }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAddress">
+                    Bank Address
+                    <span>
+                        {% if bankinfo|length >= 2 %}
+                            {{ bankinfo[1].entityAddress }} {{ bankinfo[1].entityCity }} {{ bankinfo[1].entityState }} {{ bankinfo[1].entityZip }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAccountNum">
+                    Bank Account No.
+                    <span {% if bankinfo|length >= 2 %}class="bank-acct"{% endif %}>{% if bankinfo|length >= 2 %}{{ bankinfo[1].bankAcct }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankRoutingNum">
+                    Bank Routing No.
+                    <span>{% if bankinfo|length >= 2 %}{{ bankinfo[1].routingBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textStartCheckNum">
+                    Starting Check No.
+                    <span>{% if bankinfo|length >= 2 %}{{ bankinfo[1].startBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textPresentBalance">
+                    Present Balance
+                    <span>{% if bankinfo|length >= 2 %}$ {{ bankinfo[1].curBalance|number_format(2, '.', ',') }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">
+                    Comments
+                    <span>
+                        {% if bankinfo|length >= 2 %}
+                            {% if bankinfo[1].comments is empty or bankinfo[1].comments|length < 5 %}
+                                No comments available
+                            {% else %}
+                                {{ bankinfo[1].comments }}
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <div class="thumbnails">
+                    <ul id="thumbs" class="display-thumb display-thumb2 create-image">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- BANK 3 -->
+    <div title="{% if bankinfo|length >= 3 %}
+                    {% if bankinfo[2].bankName is not empty or bankinfo[2].bankName is not null %}
+                        {% if bankinfo[2].entityTabname is not null %}
+                            {{ bankinfo[2].entityTabname }}
+                        {% else %}
+                            ZZ{{ bankinfo[2].bankAcct|slice(-4) }}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    Bank 3
+                {% endif %}" style="padding:10px">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">
+                    Bank Name
+                    <span>{% if bankinfo|length >= 3 %}{{ bankinfo[2].bankName }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankContact">
+                    Bank Contact
+                    <span>{% if bankinfo|length >= 3 %}{{ bankinfo[2].bankContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">
+                    Bank Phone Number
+                    <span class="textPhone">{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">
+                    Contact Email Address
+                    <span>{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityEmailaddress }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAddress">
+                    Bank Address
+                    <span>
+                        {% if bankinfo|length >= 3 %}
+                            {{ bankinfo[2].entityAddress }} {{ bankinfo[2].entityCity }} {{ bankinfo[2].entityState }} {{ bankinfo[2].entityZip }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAccountNum">
+                    Bank Account No.
+                    <span {% if bankinfo|length >= 3 %}class="bank-acct"{% endif %}>{% if bankinfo|length >= 3 %}{{ bankinfo[2].bankAcct }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankRoutingNum">
+                    Bank Routing No.
+                    <span>{% if bankinfo|length >= 3 %}{{ bankinfo[2].routingBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textStartCheckNum">
+                    Starting Check No.
+                    <span>{% if bankinfo|length >= 3 %}{{ bankinfo[2].startBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textPresentBalance">
+                    Present Balance
+                    <span>{% if bankinfo|length >= 3 %}$ {{ bankinfo[2].curBalance|number_format(2, '.', ',') }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">
+                    Comments
+                    <span>
+                        {% if bankinfo|length >= 3 %}
+                            {% if bankinfo[2].comments is empty or bankinfo[2].comments|length < 5 %}
+                                No comments available
+                            {% else %}
+                                {{ bankinfo[2].comments }}
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <div class="thumbnails">
+                    <ul id="thumbs" class="display-thumb display-thumb3 create-image">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- BANK 4 -->
+    <div title="{% if bankinfo|length >= 4 %}
+                    {% if bankinfo[3].bankName is not empty or bankinfo[3].bankName is not null %}
+                        {% if bankinfo[3].entityTabname is not null %}
+                            {{ bankinfo[3].entityTabname }}
+                        {% else %}
+                            ZZ{{ bankinfo[3].bankAcct|slice(-4) }}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    Bank 4
+                {% endif %}" style="padding:10px">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">
+                    Bank Name
+                    <span>{% if bankinfo|length >= 4 %}{{ bankinfo[3].bankName }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankContact">
+                    Bank Contact
+                    <span>{% if bankinfo|length >= 4 %}{{ bankinfo[3].bankContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">
+                    Bank Phone Number
+                    <span class="textPhone">{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">
+                    Contact Email Address
+                    <span>{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityEmailaddress }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAddress">
+                    Bank Address
+                    <span>
+                        {% if bankinfo|length >= 4 %}
+                            {{ bankinfo[3].entityAddress }} {{ bankinfo[3].entityCity }} {{ bankinfo[3].entityState }} {{ bankinfo[3].entityZip }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAccountNum">
+                    Bank Account No.
+                    <span {% if bankinfo|length >= 4 %}class="bank-acct"{% endif %}>{% if bankinfo|length >= 4 %}{{ bankinfo[3].bankAcct }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankRoutingNum">
+                    Bank Routing No.
+                    <span>{% if bankinfo|length >= 4 %}{{ bankinfo[3].routingBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textStartCheckNum">
+                    Starting Check No.
+                    <span>{% if bankinfo|length >= 4 %}{{ bankinfo[3].startBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textPresentBalance">
+                    Present Balance
+                    <span>{% if bankinfo|length >= 4 %}$ {{ bankinfo[3].curBalance|number_format(2, '.', ',') }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">
+                    Comments
+                    <span>
+                        {% if bankinfo|length >= 4 %}
+                            {% if bankinfo[3].comments is empty or bankinfo[3].comments|length < 5 %}
+                                No comments available
+                            {% else %}
+                                {{ bankinfo[3].comments }}
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <div class="thumbnails">
+                    <ul id="thumbs" class="display-thumb display-thumb4 create-image">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- BANK 5 -->
+    <div title="{% if bankinfo|length >= 5 %}
+                    {% if bankinfo[4].bankName is not empty or bankinfo[4].bankName is not null %}
+                        {% if bankinfo[4].entityTabname is not null %}
+                            {{ bankinfo[4].entityTabname }}
+                        {% else %}
+                            ZZ{{ bankinfo[4].bankAcct|slice(-4) }}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    Bank 5
+                {% endif %}" style="padding:10px">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">
+                    Bank Name
+                    <span>{% if bankinfo|length >= 5 %}{{ bankinfo[4].bankName }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankContact">
+                    Bank Contact
+                    <span>{% if bankinfo|length >= 5 %}{{ bankinfo[4].bankContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">
+                    Bank Phone Number
+                    <span class="textPhone">{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityContact }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">
+                    Contact Email Address
+                    <span>{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityEmailaddress }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAddress">
+                    Bank Address
+                    <span>
+                        {% if bankinfo|length >= 5 %}
+                            {{ bankinfo[4].entityAddress }} {{ bankinfo[4].entityCity }} {{ bankinfo[4].entityState }} {{ bankinfo[4].entityZip }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankAccountNum">
+                    Bank Account No.
+                    <span {% if bankinfo|length >= 5 %}class="bank-acct"{% endif %}>{% if bankinfo|length >= 5 %}{{ bankinfo[4].bankAcct }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textBankRoutingNum">
+                    Bank Routing No.
+                    <span>{% if bankinfo|length >= 5 %}{{ bankinfo[4].routingBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textStartCheckNum">
+                    Starting Check No.
+                    <span>{% if bankinfo|length >= 5 %}{{ bankinfo[4].startBalance }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textPresentBalance">
+                    Present Balance
+                    <span>{% if bankinfo|length >= 5 %}$ {{ bankinfo[4].curBalance|number_format(2, '.', ',') }} {% else %} N/A {% endif %}</span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">
+                    Comments
+                    <span>
+                        {% if bankinfo|length >= 5 %}
+                            {% if bankinfo[4].comments is empty or bankinfo[4].comments|length < 5 %}
+                                No comments available
+                            {% else %}
+                                {{ bankinfo[4].comments }}
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <div class="thumbnails">
+                    <ul id="thumbs" class="display-thumb display-thumb5 create-image">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,96 @@
+Arcanys\EasyAppBundle\Entity\Invoice:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\InvoiceRepository
+    id:
+        invoiceId:
+            type: integer
+            id: true
+            column: invoice_id
+            generator:
+                strategy: AUTO
+    fields:
+        idEntity:
+            type: integer
+            column: id_entity
+        idVendor:
+            type: integer
+            column: id_vendor
+        checkNo:
+            type: string
+            length: 255
+            column: checknum
+        description:
+            type: text
+        status:
+            type: integer
+        bankinfo:
+            type: integer
+            nullable: true
+        managerApproval:
+            type: integer
+        chartOfAccounts:
+            type: integer
+        dueDate:
+            type: string
+            length: 255
+        invoicedate:
+            type: string
+            length: 255
+        invoicenumber:
+            type: string
+            length: 255
+        amount:
+            type: string
+            length: 255
+        deletestatus:
+            type: integer
+        readstatus:
+            type: integer
+        addedby:
+            type: integer
+        printready:
+            type: integer
+            nullable: true
+        entityready:
+            type: integer
+            nullable: true
+        outstandingbalance:
+            type: float
+            length: 15
+            nullable: true
+        remainingbalance:
+            type: float
+            length: 15
+            nullable: true
+        token:
+            type: string
+            length: 255
+        company:
+            type: string
+            column: company_id
+        formtoken:
+            type: string
+            length: 255
+            nullable: true
+        assigned:
+            type: integer
+            nullable: true
+        statusdraft:
+            type: integer
+            nullable: true
+        pagenumber:
+            type: integer
+            nullable: true
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+        sentAt:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

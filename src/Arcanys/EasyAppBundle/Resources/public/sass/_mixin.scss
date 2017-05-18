@@ -1,0 +1,310 @@
+@charset "UTF-8";
+@import "compass";
+
+$blue: #0071bc;
+$gray: #666;
+$dark-gray: #333;
+$light-gray: #999;
+$lighter-gray: #e6e6e6;
+$imgPath: "../img";
+$gold: #c69c6d;
+$brown: #754c24;
+$courier: "Courier New", sans-serif;
+$red: #ff0000;
+
+
+/*Removed bulleted style in ul/ol*/
+/*Usage: @include clear-list*/
+@mixin clear-list(){
+  list-style: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.cUL{
+  @include clear-list();
+}
+
+// Mixin that will include the fall back px declaration as well as the calculated rem value.
+// Default font size on html element is 100%, equivalent to 16px.
+
+@function calculateRem($size){ 
+  $remSize: $size / 16px;
+  @return #{$remSize}rem;
+}
+@mixin font-size($size) { 
+  font-size: $size;
+  font-size: calculateRem($size);
+}
+
+/* Media query breakpoints that is converted to em.*/
+$browser-context: 16; /*Default*/
+@function em($pixels, $context: $browser-context) {
+  @return #{$pixels/$context}em;
+}
+@mixin bp($point) {
+  @if $point == small {
+    @media only screen and (min-width: em(480)) { @content; }
+  }
+  @else if $point == ipad {
+    @media only screen and (min-width: em(768)) { @content; }
+  }
+  @else if $point == homepage {
+    @media only screen and (min-width: em(580)) { @content; }
+  }
+  @else if $point == special{
+  	@media only screen and (min-width: em(879)) { @content; }	
+  }
+  @else if $point == special-2{
+  	@media only screen and (min-width: em(992)) { @content; }	
+  }
+  @else if $point == large{
+    @media only screen and (min-width: em(992)) { @content; } 
+  }
+  @else if $point == large-2{
+    @media only screen and (min-width: em(1200)) { @content; } 
+  }
+}
+
+/*
+  Browser CSS Hacks mixins
+  Usage: @include browser(ff)
+*/
+@mixin browser($vendor) {
+  @if $vendor == ff { /* FF 3.6+ */
+    @media screen and (-moz-images-in-menus:0) { @content; }  
+  }
+  @else if $vendor == ie10{ /* IE9 & IE 10+ */
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none), (min-width:0\0) { @content; }
+  }
+  @else if $vendor == chrome{ /* chrome 28 */
+    @media all and (-webkit-min-device-pixel-ratio:0) and (min-resolution: .001dpcm) { @content; }
+  }
+  @else if $vendor == safari{ /* safari & ie */
+    @media screen and (-webkit-min-device-pixel-ratio:0) { @content; }
+  }
+  @else if $vendor == opera{ /*chrome 29+ & opera 16+*/
+    @media all and (-webkit-min-device-pixel-ratio:10000), not all and (-webkit-min-device-pixel-ratio:0) { @content; }
+  }
+}
+
+/*
+ Padding bottom hack / responsive image.
+ Usage: @include responsive-img
+*/
+@mixin responsive-img(){
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 ratio */
+  height: 0;
+  overflow: hidden;
+  img{
+  	position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/*
+  Responsive video
+  Usage: @include responsive-video
+*/
+@mixin responsive-video() {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 ratio*/
+	padding-top: 25px;
+	height: 0;
+	iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+/*
+  Absolute center
+  Usage: @include center
+*/
+@mixin center(){
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin: auto;
+  width: 50%;
+  height: 50%;
+}
+
+/*
+  Center align a horizontal list
+  Usage: @include center-list
+*/
+@mixin center-list(){
+  margin: 0 auto;
+  li{
+    display: inline-block;
+  }
+}
+
+/*
+  Prevent breaking out long URLs
+  Usage: @extend %word-break
+*/
+%word-break {
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word; 
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+%ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  -ms-text-overflow: ellipsis; /* Required for IE8 */
+  -o-text-overflow: ellipsis; /* Required for Opera */
+  text-overflow: ellipsis; 
+}
+
+/*
+  Floated element always comes first in the document order. http://wtfhtmlcss.com/#floats-clearing
+  Usage: @include clearfix
+*/
+@mixin clearfix(){
+  &:before,
+  &:after{
+    content: '';
+    display: table;
+  }
+  &:after{
+    clear: both
+  }
+}
+
+/*
+  Crossbrowser opacity mixin
+*/
+@mixin opacity($value){
+  opacity: #{"." + $value};
+  filter: alpha(opacity=$value);
+  -ms-filter: "alpha(opacity=$value)";
+  -khtml-opacity: #{"." + $value};
+  -webkit-opacity: #{"." + $value};
+  -moz-opacity: #{"." + $value};
+}
+
+/*
+  Retina images
+*/
+@mixin image-2x($image, $width, $height) {
+  @media (min--moz-device-pixel-ratio: 1.3),
+         (-o-min-device-pixel-ratio: 2.6/2),
+         (-webkit-min-device-pixel-ratio: 1.3),
+         (min-device-pixel-ratio: 1.3),
+         (min-resolution: 1.3dppx) {
+    background-image: url($image);
+    background-size: $width $height;
+  }
+}
+
+/*
+  Floats
+*/
+.fl{
+  float: left;
+}
+.fr{
+  float: right;
+  margin-top: 7px;
+}
+
+/*
+  reset
+*/
+button{
+  border: 0 none;
+  outline: 0 none;
+}
+
+/*
+  Icons
+*/
+.icons{
+  background-image: url(#{$imgPath}/sprites.png);
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle
+}
+.add{
+  background-position: -93px -60px;
+  float: left;
+  margin-right: 6px
+}
+.gear{
+  background-position: 0 0
+}
+.gear2{
+  background-position: 0 -32px
+}
+.logout{
+  background-position: -26px 0
+}
+.edit{
+  background-position: 0 -64px
+}
+.del{
+  background-position: -32px -64px
+}
+.print{
+  background-position: -64px -64px
+}
+.changepass{
+  background-position: -32px -32px
+}
+.rem{
+  background-position: -64px -32px
+}
+/*
+  buttons
+*/
+.blue{
+  color: #fff;
+  border: 1px solid transparent;
+  background-color: $blue;
+  @include border-radius(5px);
+  padding: 8px 12px;
+  &:hover{
+    background-color: rgba(0, 113, 188, 0.92);
+  }
+}
+
+/*
+  Inputs
+*/
+input:not([type]), 
+input[type="email"], 
+input[type="number"], 
+input[type="password"], 
+input[type="tel"], 
+input[type="url"], 
+input[type="text"]{
+  border: 1px solid #ccc;
+  @include border-radius(3px);
+}
+input:not([type]),
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #00bc00;
+}

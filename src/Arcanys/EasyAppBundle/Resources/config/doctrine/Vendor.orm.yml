@@ -1,0 +1,65 @@
+Arcanys\EasyAppBundle\Entity\Vendor:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+        address:
+            type: string
+            length: 255
+        city:
+            type: string
+            length: 255
+        state:
+            type: string
+            length: 255
+        zip:
+            type: integer
+        contactPerson:
+            type: string
+            length: 255
+            column: contact_person
+        phoneNum:
+            type: string
+            length: 255
+            column: phone_num
+        localNum:
+            type: integer
+            nullable: true
+        email:
+            type: string
+            length: 255
+        status:
+            type: integer
+        taxform:
+            type: integer
+            nullable: true
+        w9form:
+            type: integer
+            nullable: true
+        paymentterm:
+            type: integer
+            nullable: true
+        acctnumber:
+            type: integer
+        chartsofaccounts:
+            type: integer
+        company:
+            type: string
+            column: company_id
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

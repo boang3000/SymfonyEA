@@ -1,0 +1,238 @@
+<div class="input-head">
+    {#<span class="name">{{ vendor.name }}</span>#}
+    <span><a href="#" class="edit-user" id="{{ vendor.id }}"><i class="icons edit"></i>edit</a></span>
+    <span><a href="#" class="remove-user" id="{{ vendor.id }}"><i class="icons rem"></i>remove</a></span>
+</div>
+<form method="post" data-id="{{ vendor.id }}" action="{{ url('EA_admin_vendorupdate', { 'id' : vendor.id }) }}" class="update-form-vendor">
+    <div class="fields">
+        <div class="half">
+            <label for="textName">
+                Name
+                <span class="textName">{{ vendor.name }}</span>
+                <input type="text" name="name" id="textName" placeholder="Vendor's name" class="user-textfield validate[required]" value="{{ vendor.name }}" />
+            </label>
+        </div>
+        <div class="half">
+            <label for="textEmail">
+                Email
+                <span class="textEmail"><a href="mailto:{{ vendor.email }}">{{ vendor.email }}</a></span>
+                <input type="text" name="email" id="textEmail" placeholder="Vendor's Email" autocomplete="off" class="emailadd user-textfield validate[custom[email], required]" value="{{ vendor.email }}" />
+                <span class="email-check"></span>
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="half">
+            <label for="textAddress">
+                Street Name
+                <span class="textAddress">{{ vendor.address }}</span>
+                <input type="text" name="address" id="textAddress" placeholder="Street Name" maxlength="45" class="user-textfield validate[required]" value="{{ vendor.address }}" />
+            </label>
+        </div>
+        <div class="half">
+            <label for="textCity">
+                City
+                <span class="textCity">{{ vendor.city }}</span>
+                <input type="text" name="city" id="textCity" placeholder="City" maxlength="35" class="user-textfield validate[required]" value="{{ vendor.city }}" />
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="half">
+            <label for="textState">
+                State
+                <span class="textState">
+                    {% for key,list in state %}
+                        {% if key == vendor.state %}
+                            {{ list }}
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <select name="state" id="textState" class="user-textfield validate[required]" style="display:none;">
+                    <option value="">Please Select a state</option>
+                    {% for key,list in state %}
+                        <option value="{{ key }}" {% if key == vendor.state %}selected="selected"{% endif %}>{{ list }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <div class="half">
+            <label for="textZip">
+                Zip
+                <span class="textZip">{{ vendor.zip }}</span>
+                <input type="text" name="zip" id="textZip" placeholder="Zip" maxlength="5" class="user-textfield validate[required]" value="{{ vendor.zip }}" />
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="half">
+            <label for="textContact">
+                Contact Person
+                <span class="textContact">{{ vendor.contactPerson }}</span>
+                <input type="text" name="contact" id="textContact" placeholder="Vendor's Contact Person" class="user-textfield validate[required]" value="{{ vendor.contactPerson }}" />
+                <span class="textContacterror">
+            </label>
+        </div>
+        <div class="half">
+            <label for="textAcctnum">
+                Account Number
+                <span class="textAcctnum">{{ vendor.acctnumber }}</span>
+                <input type="text" name="acctnumber" id="textAcctnum" placeholder="Account Number" maxlength="12" class="user-textfield validate[required]" value="{{ vendor.acctnumber }}" />
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="half">
+            <label for="textPhone">
+                Phone
+                <span class="textPhone">{{ vendor.phoneNum }}</span>
+                <input type="text" name="phone" id="textPhone" maxlength="10" placeholder="(000)0001234" class="user-textfield validate[required]" value="{{ vendor.phoneNum }}" />
+                <span class="textPhoneerror"></span>
+            </label>
+        </div>
+        <div class="half">
+            <label for="textLocalNum">
+                Ext. No.
+                <span class="textLocalNum">{{ vendor.localNum }}</span>
+                <input type="text" name="local" id="textLocalNum" maxlength="5" placeholder="00000" class="user-textfield" value="{{ vendor.localNum }}" />
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="forth">
+            <label for="text1099">
+                <input type="checkbox" name="1099" id="text1099" value="1" {% if vendor.taxform == 1 %}checked="checked"{% endif %} disabled="disabled" />
+                1099
+            </label>
+        </div>
+        <div class="forth">
+            <label for="textW9">
+                <input type="checkbox" name="W9" id="textW9" value="1" {% if vendor.w9form == 1 %}checked="checked"{% endif %} disabled="disabled" />
+                W9
+            </label>
+        </div>
+        <div class="forth">
+            <label for="textPaymentTerms">
+                Payment Terms
+                <span class="textPaymentTerms">
+                    {% if vendor.paymentterm == 1 %}
+                        Due upon receipt
+                    {% elseif vendor.paymentterm == 2 %}
+                        Net 10
+                    {% elseif vendor.paymentterm == 3 %}
+                        Net 15
+                    {% elseif vendor.paymentterm == 4 %}
+                        Net 30
+                    {% elseif vendor.paymentterm == 5 %}
+                        Net 45
+                    {% endif %}
+                </span>
+                <select name="paymentterms" id="textPaymentTerms" class="user-textfield validate[required]">
+                    <option value="">Select Payment Terms</option>
+                    <option value="1" {% if vendor.paymentterm == 1 %}selected="selected"{% endif %}>Due upon receipt</option>
+                    <option value="2" {% if vendor.paymentterm == 2 %}selected="selected"{% endif %}>Net 10</option>
+                    <option value="3" {% if vendor.paymentterm == 3 %}selected="selected"{% endif %}>Net 15</option>
+                    <option value="4" {% if vendor.paymentterm == 4 %}selected="selected"{% endif %}>Net 30</option>
+                    <option value="5" {% if vendor.paymentterm == 5 %}selected="selected"{% endif %}>Net 45</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="full">
+            <div class="chart-accounts-display">
+                <label for="textChartsofaccounts">Chart of Accounts
+                    <span class="textChartsofaccounts">
+                        {% if getchart is not empty %}
+                            {{ getchart[0].chartname }}
+                        {% else %}
+                            Charts of account not available
+                        {% endif %}
+                    </span>
+                </label>
+                <select name="chartofaccounts" id="textChartsofaccounts" class="cs-select user-textfield chartofaccounts-select cs-skin-border validate[required]" tabindex="9">
+                    <option value="">Select Accounts</option>
+                    {% if charts is not empty %}
+                        {% for list in charts %}
+                            <option value="{{ list.id }}" {% if getchart is not empty %}{% if getchart[0].id == list.id %}selected="selected"{% endif %}{% endif %}>{{ list.accountnumber }} {{ list.accountname }} {{ list.chartname }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div class="chart-accounts-option">
+                <ul class="chart-accounts-list">
+                    <li>
+                        <a href="#" class="chart-add"><i class="chartaccounts-icon add-icon"></i></a>
+                        <div class="chartaccounts-form chartaccounts-form-add">
+                            <input type="text" name="acctnum" class="chartaccounts-input acctnum" maxlength="12" placeholder="Account Number" />
+                            <span class="charts-info acctnum-add-info"></span>
+                            <input type="text" name="acctname" class="chartaccounts-input acctname" maxlength="25" placeholder="Account Name" />
+                            <span class="charts-info acctname-add-info"></span>
+                            <input type="text" name="addchart" class="chartaccounts-input typeofaccount" maxlength="25" placeholder="Type of Account" />
+                            <span class="charts-info chart-add-info"></span>
+                            <input type="button" class="chartaccounts-button charts-add-btn" value="Add" />
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#" class="chart-modify"><i class="chartaccounts-icon modify-icon"></i></a>
+                        <div class="chartaccounts-form chartaccounts-form-modify">
+                            <div class="modify-chart-list">
+                                <ul>
+                                    {% if charts is empty %}
+                                        <li class="empty-data" data-info="1">No charts of accounts available</li>
+                                    {% else %}
+                                        {% for list in charts %}
+                                            <li data-id="{{ list.id }}" id="chart-parent-{{ list.id }}">
+                                                <label class="chartname-{{ list.id }}">{{ list.chartname }}</label>
+                                                <div class="edit-field-charts">
+                                                    <input type="text" name="acctnum" value="{{ list.accountnumber }}" data-id="{{ list.id }}" class="chartaccounts-input acctnum" maxlength="12" placeholder="Account Number" />
+                                                    <span class="charts-info acctnum-add-info" data-id="{{ list.id }}"></span>
+                                                    <input type="text" name="acctname" value="{{ list.accountname }}" data-id="{{ list.id }}" class="chartaccounts-input acctname" maxlength="25" placeholder="Account Name" />
+                                                    <span class="charts-info acctname-add-info" data-id="{{ list.id }}"></span>
+                                                    <input type="text" name="editchart" value="{{ list.chartname }}" data-id="{{ list.id }}" class="chartaccounts-input typeofaccount" maxlength="25" placeholder="Type of Account" />
+                                                    <span class="charts-info chart-edit-info" data-id="{{ list.id }}"></span>
+
+                                                    <input type="button" class="chartaccounts-button charts-edit-btn" data-id="{{ list.id }}" value="Edit" />
+                                                    <input type="button" class="chartaccounts-button charts-cancel-btn" data-id="{{ list.id }}" value="Cancel" />
+                                                </div>
+                                                <a href="#" class="modify-chart-btn" data-id="{{ list.id }}"><i class="chart-btn-icon modify"></i></a>
+                                                <a href="#" class="delete-chart-btn" data-id="{{ list.id }}"><i class="chart-btn-icon delete"></i></a>
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <span class="charts-info chart-modify-info"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="full">
+            <label for="textComments">
+                Comments
+                <span class="textComments">
+                    {% if comment is empty or comment[0].comments == '' or comment[0].comments == ' ' %}
+                        No comment
+                    {% else %}
+                        {{ comment[0].comments }}
+                    {% endif %}
+                </span>
+                <textarea name="comments" id="textComments" placeholder="Your comments here" class="user-textfield">{% if comment is empty %}{% else %}{{ comment[0].comments }}{% endif %} </textarea>
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <input type="submit" class="vendor-btn user-button" value="Save" />
+    </div>
+</form>
+<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/vendor/vendor-functions.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/chartofaccounts.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/select2.min.js') }}"></script>
+<script>
+    $('.select2-container, .chart-accounts-option').hide();
+    numbersOnly('input[name="acctnum"]');
+</script>

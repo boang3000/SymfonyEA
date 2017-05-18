@@ -1,0 +1,228 @@
+<div class="input-head">
+    {#<span class="name">{{ users.firstname|capitalize }} {{ users.lastname|capitalize }}</span>#}
+    <span><a href="#" class="edit-user" id="{{ users.id }}"><i class="icons edit"></i>edit</a></span>
+    <span><a href="{{ url('EA_admin_updatepassword', { 'id' : users.id }) }}" class="changepass"><i class="icons changepass"></i>change password</a></span>
+    <span><a href="#" class="remove-user" id="{{ users.id }}"><i class="icons rem"></i>remove</a></span>
+</div>
+<form method="post" data-id="{{ users.id }}" action="{{ url('EA_admin_updateaccount', { 'id' : users.id }) }}" class="update-user-form">
+    <div class="fields">
+        <div class="half">
+            <label for="">
+                First Name
+                <span class="txFirstname">{{ users.firstname|capitalize }}</span>
+                <input value="{{ users.firstname }}" type="text" id="acme_user_registration_firstname" placeholder="Firstname" name="acme_user_registration[firstname]" maxlength="255" class="validate[required] firstname user-textfield" />
+            </label>
+        </div>
+        <div class="half">
+            <label for="">
+                Last Name
+                <span class="txLastname">{{ users.lastname|capitalize }}</span>
+                <input value="{{ users.lastname }}" type="text" id="acme_user_registration_lastname" placeholder="Lastname" name="acme_user_registration[lastname]" maxlength="255" class="validate[required] lastname user-textfield" />
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="full">
+            <label for="">
+                Email
+                <span class="txEmail"><a href="mailto:{{ users.email }}">{{ users.email }}</a></span>
+                <input value="{{ users.email }}" type="email" autocomplete="off" id="acme_user_registration_email" placeholder="Email" name="acme_user_registration[email]" class="validate[required] email emailadd user-textfield" />
+                <span class="email-check"></span>
+            </label>
+        </div>
+    </div>
+    {% if app.user.roles[0] != 'ROLE_SUPER_ADMIN' %}
+    <div class="fields">
+        <div class="half">
+            <label for="">
+                Contact Number
+                <span class="txContactnum">{{ users.contactnum }}</span>
+                <input value="{{ users.contactnum }}" type="text" id="acme_user_registration_contactnum" placeholder="(000)0000000" name="acme_user_registration[contactnum]" maxlength="10" class="validate[required] contactnum user-textfield" />
+                <span class="textContacterror"></span>
+            </label>
+        </div>
+        <div class="half">
+            <label for="">
+                Ext. No.
+                <span class="txLocalcontact">{{ users.localcontact }}</span>
+                <input value="{{ users.localcontact }}" type="text" id="acme_user_registration_localcontact" placeholder="00000" name="acme_user_registration[localcontact]" maxlength="5" class="localcontact user-textfield" />
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="full">
+            <label for="">
+                Role
+                <span class="txRoles">
+                    {% if users.roles[0] == 'ROLE_ACCOUNTANT' %}
+                        Accountant
+                    {% elseif users.roles[0] == 'ROLE_MANAGER' %}
+                        Manager
+                    {% elseif ( users.roles[0] == 'ROLE_ADMIN' ) or ( users.roles[0] == 'ROLE_SUPER_ADMIN' ) %}
+                        Admin
+                    {% endif %}
+                </span>
+                <select id="acme_user_registration_roles" name="acme_user_registration[roles][]" required="required" multiple="multiple" class="validate[required] roles user-textfield">
+                    <option {% if users.roles[0] == 'ROLE_ACCOUNTANT' %} selected="selected" {% endif %} value="ROLE_ACCOUNTANT">Accountant</option>
+                    <option {% if users.roles[0] == 'ROLE_MANAGER' %} selected="selected" {% endif %} value="ROLE_MANAGER">Manager</option>
+                    {#<option {% if users.roles[0] == 'ROLE_ADMIN' %} selected="selected" {% endif %} value="ROLE_ADMIN">Admin</option>#}
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="full">
+            <label for="">
+                Signature
+                <span class="txImage">
+                    {% if userimg is empty %}
+                        No signature available<br/>
+                    {% else %}
+                        <img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ userimg[0].filename }}" />
+                    {% endif %}
+                </span>
+            </label>
+            <div class="fileImgUpload">
+                <input id="file_upload" name="file_upload" class="user-textfield" data-id="{{ users.id }}" type="file" />
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="fields">
+        <div class="full">
+            <input type="hidden" name="token" class="token" value="{{ users.token }}" />
+            <input type="hidden" id="acme_user_registration_enabled" name="acme_user_registration[enabled]" value="{{ users.enabled }}">
+        </div>
+    </div>
+    <div class="fields">
+        <input type="submit" class="user-button" value="Save" />
+    </div>
+</form>
+
+<br/>
+<div class="full">
+    <div class="pluploader">
+        <div id="pl-container">
+            <input id="pickfiles" type="image" src="{{ asset('bundles/arcanyseasyapp/img/upload-user.png') }}">
+        </div>
+        <div id="filelist" style="padding-bottom: 10px;">Your browser doesn't have HTML5 support.</div>
+    </div>
+    <div class="thumbnails">
+        <div id="invoice-thumbnails" class="owl-carousel img-wrap">
+            {% for list in userimg %}
+                <div class="item imglist-{{ list.id }}">
+                    <span class="close" data-id="{{ list.id }}">&times;</span>
+                    <img class="lazyOwl" data-id="{{ list.id }}" data-src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+{% endblock %}
+
+<script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/plupload.full.min.js') }}"></script>
+<script>
+    var plupParams = {
+        imgs: "{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}",
+        upload: "{{ url('EA_admin_upload') }}",
+        delete: "{{ url('EA_admin_delete_image') }}"
+    };
+
+    $(function() {
+        $("#invoice-thumbnails").owlCarousel({
+            navigation : true,
+            pagination: true,
+            slideSpeed : 300,
+            paginationSpeed : 400,
+            singleItem : true,
+            autoHeight : true,
+            items : 1,
+            lazyLoad : true
+        });
+
+        var container = document.getElementById('pl-container'),
+                fileList = document.getElementById('filelist');
+
+        var uploader = new plupload.Uploader({
+            runtimes: 'html5',
+            browse_button: 'pickfiles',
+            drop_element : 'drop-target',
+            container: container,
+            url: plupParams.upload,
+            filters: {
+                max_file_size: '10mb',
+                mime_types: [
+                    {title: 'Image files', extensions: 'jpg,gif,png,pdf'}
+                ]
+            },
+            init: {
+                PostInit: function () {
+                    fileList.innerHTML = '';
+                },
+                BeforeUpload: function (up, file) {
+                    up.settings.multipart_params = {
+                        token : $('.token').val()
+                    };
+                },
+                FilesAdded: function (up, files) {
+                    fileList.innerHTML = '';
+
+                    plupload.each(files, function (file) {
+                        fileList.innerHTML += '<div id="' + file.id + '" class="file-info">' + file.name + ' <span></span></div>';
+                    });
+
+                    uploader.start();
+                },
+                UploadProgress: function (up, file) {
+                    if (document.getElementById(file.id)) {
+                        document.getElementById(file.id).getElementsByTagName('span')[0].innerHTML = '<progress max="100" value="' + file.percent + '">' + "</progress>";
+                    }
+                },
+                FileUploaded: function(up, file, info) {
+                    var response = $.parseJSON(info.response);
+                    if (!response.success) {
+                        fileList.innerHTML = response.msg;
+                        return;
+                    }
+
+                    var data = response.data,
+                            owl = $(".owl-carousel").data('owlCarousel'),
+                            content = "<div class=\"item imglist-" + data.id + "\">"
+                                    + "<span class=\"close\" data-id=\""
+                                    + data.id +"\">&times;</span><img class=\"lazyOwl\" data-src=\"" + plupParams.imgs + data.fileName
+                                    + "\" /></div>";
+                    owl.removeItem(0);
+                    owl.addItem(content, 0);
+
+                    $("#" + file.id).remove();
+
+
+                },
+                Error: function (up, err) {
+                    fileList.innerHTML = "\nError #" + err.code + ": " + err.message;
+                }
+            }
+        });
+        uploader.init();
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        numbersOnly('#acme_user_registration_contactnum');
+        numbersOnly('#acme_user_registration_localcontact');
+        specialCharAlphaNumeric2('#acme_user_registration_firstname');
+        specialCharAlphaNumeric2('#acme_user_registration_lastname');
+        jQuery(".update-user-form").validationEngine();
+        $('select#acme_user_registration_roles').hide();
+        $('select#acme_user_registration_roles').removeAttr( "multiple" );
+        $(".changepass").colorbox({iframe:true, width:"40%", height:"75%"});
+        $(".txContactnum").text(function(i, text) {
+            text = text.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+            return text;
+        });
+    });
+</script>

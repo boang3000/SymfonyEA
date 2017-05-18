@@ -1,0 +1,54 @@
+<div class="container">
+    <div class="blue-header forapproval">
+        <h4>For Approval</h4>
+        <table class="tbl-dashboard">
+            <tr>
+                <th width="20%">Entity</th>
+                <th width="10%">Vendor</th>
+                <th width="30%">Description</th>
+                <th width="10%" style="text-align:center">Status</th>
+                <th width="10%" style="text-align:center">Invoice Date</th>
+                <th width="10%" style="text-align:center">Due Date</th>
+                <th width="10%" style="text-align:right">Amount</th>
+            </tr>
+            {% if managelist is empty %}
+                <tr>
+                    <td colspan="7" align="center">No Invoice available</td>
+                </tr>
+            {% else %}
+                {% for list in managelist %}
+                    <tr id="list-{{ list.invoiceId }}">
+                        <td><a href="{{ url('EA_information_invoice', { 'id' : list.invoiceId }) }}">{{ list.entityName|length > 22 ? list.entityName|slice(0, 22) ~ '...' : list.entityName }}</a></td>
+                        <td>{{ list.name|length > 21 ? list.name|slice(0, 21) ~ '...' : list.name }}</td>
+                        <td>{{ list.description|length > 40 ? list.description|slice(0, 40) ~ '...' : list.description }}</td>
+                        <td align="center">
+                            {% if (list.status == 1) or (list.status == 11) %}
+                                Pending
+                            {% elseif (list.status == 2) or (list.status == 22) %}
+                                Not Approved
+                            {% elseif (list.status == 3) or (list.status == 33) %}
+                                Manual Payment
+                            {% elseif list.status == 54 or list.status == 5 %}
+                                Partial Payment
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ list.invoicedate|date("m-d-Y") }}</td>
+                        <td align="center">{{ list.dueDate|date("m-d-Y") }}</td>
+                        <td align="left">
+                            {% if list.status == 5 or list.status == 54 %}
+                                <span class="dollar-position">$</span> <span class="amt-position">{{ list.outstandingbalance|number_format(2, '.', ',') }}</span>
+                            {% else %}
+                                <span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        <table>
+            <tr>
+                <td style="border: 0">{{ knp_pagination_render(managelist) }}</td>
+            </tr>
+        </table>
+    </div>
+</div>

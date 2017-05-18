@@ -1,0 +1,390 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Revenue Dashboard' %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% set an_admin = false %}
+{% set an_acct = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+		{% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' %}
+			{% set an_admin = true %}
+		{% endif %}
+		{% if roles == 'ROLE_ACCOUNTANT' %}
+			{% set an_acct = true %}
+		{% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/uploadify.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery.alerts.css') }}">
+	<style>
+		#revenue_wiretype_1 { margin-left: 70px; }
+	</style>
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'revenue' } %}
+{% endblock %}
+
+{% block revenuenav %}
+	<div class="second-nav">
+		<ul class="cUL fl">
+			{% include 'ArcanysEasyAppBundle::navtab-revenue.html.twig' with { 'activetab' : 'wire' } %}
+		</ul>
+	</div>
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+	<div id="dialog-confirm" class="dialog-confirm" title="Overdraft Warning">
+		<p>
+			Processing this check will overdraw the account.
+		</p>
+	</div>
+    {% if is_admin_accountant %}
+        <div class="container admin">
+            <div class="admin-container">
+                <!-- Left -->
+                <div class="left fl">
+					<div class="table" style="padding: 10px 30px;">
+						<div class="input-head">
+                            <span class="name">Edit Wire</span>
+                        </div>
+
+                        <form method="post" class="form-account" enctype="">
+						{% if an_admin or wirestatus == 1 or wirestatus == 2 %}
+							<div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.dateadded,
+                                    {
+                                        'attr':
+                                            {
+                                                'class' : 'validate[required] ',
+												'disabled':'disabled'
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+							<div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.wiretype, { 'attr': {'class': 'wiretype'} }) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.entityid,
+                                    {
+                                        'attr':
+                                            {
+                                                'class' : 'select-entity validate[required] ',
+                                                'disabled':'disabled'
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    <div class="display-bankinfo revenue-bankinfo">
+                                        <label for="editwire" class="required" style="float:left;">Entity Bank info</label>
+                                        <select id="editwire" name="bankname" required="required" class="validate[required]">
+                                            {% for list in enbanks %}
+                                                <option value="{{ list.entitybankId }}" {% if list.entitybankId == bankinfo[0].entitybankId %}selected="selected"{% endif %}>{{ list.bankName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.amount,
+                                    {
+                                        'attr':
+                                            {
+												'placeholder' : '0.00',
+                                                'class' : 'validate[required,max[99999999.99]]',
+												'disabled':'disabled',
+												'maxlength' : '13'
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.description,
+                                    {
+                                        'attr':
+                                            {
+                                                'class' : 'validate[required] ',
+												'disabled':'disabled'
+                                            }
+                                    }) }}
+                                </div>
+                            </div>
+						{% else %}
+							<div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.dateadded,
+                                    {
+                                        'attr':
+                                            {
+                                                'class' : 'validate[required] '
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.wiretype) }}
+                                </div>
+                            </div>
+							<div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.entityid,
+                                    {
+                                        'attr':
+                                            {
+                                                'class' : 'select-entity validate[required] '
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    <div class="display-bankinfo">
+                                        <label for="editwire" class="required">Entity Bank info</label>
+                                        <select id="editwire" name="bankname" required="required" class="validate[required]">
+                                            {% for list in enbanks %}
+                                                <option value="{{ list.entitybankId }}" {% if list.entitybankId == bankinfo[0].entitybankId %}selected="selected"{% endif %}>{{ list.bankName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.amount,
+                                    {
+                                        'attr':
+                                            {
+												'placeholder' : '0.00',
+                                                'class' : 'validate[required,max[99999999.99]]',
+												'maxlength' : '13'
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.description,
+                                    {
+                                        'attr':
+                                            {
+                                                'class' : 'validate[required] '
+                                            }
+                                    }) }}
+                                </div>
+                            </div>
+						{% endif %}							
+							<div class="fields">
+								{% if an_admin or wirestatus == 1 or wirestatus == 2 %}
+                                <div class="half">
+                                    {{ form_row(form.Save,
+                                    {
+                                        'attr':
+                                            {
+												'style' : 'display: none;',
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+								{% else %}
+								<div class="half">
+                                    {{ form_row(form.Save,
+                                    {
+                                        'attr':
+                                            {
+												'style' : 'color: #fff; border: 1px solid transparent; background-color: #0071bc; -webkit-border-radius: 5px; -moz-border-radius: 5px; -ms-border-radius: 5px; -o-border-radius: 5px; border-radius: 5px; padding: 8px 12px; background-image: none;',
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+								<div class="half" style="padding-top: 8px; height: 30px;">
+									<a href="{{ url('Revenue_delete', {'id': wireid, 'where': 'Revenuewire', 'landing': 'wire'}) }}" class="blue" style="background-color: #BC0000;">Delete</a>
+								</div>
+								{% endif %}
+								{% if an_admin and wirestatus == 0 %}
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_status_wire', {'id': wireid, 'status': 1}) }}" class="blue" >Approve</a>
+									</div>
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_status_wire', {'id': wireid, 'status': 3}) }}" class="blue" style="background-color: #BC0000;">Not Approve</a>
+									</div>
+								{% endif %}
+								{% if an_admin and wirestatus == 1 %}
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_index_wire') }}" class="blue" style="background-color: #9D9D9D;">Finish</a>
+									</div>
+								{% endif %}
+								{% if an_admin and wirestatus == 2 %}
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_index_wire') }}" class="blue" style="background-color: #9D9D9D;">Finish</a>
+									</div>
+								{% endif %}
+								{% if an_admin and wirestatus == 3 %}
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_index_wire') }}" class="blue" style="background-color: #9D9D9D;">Finish</a>
+									</div>
+								{% endif %}
+								{% if an_acct and wirestatus == 1 %}
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_status_wire', {'id': wireid, 'status': 2}) }}" class="blue" >Submit</a>
+									</div>
+								{% endif %}
+								{% if an_acct and wirestatus == 2 %}
+									<div class="half" style="padding-top: 8px; height: 30px;">
+										<a href="{{ url('Revenue_index_wire') }}" class="blue" style="background-color: #9D9D9D;">Finish</a>
+									</div>
+								{% endif %}
+							</div>
+							{{ form_row(form.upltoken,
+							{
+								'attr':
+									{
+										'class' : 'token'
+									}
+							}) }}
+							{{ form_rest(form) }}
+                        </form>
+                    </div>
+                </div>
+				<div class="right-invoice">
+                    <div class="thumbnails">
+                        <div id="img" class="animated"></div>
+                        <ul id="thumbs" class="display-thumb create-image">
+                            <li></li>
+                        </ul>
+                        <!-- navigation holder -->
+                        <div class="holder"></div>
+					</div>
+					{% if an_acct and wirestatus == 0 %}
+                    <div class="file-uploader-wrap"><input id="file_upload" name="file_upload" type="file" multiple="true"></div>
+					{% endif %}
+				</div>
+			</div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+	<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine-en.js') }}"></script>
+	<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/revenue/revenue.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.uploadify.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.alerts.js') }}"></script>
+	<script type="text/javascript">
+		$(function() {
+            displayListofEntityinfo('select-entity', '{{ url('Revenue_entity_bankinfo') }}', 'display-bankinfo');
+            getBalance('editwire', JSON.parse('{{ entity_list|json_encode()|raw }}'));
+			$('#revenue_entityid').val({{ entid }});
+			numbersDotOnly('input[name="revenue[amount]"]');
+			jQuery(".form-account").validationEngine();
+            
+			$('.form-account').on('submit', function(event) {
+				var amount = $('#revenue_amount').val();
+				var balance = $('#bal_for_revenue_entityid').attr('rel');
+				var bankdetails = $('#details_for_revenue_entityid').attr('rel');
+				
+				if($('#revenue_wiretype_1').is(':checked') && amount > balance) {
+					event.preventDefault();
+					jConfirm('Processing this transfer will <strong>overdraw</strong> the account.', 'Overdraft Warning: '+ bankdetails, function(r) {
+						if(r == true) {
+							$('.form-account').unbind('submit').submit();
+						}
+					});
+				} else {
+					return true;
+				}
+			});
+			
+			var getdata = $('.token').val();
+			
+			$.ajax({
+				type: 'POST', data: { uplToken: getdata }, url: '{{ url('Revenue_retrieve_all_img') }}',
+				beforeSend: function() { },
+				success: function(msg) {
+					$.each( msg.image, function( key, value ) {
+						$('.display-thumb').append(
+							'<li class="animated fadeInUp" style="padding: 3px;">' +
+								'<a href="#" class="img-display">' +
+									'<img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}' + value + '" />' +
+								'</a>' +
+							'</li>'
+						);
+						console.log(value);
+					});
+				}
+			});
+			
+            setTimeout(function () {
+                $('#file_upload').uploadify({
+                    'auto'     : true,
+                    'width'    : 140,
+                    'buttonImage' : '{{ asset('bundles/arcanyseasyapp/img/invoice-upload-btn.png') }}',
+                    'fileTypeDesc' : 'Image Files',
+                    'formData' : { 'token' : getdata },
+                    'swf'      : '{{ asset('bundles/arcanyseasyapp/swf/uploadify.swf') }}',
+                    'uploader' : '{{ url('Revenue_add_image') }}',
+                    'onUploadComplete' : function(file, data, response) {
+                        $.ajax({
+                            type: 'POST', data: { uplToken: getdata }, url: '{{ url('Revenue_retrieve_created_img') }}',
+                            beforeSend: function() { },
+                            success: function(msg) {
+                                $.each( msg.image, function( key, value ) {
+                                    $('.display-thumb').append(
+                                        '<li class="animated fadeInUp" style="padding: 3px;">' +
+                                            '<a href="#" class="img-display">' +
+                                                '<img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}' + value + '" />' +
+                                            '</a>' +
+                                        '</li>'
+                                    );
+                                    console.log(value);
+                                });
+                            }
+                        });
+                    }
+                });
+            }, 0);
+		});
+		$(window).load(function() {
+			getBalanceOnLoad('editwire', JSON.parse('{{ entity_list|json_encode()|raw }}'));
+		});
+		function testlang() {
+			jQuery( "#dialog-confirm" ).dialog({
+                resizable: false,
+                height: 300,
+                width: 400,
+                modal: true,
+                buttons: {
+                    Cancel: function() { return false; },
+                    "Proceed Anyway": function() { return true; }
+                }
+            });
+            return false;
+		}
+	</script>
+{% endblock %}

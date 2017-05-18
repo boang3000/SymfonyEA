@@ -1,0 +1,12 @@
+{% if is_admin_accountant %}
+	{% if current_role == 'ROLE_SUPER_ADMIN' %}
+		<li class="{% if activetab == 'account' %} active {% endif %}"><a href="{{ url('EA_superadmin_addaccount') }}">Company Personnel</a></li>
+	{% endif %}
+	{% if current_role != 'ROLE_SUPER_ADMIN' %}
+		<li class="{% if activetab == 'account' %} active {% endif %}"><a href="{{ url('EA_admin_addaccount') }}">Company Personnel</a></li>
+		<li class="{% if activetab == 'entity' %} active {% endif %}"><a href="{{ url('EA_admin_entity') }}">Entities</a></li>
+	{% endif %}
+{% endif %}
+{% if current_role != 'ROLE_SUPER_ADMIN' %}
+	<li class="{% if activetab == 'vendor' %} active {% endif %}"><a href="{{ url('EA_admin_vendor') }}">Vendors</a></li>
+{% endif %}

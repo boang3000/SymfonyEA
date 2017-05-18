@@ -1,0 +1,264 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Invoice Approval' %}
+
+{% block title %}
+    {{ pageTitle }} |
+    {#{% if entity.entityName is not empty %}
+        {{ entity.entityName }}
+    {% else %}
+        Entity not found
+    {% endif %}#}
+{% endblock %}
+
+{# FILTER VIEW FOR ADMIN #}
+{% set is_admin_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/datepicker.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/cs-select.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/colorbox.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/select2.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'invoice' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {#{% if is_admin_accountant %}#}
+    {# SELECTING BANK INFO VIEW #}
+    {% if invoice.status == 4 and invoice.entityready == 0 or
+          invoice.status == 10 and invoice.entityready == 0 %}
+        {% include "ArcanysEasyAppBundle:Invoice:bankinfo-archive.html.twig" %}
+
+    {# ADMIN"S APPROVAL PAGE #}
+    {% elseif invoice.status == 44 or invoice.status == 33 or invoice.status == 11 or invoice.status == 0 %}
+        {% include "ArcanysEasyAppBundle:Invoice:adminapproval.html.twig" %}
+
+    {# MANAGER'S APPROVAL #}
+    {% elseif invoice.status == 1 or invoice.status == 3 or invoice.status == 5 or invoice.status == 54 %}
+        {% include "ArcanysEasyAppBundle:Invoice:managerapproval.html.twig" %}
+
+    {# ARCHIVE VIEW #}
+    {% elseif
+            invoice.status == 4 and invoice.printready == 1 or
+            invoice.status == 44 and invoice.printready == 1 or
+            invoice.status == 10 and invoice.printready == 1 %}
+        {% include "ArcanysEasyAppBundle:Invoice:archiveview.html.twig" %}
+
+    {# ACCOUNTANT TO UPDATE THE INVOICE FROM NOT APPROVED VIEW #}
+    {% elseif invoice.status == 2 %}
+        {% include "ArcanysEasyAppBundle:Invoice:notapproved.html.twig" %}
+
+    {# IF INVOICE IS DRAFT #}
+    {% elseif invoice.status == 9 %}
+        <script>window.location.href = '{{ url('draft_updatec_invoice', { 'id' : invoice.invoiceId }) }}';</script>
+    {% endif %}
+    <div style='display:none'>
+        <div id='inline_content' style='padding:10px; background:#fff;'>
+            <p>This is the last 4 digits of the bank account number.</p>
+        </div>
+    </div>
+    {#{% endif %}#}
+{% endblock %}
+
+{% block footerjavascript %}
+    <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.colorbox-min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/toword.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/select2.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/invoice/approvalinvoice.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            var statusmsg = $('.display-status'),
+                homeLink  = '{{ url('EA_index_invoice') }}';
+
+            approveBtn('{{ url('EA_statusupdate_invoice') }}', '{{ invoice.invoiceId }}');
+            partialBtn('{{ url('EA_statusupdate_invoice') }}', '{{ invoice.invoiceId }}');
+            notApproveBtn('{{ url('EA_statusupdate_invoice') }}', '{{ invoice.invoiceId }}');
+            updateInvoicenotApproved('{{ url('update_invoice_notapproved') }}', '{{ invoice.invoiceId }}', homeLink);
+
+            // load currentbalance
+            $('.invoice-btn.blue').on('click', function() {
+                var url             = '',
+                    data            = '',
+                    curbalance      = 0,
+                    checkapproval   = $('.display-status .exit-btn').html(),
+                    comment         = $('.comment-txbox').val(),
+//                    invoicebal      = $('.editable_in.price.view label').html(),
+                    invoicebal      = $('.cur-ammount').val(),
+                    parbalance      = '{{ invoice.amount|number_format(2, '.', ',') }}',
+                    status          = $(this).data('status'),
+                    partialstatus   = $('.invoice-btn.partial').data('status'),
+                    role            = $(this).data('user'),
+                    getID           = '{{ invoice.invoiceId }}',
+                    attr            = $('.invoice-btn.notapprove').attr('data-info'),
+                    originalamt     = parseFloat($('label.currentamt').html().replace(',', '')),
+                    partialamt      = parseFloat($('.cur-ammount').val());
+
+                if ( $(this).hasClass('has-selected') || status == 3 || status == 33 ) {
+
+                    if ( $('.display-message').length ) {
+                        curbalance = $('.display-message').html().slice(2);
+                    }
+
+                    if ( status == 5 ) {
+                        if ( $('.comment-notification').hasAttr('data-info') ) {
+
+                            if ( $('.cur-ammount').is(':visible') ) {
+                                if ( originalamt < partialamt ) {
+                                    console.log(originalamt);
+                                    console.log(partialamt);
+                                    $('.cur-ammount').focus();
+                                    $('.amt-validate').html('Your amount exceeded from the original value.').show();
+                                    setTimeout(function() {
+                                        $('.amt-validate').fadeOut(300, function() {
+                                            $(this).hide();
+                                        });
+                                    }, 3500);
+                                    console.log('1test');
+                                    return false;
+                                }
+                                else {
+                                    console.log('0');
+                                    addcommentinvoice('{{ url('EA_invoice_postcomment') }}', '{{ app.user.id }}', homeLink);
+                                    url  = '{{ url('EA_invoice_checkbalance') }}';
+                                    data = { curbalance: parbalance, invoicebal: invoicebal, status: status, partialstat: partialstatus, id: getID };
+                                    //console.log(data);
+                                    procesStatus(url, data, homeLink);
+                                }
+                            } else {
+                                console.log('test');
+                                if ( $('.comment-notification').hasAttr('data-info') ) {
+                                    console.log('0');
+                                    addcommentinvoice('{{ url('EA_invoice_postcomment') }}', '{{ app.user.id }}', homeLink);
+                                } else {
+                                    console.log('hurrdurr');
+                                    url  = '{{ url('EA_invoice_checkbalance') }}';
+                                    data = { curbalance: parbalance, invoicebal: invoicebal, status: status, partialstat: partialstatus, id: getID };
+                                    procesStatus(url, data, homeLink);
+                                }
+                            }
+                        } else {
+                            invoicebal = $('.cur-ammount').val();
+                            if ( $('.cur-ammount').is(':visible') ) {
+                                if ( invoicebal.length == '' ) {
+                                    $('.cur-ammount').focus();
+                                    console.log('11');
+                                    return false;
+                                }
+                                else {
+                                    if ( originalamt < partialamt ) {
+                                        $('.cur-ammount').focus();
+                                        $('.amt-validate').html('Your amount exceeded from the original value.').show();
+                                        setTimeout(function() {
+                                            $('.amt-validate').fadeOut(300, function() {
+                                                $(this).hide();
+                                            });
+                                        }, 3500);
+                                        console.log('1');
+                                        return false;
+                                    } else {
+                                        console.log('1111');
+                                        url  = '{{ url('EA_invoice_checkbalance') }}';
+                                        data = { curbalance: parbalance, invoicebal: invoicebal, status: status, partialstat: partialstatus, id: getID };
+                                        procesStatus(url, data, homeLink);
+                                    }
+                                }
+                            }
+                            else {
+                                console.log('hurrdurr');
+                                url  = '{{ url('EA_invoice_checkbalance') }}';
+                                data = { curbalance: parbalance, invoicebal: invoicebal, status: status, partialstat: partialstatus, id: getID };
+                                procesStatus(url, data, homeLink);
+                            }
+                        }
+                    }
+
+                    else if ( status == 1 || status == 0 ) { // status pending
+                        var updatestatus = 0;
+                        console.log('00001');
+                        addcommentinvoice('{{ url('EA_invoice_postcomment') }}', '{{ app.user.id }}', homeLink);
+
+                        // if status exist
+                        if ( typeof attr !== typeof undefined && attr !== false ) { // status will not approved
+                            if ( role == 0 ) {
+                                console.log('12');
+                                updatestatus = 2;
+                            } else {
+                                console.log('122');
+                                updatestatus = 22;
+                            }
+                        } else {
+                            if ( role == 0 ) {
+                                console.log('123');
+                                updatestatus = 1;
+                            } else {
+                                console.log('1234');
+                                updatestatus = 4;
+                            }
+                        }
+
+                        url  = '{{ url('EA_invoice_checkbalance') }}';
+                        data = { curbalance: curbalance, invoicebal: invoicebal, status: updatestatus, partialstat: partialstatus, id: getID };
+                        procesStatus(url, data, homeLink);
+                    }
+
+                    else if ( status == 3 || status == 33 ) {
+                        var updatestatus = '';
+                        if ( role == 0 ) {
+                            console.log('qwe1');
+                            updatestatus = 33;
+                        } else {
+                            console.log('qwe2');
+                            updatestatus = 44;
+                        }
+
+                        url  = '{{ url('EA_invoice_checkbalance') }}';
+                        data = { curbalance: curbalance, invoicebal: invoicebal, status: updatestatus, partialstat: partialstatus, id: getID };
+                        procesStatus(url, data, homeLink);
+                    }
+
+                    else {
+                        console.log('qwe');
+                        if ( $('.comment-notification').hasAttr('data-info') ) {
+                            addcommentinvoice('{{ url('EA_invoice_postcomment') }}', '{{ app.user.id }}', homeLink);
+                            url  = '{{ url('EA_invoice_checkbalance') }}';
+                            data = { curbalance: curbalance, invoicebal: invoicebal, status: status, partialstat: partialstatus, id: getID };
+                            procesStatus(url, data, homeLink);
+                        } else {
+                            if ( checkapproval == '' ) {
+                                console.log('rty');
+                                return false;
+                            }
+                            else {
+                                console.log('uio');
+                                url  = '{{ url('EA_invoice_checkbalance') }}';
+                                data = { curbalance: curbalance, invoicebal: invoicebal, status: status, partialstat: partialstatus, id: getID };
+                                procesStatus(url, data, homeLink);
+                            }
+                        }
+                    }
+                } else {
+                    console.log('walay class');
+                    return false;
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

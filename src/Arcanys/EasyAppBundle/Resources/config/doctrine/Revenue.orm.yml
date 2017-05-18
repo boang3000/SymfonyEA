@@ -1,0 +1,32 @@
+Arcanys\EasyAppBundle\Entity\Revenue:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\RevenueRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        dateadded:
+            type: string
+            nullable: true
+        entityId:
+            type: string
+            column: entity_id
+        entitybanknameId:
+            type: integer
+            column: entitybankname_id
+        amount:
+            type: string
+            length: 255
+        description:
+            type: text
+        upltoken:
+            type: string
+            length: 255
+        company:
+            type: string
+            column: company_id
+    lifecycleCallbacks: {  }

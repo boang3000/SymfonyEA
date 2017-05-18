@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+
+    {# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+    {% set is_admin = false %}
+    {% if app.security.token.user.roles is iterable %}
+        {% for roles in app.security.token.user.roles %}
+            {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN'  %}
+                {% set is_admin = true %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Easy AP | {% block title %}{% endblock %}</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+
+    {% block stylesheet %}
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/normalize.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/main.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/registry.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/extra.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/jquery_notification.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/validationEngine.jquery.css') }}">
+    {% endblock %}
+    {% block headjavascript %}
+        <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-1.11.0.min.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/jquery_notification_v.1.js') }}"></script>
+        <script src="{{ asset('bundles/arcanyseasyapp/js/main.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+
+{% block container %}
+    <!-- Container -->
+    <div class="container admin">
+        <div class="admin-container">
+            <!-- Right -->
+            <div class="content">
+                <div class="display-loader"></div>
+
+                <div class="header-cp">
+                    <h2>Change Password</h2>
+                </div>
+
+                <div class="account-info-cp">
+                    <div class="display-message"></div>
+                    {#{{ path('fos_user_change_password') }}#}
+                    <form action="{{ url('EA_admin_updatepassword', { 'id' : users.id }) }}" {{ form_enctype(form) }} method="POST" class="fos_user_change_password">
+                        <div class="fields">
+                            <div class="full">
+                                <label for="">
+                                    Current Password
+                                    {{ form_widget(form.current_password) }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="fields">
+                            <div class="full">
+                                <label for="">
+                                    {{ form_widget(form.plainPassword) }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="fields button">
+                            <input type="submit" value="Change Password" class="cp-button" />
+                            <br>
+                            {#<a id="{{ users.id }}" href="{{ url('EA_admin_forgotpassword', { 'id' : users.id }) }}" class="forgotpass">I Forgot My Password</a>#}
+                        </div>
+                        {{ form_rest(form) }}
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block footerjavascript %}
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine-en.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            jQuery(".update-user-form").validationEngine();
+            $('#fos_user_change_password_plainPassword ul li').html('Password mismatch');
+
+            $('<div class="fp-error"></div>').appendTo("#fos_user_change_password_plainPassword div:first-child");
+            $('<div class="sp-error"></div>').appendTo("#fos_user_change_password_plainPassword div:last-child");
+            $('.fp-error .sp-error').remove();
+
+            $('.fos_user_change_password').on('submit', function(e) {
+                var getID = $(this).attr('id'),
+                    fp    = $('#fos_user_change_password_plainPassword_first'),
+                    sp    = $('#fos_user_change_password_plainPassword_second');
+
+                if (fp.val() == '') {
+                    $('.fp-error').html('<div>Please input the required fields</div>');
+                    return false;
+                } else if (sp.val() == '') {
+                    $('.sp-error').html('Please confirm your password');
+                    return false;
+                } else if (fp.val() != sp.val()) {
+                    $('.sp-error').html('Password Mismatch');
+                    return false;
+                } else if (sp.val() != fp.val()) {
+                    $('.fp-error').html('Password Mismatch');
+                    return false;
+                }  else if (fp.val().length < 9) {
+                    $('.fp-error').html('Password should be more than 9 characters');
+                    return false;
+                } else {
+                    $('.display-message').html("Your password has been changed.");
+                    return true;
+                }
+                e.preventDefault();
+            });
+        });
+    </script>
+{% endblock %}
+</body>
+</html>

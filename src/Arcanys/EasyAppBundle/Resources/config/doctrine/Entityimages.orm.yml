@@ -1,0 +1,41 @@
+Arcanys\EasyAppBundle\Entity\Entityimages:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\EntityimagesRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        entityId:
+            type: integer
+            column: entity_id
+        fileName:
+            type: string
+            length: 255
+            column: file_name
+        status:
+            type: integer
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+        path:
+            type: string
+            length: 255
+            nullable: true
+            column: path
+        upltoken:
+            type: string
+            length: 255
+        bankno:
+            type: integer
+            column: bankno
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

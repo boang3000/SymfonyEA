@@ -1,0 +1,159 @@
+
+    <div class="invoice">
+        <div class="display-status invoice-status"></div>
+        <div class="contents">
+            <div class="top clearfix">
+                <div class="editable_in entity">
+                    <em>Entity:</em>
+                    <div>
+                        <select name="entity" class="cs-select cs-skin-border entity-select validate[required]" tabindex="1">
+                            <option value="">Select Entity</option>
+                            {% for e_list in entity %}
+                                <option value="{{ e_list.id }}">{{ e_list.entityName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="error-message">
+                        <span class="red display-message"></span>
+                        <span class="red display-message-ba checknum" style="margin-left:20px;"></span>
+                        <a href="#inline_content" class="info-popup" style="display:none;"><span class="icons info"></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mid_1 clearfix">
+                <div class="editable_in pay">
+                    <em>Pay To The Order Of:</em>
+                    <select name="vendor" class="cs-select cs-skin-border vendor-select validate[required]" tabindex="2">
+                        <option value="" selected>Select Pay Order</option>
+                        {% for v_list in vendor %}
+                            <option value="{{ v_list.id }}">{{ v_list.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="editable_in price">
+                    <em>$</em>
+                    <input type="text" name="amount" value="" maxlength="13" placeholder="0.00" class="cur-ammount validate[required]" id="input-cur-amount" tabindex="3" />
+                    <span class="amt-validate" ></span>
+                </div>
+                <div class="editable_in money-char">
+                    <span id="output-cur-amount"></span><span class="cents-amt"></span>
+                    {#<span class="cur">50 / 100 <em>DOLLARS</em></span>#}
+                </div>
+            </div>
+            <div class="mid_1 clearfix">
+                <div class="bank-name bank-name-details"></div>
+                <div class="editable_in datepick invoice-dates">
+                    <div class="editable_in price">
+                        <label>Invoice No.</label>
+                        <input type="text" name="invoiceamount" class="invoiceamount validate[required]" placeholder="0" maxlength="14" tabindex="4" />
+                    </div>
+                    <div class="input-append date datepicker no-padding" data-date-format="mm/dd/yyyy">
+                        <label>Invoice Date</label>
+                        <input name="invoicedate" class="input-medium invoicedate validate[required]" size="16" type="text" tabindex="5" />
+                        <span class="add-on"></span>
+                    </div>
+                    <div class="input-append date datepicker no-padding" data-date-format="mm/dd/yyyy">
+                        <label>date due</label>
+                        <input name="datedue" class="input-medium date-due-input validate[required]" size="16" type="text" tabindex="6" />
+                        <input name="vendordate" class="vendordate" type="hidden" value="0" />
+                        <span class="add-on"></span>
+                    </div>
+                </div>
+                <div class="editable_in manager-wrapper">
+                    <div class="select-container">
+                        <select name="managerapproval" class="cs-select cs-skin-border manager-select validate[required]" tabindex="7">
+                            <option value="">Select Manager</option>
+                            <option value="99999">No Manager</option>
+                            {% for u_list in user %}
+                                <option value="{{ u_list.id }}">{{ u_list.firstname }} {{ u_list.lastname }}</option>
+                            {% endfor %}
+                        </select>
+                        <em style="border-top:0;margin-top:0;">Manager Approval:</em>
+                    </div>
+                    <div class="editable_in manager-sign">
+                        <em>Manager Approval:</em>
+                    </div>
+                </div>
+            </div>
+            <div class="mid_1 clearfix">
+                <div class="vendor-details">
+                    <div class="vendorname">
+                        <label></label>
+                        <span></span>
+                    </div>
+                    <div class="vendoraddress">
+                        <label></label>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="textareas clearfix">
+                <label>Description:</label>
+                <textarea name="description" class="description" tabindex="8"></textarea>
+                <input type="hidden" name="token" class="token" value="{{ checknum }}" />
+            </div>
+            <div class="editable_in chart">
+                <div class="chart-accounts-display">
+                    <em>Chart of Accounts</em>
+                    <select name="chartofaccounts" class="cs-select chartofaccounts-select cs-skin-border" tabindex="9">
+                        <option value="">Select Accounts</option>
+                        {% for list in charts %}
+                            <option value="{{ list.id }}">{{ list.accountnumber }} {{ list.accountname }} {{ list.chartname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="chart-accounts-option">
+                    <ul class="chart-accounts-list">
+                        <li>
+                            <a href="#" class="chart-add"><i class="chartaccounts-icon add-icon"></i></a>
+                            <div class="chartaccounts-form chartaccounts-form-add">
+                                <input type="text" name="acctnum" class="chartaccounts-input acctnum" maxlength="12" placeholder="Account Number" />
+                                <span class="charts-info acctnum-add-info"></span>
+                                <input type="text" name="acctname" class="chartaccounts-input acctname" maxlength="25" placeholder="Account Name" />
+                                <span class="charts-info acctname-add-info"></span>
+                                <input type="text" name="addchart" class="chartaccounts-input typeofaccount" maxlength="25" placeholder="Type of Account" />
+                                <span class="charts-info chart-add-info"></span>
+                                <input type="button" class="chartaccounts-button charts-add-btn" value="Add" />
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#" class="chart-modify"><i class="chartaccounts-icon modify-icon"></i></a>
+                            <div class="chartaccounts-form chartaccounts-form-modify">
+                                <div class="modify-chart-list">
+                                    <ul>
+                                        {% if charts is empty %}
+                                            <li class="empty-data" data-info="1">No charts of accounts available</li>
+                                        {% else %}
+                                            {% for list in charts %}
+                                                <li data-id="{{ list.id }}" id="chart-parent-{{ list.id }}">
+                                                    <label class="chartname-{{ list.id }}">{{ list.chartname }}</label>
+                                                    <div class="edit-field-charts">
+                                                        <input type="text" name="acctnum" value="{{ list.accountnumber }}" data-id="{{ list.id }}" class="chartaccounts-input acctnum" maxlength="12" placeholder="Account Number" />
+                                                        <span class="charts-info acctnum-add-info" data-id="{{ list.id }}"></span>
+                                                        <input type="text" name="acctname" value="{{ list.accountname }}" data-id="{{ list.id }}" class="chartaccounts-input acctname" maxlength="25" placeholder="Account Name" />
+                                                        <span class="charts-info acctname-add-info" data-id="{{ list.id }}"></span>
+                                                        <input type="text" name="editchart" value="{{ list.chartname }}" data-id="{{ list.id }}" class="chartaccounts-input typeofaccount" maxlength="25" placeholder="Type of Account" />
+                                                        <span class="charts-info chart-edit-info" data-id="{{ list.id }}"></span>
+
+                                                        <input type="button" class="chartaccounts-button charts-edit-btn" data-id="{{ list.id }}" value="Edit" />
+                                                        <input type="button" class="chartaccounts-button charts-cancel-btn" data-id="{{ list.id }}" value="Cancel" />
+                                                    </div>
+                                                    <a href="#" class="modify-chart-btn" data-id="{{ list.id }}"><i class="chart-btn-icon modify"></i></a>
+                                                    <a href="#" class="delete-chart-btn" data-id="{{ list.id }}"><i class="chart-btn-icon delete"></i></a>
+                                                </li>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                <span class="charts-info chart-modify-info"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="textareas clearfix">
+                <label>Comments:</label>
+                <textarea name="comments" class="comments-txtbox" tabindex="10"></textarea>
+            </div>
+        </div>
+    </div>

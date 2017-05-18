@@ -1,0 +1,53 @@
+security:
+    #access_denied_url: /login
+
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+
+    role_hierarchy:
+        ROLE_ACCOUNTANT: ROLE_USER
+        ROLE_MANAGER: ROLE_ACCOUNTANT
+        ROLE_ADMIN: ROLE_MANAGER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username
+
+        in_memory:
+            memory: ~
+
+    firewalls:
+        main:
+             pattern:             .*
+             context:             user
+             form_login:
+                 provider:       fos_userbundle
+                 login_path:     /login
+                 use_forward:    false
+                 check_path:     /login_check
+                 failure_path:   null
+                 always_use_default_target_path: true
+                 default_target_path: /invoice/index
+             logout:
+                 path:   /logout
+                 target: /login
+                 success_handler: logout_listener
+             anonymous:          true
+
+
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        default:
+            anonymous: ~
+
+    access_control:
+        - { path: ^/bundles/arcanyseasyapp/swf/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/(entity|vendor|account|invoice|revenue), roles: ROLE_ACCOUNTANT }
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/dashboard, role: ROLE_ACCOUNTANT }
+        - { path: ^/admin/, role: ROLE_SUPER_ADMIN }

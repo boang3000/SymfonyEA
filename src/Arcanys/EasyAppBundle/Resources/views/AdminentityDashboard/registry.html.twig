@@ -1,0 +1,104 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block title %}Registry View{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'entity' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container">
+            <div class="header-form">
+                <form action="{{ url('EA_admin_entity_registry') }}" method="post">
+                    <input type="text" name="searchkey" value="{{ searchKey }}" />
+                    <input type="submit" class="button">
+                </form>
+            </div>
+            <div class="header-list">
+                <div class="header-list-alpha">
+                    <ul>
+                        <li class="active"><a href="{{ url('EA_admin_entity_registry') }}">All</a></li>
+                        {% for i in 0..25 %}
+                            <li><a href="{{ url('EA_admin_entity_registryview', { 'page' : letters[i] }) }}">{{ letters[i]|capitalize }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="header-list-button">
+                    {% if is_admin_accountant %}
+                        <button type="button" class="blue" onclick="window.location='{{ url('EA_admin_entity') }}';"><i class="icons add"></i>New Entity</button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="blue-header forapproval content-module">
+                <table id="entity-registry" cellpadding=5>
+                    <tr>
+                        <th>Entity</th>
+                        <th>Bank Name</th>
+                        <th>Acct. No.</th>
+                        <th>Balance</th>
+                    </tr>
+                    {% set entityName = "" %}
+                    {% set same = "no-border" %}
+                    {% for key,column in entity %}
+                        {% if entityName != column.entityName %}
+                            {% set same = "border" %}
+                        {% else %}
+                            {% set same = "no-border" %}
+                        {% endif %}
+                        <tr>
+                            <td class="{{ same }}">
+                                {% if entityName != column.entityName %}
+                                    <a href="{{ url('EA_admin_entitydetails', { 'id' : column.id }) }}">
+                                        <strong>{{ column.entityName|length > 18 ? column.entityName|slice(0, 18) ~ '...' : column.entityName }}</strong>
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="{{ same }}">
+                                {{ column.bankName|length > 15 ? column.bankName|slice(0, 15) ~ '...' : column.bankName }}
+                            </td>
+                            <td class="{{ same }}">...{{ column.bankAcct|slice(-4) }}</td>
+                            <td class="{{ same }}">
+                                <span class="dollar-position">$</span>
+                                <span>
+                                    {{ column.curBalance|number_format(2, '.', ',')|length > 15 ? column.curBalance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : column.curBalance|number_format(2, '.', ',') }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% set entityName = column.entityName %}
+                    {% endfor %}
+                </table>
+                <table>
+                    <tr>
+                        <td style="border: 0">{{ knp_pagination_render(entity) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/entity/entity-function.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.validate.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            var bankaccount = $('.bank-acct');
+
+            bankaccount.each(function() {
+                var getbankaccount  = $(this).html(),
+                    renewNum        = (getbankaccount.length - 4)+1,
+                    string          = '';
+
+                for ( var i = 0; i < renewNum; i++) {
+                    string = getbankaccount.charAt(i);
+                    string = string.replace(string, '.');
+                }
+
+                $(this).html('...' + getbankaccount.slice(-4));
+            });
+        });
+    </script>
+{% endblock %}

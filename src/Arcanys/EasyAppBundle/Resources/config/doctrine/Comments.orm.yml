@@ -1,0 +1,22 @@
+Arcanys\EasyAppBundle\Entity\Comments:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        idInvoice:
+            type: integer
+            column: id_invoice
+        message:
+            type: text
+        status:
+            type: integer
+        dateadded:
+            type: datetime
+        dateupdated:
+            type: datetime
+    lifecycleCallbacks: {  }

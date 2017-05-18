@@ -1,0 +1,131 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Revenue Dashboard' %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'revenue' } %}
+{% endblock %}
+
+{% block revenuenav %}
+	<div class="second-nav">
+		<ul class="cUL fl">
+			{% include 'ArcanysEasyAppBundle::navtab-revenue.html.twig' with { 'activetab' : 'revenue' } %}
+		</ul>
+	</div>
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container">
+            <div class="blue-header forapproval">
+				<div class="revenue-select-div fl" style="padding-top: 25px; padding-bottom: 25px;">
+					<span style="display: block; color: #999;">Show Revenue for:</span>
+					<form id="entity_form" method="get" action="">
+					<select class="revenue-select" name="entity_id">
+						<option value="">All Entities</option>
+						{% for list in entity %}
+							{% if list.id == curr_entid %}
+								<option value="{{ list.id }}" selected='selected'>{{ list.entityName }}</option>
+							{% else %}
+								<option value="{{ list.id }}">{{ list.entityName }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+					</form>
+				</div>
+				<div class="header-list-button fr" style="margin-top: 30px;">
+					<a href="{{ url('Revenue_add_revenue') }}" class="blue"><i class="icons add" style="float: none;"></i>Record Revenue</a>
+				</div>	
+				<table class="pending-tbl">
+					<tr>
+						<th width="15%">Date</th>
+						<th width="15%">Entity</th>
+						<th width="50%">Description</th>
+						<th width="10%" style="text-align:center">Revenue</th>
+					</tr>
+					{% if rev is empty %}
+						<tr>
+							<td colspan="13" align="center">No Revenues available</td>
+						</tr>
+					{% else %}
+						{% for list in rev %}
+							<tr>
+								<td>{{ list.0.dateadded }}</td>
+								<td><a href="{{ url('Revenue_edit_revenue', {'id': list.0.id}) }}">{{ list.entityName|length > 25 ? list.entityName|slice(0, 25) ~ '...' : list.entityName }}</a></td>
+								<td>{{ list.0.description|length > 60 ? list.0.description|slice(0, 60) ~ '...' : list.0.description }}</td>
+								<td><span class="dollar-position">$</span> <span class="amt-position">{{ list.0.amount|number_format(2, '.', ',')|length > 15 ? list.0.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.0.amount|number_format(2, '.', ',') }}</span></td>
+							</tr>
+						{% endfor %}
+					{% endif %}
+				</table>
+				<table>
+					<tr>
+						<td style="border: 0">{{ knp_pagination_render(rev) }}</td>
+					</tr>
+				</table>
+			</div>
+        </div>
+		<div class="container">
+            <div class="total-amount">
+                <div class="total-txt"><h2>Total</h2></div>
+                <div class="total-option">
+                    <ul>
+                        <li><a href="#" class="getYear"><span class="year"></span> Year to Date</a></li>
+                        <li><a href="#" class="getMonth"><span class="year"></span> Month to Date</a></li>
+                        <li>
+                            <a href="#" class="dateTodate"><span class="month"></span>From Date to Date</a>
+                            <div class="month-to-date">
+                                <form method="post" action="{{ url('Revenue_getdate') }}" class="month-go">
+                                    <input type="text" id="from" name="from" placeholder="From" />
+                                    <input type="text" id="to" name="to" placeholder="To" />
+                                    <input type="submit" value="Go" />
+                                    <input type="button" value="Cancel" />
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="total-sum">
+                    <table>
+                        <tr>
+                            <td align="right"><div class="total-revenue">Not yet available</div></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/revenue/revenue.js') }}"></script>
+	<script type="text/javascript">
+		$(function() {
+            getMonthValue('{{ url('Revenue_getmonth') }}');
+            getYearValue('{{ url('Revenue_getyear') }}');
+            getMonthToMonthValue();
+        });
+		$(document).ready(function() {
+			$('.revenue-select').change(function() {
+				$('#entity_form').submit();
+			});
+		});
+	</script>
+{% endblock %}

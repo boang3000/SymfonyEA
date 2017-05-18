@@ -1,0 +1,93 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block container %}
+    <!-- Container -->
+    <div class="container">
+        <div class="blue-header forapproval">
+            <h4>For Approval</h4>
+            <table>
+                <tr>
+                    <th>Entity</th>
+                    <th>Vendor</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>&nbsp;</th>
+                </tr>
+                <tr>
+                    <td>Gainey 35 (LLC - G35)</td>
+                    <td>Scottsdale Law</td>
+                    <td>
+                        <p>Lorem ipsum dolor adipisicing elit Lorem ipsum dolor adipisicing elit</p>
+                    </td>
+                    <td>RK</td>
+                    <td>May 18</td>
+                    <td>$ 3,567.50</td>
+                    <td class="last">
+                        <a href="#"><i class="icons edit"></i></a>
+                        <a href="#"><i class="icons del"></i></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gainey 35 (LLC - G35)</td>
+                    <td>Scottsdale Law</td>
+                    <td>
+                        <p>Lorem ipsum dolor adipisicing elit Lorem ipsum dolor adipisicing elit</p>
+                    </td>
+                    <td>RK</td>
+                    <td>May 18</td>
+                    <td>$ 3,567.50</td>
+                    <td class="last">
+                        <a href="#"><i class="icons edit"></i></a>
+                        <a href="#"><i class="icons del"></i></a>
+                    </td>
+                </tr>
+            </table>
+            <button type="button" class="blue"><i class="icons add"></i>New Invoice</button>
+        </div>
+        <div class="blue-header forapproval">
+            <h4>Pending Action</h4>
+            <table>
+                <tr>
+                    <th>Entity</th>
+                    <th>Vendor</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>&nbsp;</th>
+                </tr>
+                <tr>
+                    <td>Gainey 35 (LLC - G35)</td>
+                    <td>Scottsdale Law</td>
+                    <td>
+                        <p>Lorem ipsum dolor adipisicing elit Lorem ipsum dolor adipisicing elit</p>
+                    </td>
+                    <td>RK</td>
+                    <td>May 18</td>
+                    <td>$ 3,567.50</td>
+                    <td>
+                        <a href="#"><i></i></a>
+                        <a href="#"><i></i></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gainey 35 (LLC - G35)</td>
+                    <td>Scottsdale Law</td>
+                    <td>
+                        <p>Lorem ipsum dolor adipisicing elit Lorem ipsum dolor adipisicing elit</p>
+                    </td>
+                    <td>RK</td>
+                    <td>May 18</td>
+                    <td>$ 3,567.50</td>
+                    <td class="last">
+                        <a href="#"><i class="icons print"></i></a>
+                        <a href="#"><i class="icons del"></i></a>
+                    </td>
+                </tr>
+            </table>
+            <button type="button" class="blue fr">Print All Approved</button>
+        </div>
+    </div>
+{% endblock %}

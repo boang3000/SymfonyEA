@@ -1,0 +1,76 @@
+Arcanys\EasyAppBundle\Entity\Entitybankinfo:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\EntitybankinfoRepository
+    id:
+        entitybankId:
+            type: integer
+            id: true
+            column: entitybank_id
+            generator:
+                strategy: AUTO
+    fields:
+        entityNumId:
+            type: integer
+            column: entity_num_id
+        bankName:
+            type: string
+            length: 255
+            nullable: true
+        bankContact:
+            type: string
+            length: 255
+            nullable: true
+        bankAcct:
+            type: string
+            length: 255
+            column: bank_acct
+            nullable: true
+        startBalance:
+            type: float
+            column: start_balance
+            nullable: true
+        routingBalance:
+            type: float
+            column: routing_balance
+            nullable: true
+        curBalance:
+            type: float
+            column: cur_balance
+            nullable: true
+        entityAddress:
+            type: string
+            length: 255
+            nullable: true
+        entityCity:
+            type: string
+            length: 255
+            nullable: true
+        entityState:
+            type: string
+            length: 255
+            nullable: true
+        entityZip:
+            type: string
+            length: 255
+            nullable: true
+        entityEmailaddress:
+            type: string
+            length: 255
+            nullable: true
+        entityContact:
+            type: string
+            length: 255
+            nullable: true
+        entityTabname:
+            type: string
+            length: 255
+            nullable: true
+        token:
+            type: string
+            length: 255
+            nullable: true
+        comments:
+            type: text
+            nullable: true
+    lifecycleCallbacks: {  }

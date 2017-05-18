@@ -1,0 +1,10 @@
+<ul class="cUL nav fl">
+    <li class="nav1 {% if active == 'invoice' %} active {% endif %}"><a href="{{ url('EA_index_invoice') }}"><i></i><span>Invoices</span></a></li>
+    {% if is_admin_accountant %}
+        <li class="nav2 {% if active == 'vendor' %} active {% endif %}"><a href="{{ url('EA_admin_vendor_registry') }}"><i></i><span>Vendors</span></a></li>
+        <li class="nav3 {% if active == 'entity' %} active {% endif %}"><a href="{{ url('EA_admin_entity_registry') }}"><i></i><span>Entities</span></a></li>
+        <li class="nav4 {% if active == 'registry' %} active {% endif %}"><a href="{{ url('EA_master_registry') }}"><i></i><span>Master Registry</span></a></li>
+        <li class="nav5 {% if active == 'revenue' %} active {% endif %}"><a href="{{ url('Revenue_index_revenue') }}"><i></i><span>Revenue / Capital</span></a></li>
+        <li class="nav6 {% if active == 'account' %} active {% endif %}"><a href="{{ url('EA_admin_addaccount') }}"><i></i><span>Company Personnel</span></a></li>
+    {% endif %}
+</ul>

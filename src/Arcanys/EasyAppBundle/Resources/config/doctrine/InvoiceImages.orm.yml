@@ -1,0 +1,50 @@
+Arcanys\EasyAppBundle\Entity\InvoiceImages:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\InvoiceImagesRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        idInvoice:
+            type: integer
+            column: id_invoice
+        fileName:
+            type: string
+            length: 255
+            column: file_name
+        path:
+            type: string
+            length: 255
+            nullable: true
+            column: path
+        upltoken:
+            type: string
+            length: 255
+        status:
+            type: integer
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+        idVendor:
+            type: integer
+            column: id_vendor
+            nullable: true
+        pagenumber:
+            type: integer
+            column: pagenumber
+            nullable: true
+        formtoken:
+            type: string
+            length: 255
+            column: formtoken
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

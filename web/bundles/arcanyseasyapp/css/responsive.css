@@ -1,0 +1,99 @@
+/*
+@media screen and (min-width: 1366px) {
+    .invoice-footer input[type="submit"] {
+        position: relative;
+        left: 1.5em;
+    }
+
+    .invoicedetail-footer input[type="button"] {
+        position: relative;
+        left: -6.5em;
+    }
+
+    .invoicedetail-footer .pendingbank-btn.blue {
+        left: 4.5em;
+    }
+
+    _::-moz-svg-foreign-content,
+    :root .invoicedetail-footer .invoice-btn.blue {
+        position: relative;
+        left: 7.5em;
+        float: left;
+    }
+
+    _::-moz-svg-foreign-content,
+    :root .container .invoicedetail-footer .admin-btn {
+        position: relative;
+        left: 15.5em;
+    }
+
+     _::-moz-svg-foreign-content,
+     :root .container .invoicedetail-footer .single-admin-btn {
+         position: relative;
+         left: 29.5em;
+     }
+}
+@media screen and (min-width: 1498px) {
+    .invoice-footer input[type="submit"] {
+        position: relative;
+        left: -1.5em;
+    }
+
+    .invoicedetail-footer .pendingbank-btn.blue {
+        left: 1.5em;
+    }
+
+    .invoicedetail-footer input[type="button"] {
+        position: relative;
+        left: -10.5em;
+    }
+}
+@media screen and (min-width: 1798px) {
+    .invoice-footer input[type="submit"] {
+        position: relative;
+        left: -7.5em;
+    }
+
+    .invoicedetail-footer .pendingbank-btn.blue {
+        left: -5em;
+    }
+
+    .invoicedetail-footer input[type="button"] {
+        position: relative;
+        left: -16.5em;
+    }
+}
+@media screen and (min-width: 2025px) {
+    .invoice-footer input[type="submit"] {
+        position: relative;
+        left: -12.5em;
+    }
+
+    .invoicedetail-footer .pendingbank-btn.blue {
+        left: -10em;
+    }
+
+    .invoicedetail-footer input[type="button"] {
+        position: relative;
+        left: -21.5em;
+    }
+}*/
+
+/* SAFARI HACK */
+_::-moz-svg-foreign-content, :root
+.search-bar .search .icon::before, .search-bar .search .submit::before {
+    content: '';
+    position: absolute;
+    height: 8px;
+    width: 2px;
+    background: white;
+    transform: rotate(-24deg);
+    top: 14px;
+    left: 18px;
+    -webkit-transform: rotate(-45deg);
+}
+
+_::-moz-svg-foreign-content, :root
+.invoice select {
+    line-height: 17px;
+}

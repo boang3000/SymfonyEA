@@ -1,0 +1,27 @@
+Arcanys\EasyAppBundle\Entity\Vendorcomments:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\VendorcommentsRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        vendorId:
+            type: integer
+            column: vendor_id
+        comments:
+            type: text
+        status:
+            type: integer
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

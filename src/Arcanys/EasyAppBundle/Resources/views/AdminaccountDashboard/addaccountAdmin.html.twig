@@ -1,0 +1,365 @@
+{% extends 'ArcanysEasyAppBundle::admintemplate.html.twig' %}
+
+{% block title %}Add Account{% endblock %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" href="{{ asset('bundles/arcanyseasyapp/css/colorbox.css') }}" />
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+{% endblock %}
+
+{% block adminnav %}
+    {% include 'ArcanysEasyAppBundle::navtab.html.twig' with { 'activetab' : 'account' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container admin">
+            <div class="admin-container">
+                <!-- Left -->
+                <div class="left fl">
+                    {% block content_btn %}
+                    <div class="blue-header">
+                        <h4 class="fl">{% block content_tab_title %}Company Admin Accounts{% endblock %}</h4>
+                        <a href="{{ url('EA_superadmin_addaccount') }}" class="blue fr"><i class="icons add"></i><span>New Account</span></a>
+                    </div>
+                    {% endblock %}
+                    <div class="table">
+                        <table class="list-users">
+                            <tr class="head">
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                            {% if users is empty %}
+                                <tr><td colspan="2">No data available</td></tr>
+                            {% else %}
+                                {% for list in users %}
+                                    <tr id="{{ list.id }}">
+                                        <td>{{ list.firstname|length > 11 ? list.firstname|slice(0, 11) ~ '...' : list.firstname }} {{ list.lastname|length > 11 ? list.lastname|slice(0, 11) ~ '...' : list.lastname }}</td>
+                                        <td>{{ list.email|length > 21 ? list.email|slice(0, 21) ~ '...' : list.email }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right -->
+                <div class="right">
+                    <div class="display-loader"></div>
+
+                    <div class="account-info">
+                        <div class="input-head">
+                            <span class="name">Add New Account</span>
+                        </div>
+
+                        <form method="post" class="form-account" enctype="">
+                            <div class="fields">
+                                <div class="half">
+                                    {{ form_row(form.firstname,
+                                    {
+                                        'attr':
+                                            {
+                                                'placeholder': 'Firstname',
+                                                'class' : 'validate[required] '
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                                <div class="half">
+                                    {{ form_row(form.lastname,
+                                    {
+                                        'attr':
+                                            {
+                                                'placeholder': 'Lastname',
+                                                'class' : 'validate[required] '
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+							<div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.email,
+                                    {
+                                        'attr':
+                                            {
+                                                'placeholder': 'Email',
+                                                'autocomplete': 'off',
+                                                'class' : 'validate[required] emailadd'
+                                            }
+                                    }
+                                    ) }}
+                                    <span class="email-check"></span>
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.password,
+                                    {
+                                        'attr':
+                                            {
+                                                'placeholder': 'Password',
+                                                'pattern': ".{9,}",
+                                                'oninvalid' : "this.setCustomValidity('Password should be more than 9 characters')",
+                                                'class' : 'validate[required] '
+                                            }
+                                    }
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.enabled) }}
+                                </div>
+                            </div>
+							<div class="fields">
+                                <div class="full">
+                                    {{ form_row(form.company) }}
+                                </div>
+                            </div>
+							<input type="hidden" name="token" class="token" value="{{ checknum }}" />
+                            {{ form_rest(form) }}
+                            <div class="fields">
+                                <input type="submit" value="Save" />
+                            </div>
+                        </form>
+                        <br/>
+                        <div class="full">
+                            <div class="pluploader">
+                                <div id="pl-container">
+                                    <input id="pickfiles" type="image" src="{{ asset('bundles/arcanyseasyapp/img/upload-user.png') }}">
+                                </div>
+                                <div id="filelist" style="padding-bottom: 10px;">Your browser doesn't have HTML5 support.</div>
+                            </div>
+                            <div class="thumbnails">
+                                <div id="invoice-thumbnails" class="owl-carousel img-wrap">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+
+{% block footerjavascript %}
+<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine-en.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.validationEngine.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/jquery.colorbox-min.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/account/adminaccount-function.js') }}"></script>
+
+<script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/plupload.full.min.js') }}"></script>
+<script>
+    var plupParams = {
+        imgs: "{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}",
+        upload: "{{ url('EA_admin_upload') }}",
+        delete: "{{ url('EA_admin_delete_image') }}"
+    };
+
+    $(function() {
+        $("#invoice-thumbnails").owlCarousel({
+            navigation : true,
+            pagination: true,
+            slideSpeed : 300,
+            paginationSpeed : 400,
+            singleItem : true,
+            autoHeight : true,
+            items : 1,
+            lazyLoad : true
+        });
+
+        var container = document.getElementById('pl-container'),
+                fileList = document.getElementById('filelist');
+
+        var uploader = new plupload.Uploader({
+            runtimes: 'html5',
+            browse_button: 'pickfiles',
+            drop_element : 'drop-target',
+            container: container,
+            url: plupParams.upload,
+            filters: {
+                max_file_size: '10mb',
+                mime_types: [
+                    {title: 'Image files', extensions: 'jpg,gif,png,pdf'}
+                ]
+            },
+            init: {
+                PostInit: function () {
+                    fileList.innerHTML = '';
+                },
+                BeforeUpload: function (up, file) {
+                    up.settings.multipart_params = {
+                        token : $('.token').val()
+                    };
+                },
+                FilesAdded: function (up, files) {
+                    fileList.innerHTML = '';
+
+                    plupload.each(files, function (file) {
+                        fileList.innerHTML += '<div id="' + file.id + '" class="file-info">' + file.name + ' <span></span></div>';
+                    });
+
+                    uploader.start();
+                },
+                UploadProgress: function (up, file) {
+                    if (document.getElementById(file.id)) {
+                        document.getElementById(file.id).getElementsByTagName('span')[0].innerHTML = '<progress max="100" value="' + file.percent + '">' + "</progress>";
+                    }
+                },
+                FileUploaded: function(up, file, info) {
+                    var response = $.parseJSON(info.response);
+                    if (!response.success) {
+                        fileList.innerHTML = response.msg;
+                        return;
+                    }
+
+                    var data = response.data,
+                            owl = $(".owl-carousel").data('owlCarousel'),
+                            content = "<div class=\"item imglist-" + data.id + "\">"
+                                    + "<span class=\"close\" data-id=\""
+                                    + data.id +"\">&times;</span><img class=\"lazyOwl\" data-src=\"" + plupParams.imgs + data.fileName
+                                    + "\" /></div>";
+                    owl.removeItem(0);
+                    owl.addItem(content, 0);
+
+                    $("#" + file.id).remove();
+
+
+                },
+                Error: function (up, err) {
+                    fileList.innerHTML = "\nError #" + err.code + ": " + err.message;
+                }
+            }
+        });
+        uploader.init();
+
+        $(document).on('click', '.close', function(e) {
+            var id = $(this).data('id'),
+                    index = 0,
+                    owl = $(".owl-carousel").data('owlCarousel'),
+                    images = $('.lazyOwl');
+
+            for (var i = 0; i < images.length; i++) {
+                if ($(images[i]).data('id') == id) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (confirm('Are you sure you want to delete this image?')) {
+                $.ajax({
+                    type: 'POST',
+                    url: plupParams.delete,
+                    data: {
+                        id : id
+                    },
+                    success: function(data, textStatus, jQxhr) {
+                        if (data.success) {
+                            owl.removeItem(index);
+                        }
+                    },
+                    error: function(jqXhr, textStatus, errorThrown) {
+                    }
+                });
+            }
+            e.preventDefault();
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        $('.list-users tr').on('click', function(e) {
+            var getID = $(this).attr('id'),
+                url   = "{{ url('EA_superadmin_viewaccount') }}",
+                view  = "{{ url('EA_superadmin_displayaccount', { 'id' : 'idnumber' }) }}",
+                view  = view.replace('idnumber', getID),
+                data  = { id: getID },
+                load  = $('.display-loader'),
+                right = $('.account-info');
+
+            if ( history.pushState )
+                window.history.pushState({}, document.title, view);
+
+            $(this).toggleClass('selected').siblings().removeClass('selected');
+
+            load.addClass('loader');
+            $.post(url, data, function(data) {
+                if (load.hasClass('loader')) {
+                    load.removeClass('loader');
+                }
+                right.html(data);
+            });
+        });
+
+        $(document.body).on('blur', '.emailadd', function(e) {
+            var getData = $(this).val(),
+                data    = { keyword: getData },
+                url     = '{{ url('check_email') }}';
+            if (getData) {
+                $.ajax({
+                    type: 'POST',
+                    data: data,
+                    url: url,
+                    beforeSend: function() { $('.email-check').html('validating...').show(); },
+                    success: function(datas) {
+                        if (datas.info == 0) {
+                            $('.email-check').html(datas.email).show();
+                        } else if (datas.info == 1) {
+                            $('.email-check').html(datas.email).show();
+                            return false;
+                        }
+                        console.log(datas);
+                    }
+                });
+            } else if (getData == '') {
+                $('.email-check').html();
+            }
+        });
+
+        $(document.body).on('click', '.remove-user', function(e) {
+            var getID = $(this).attr('id'),
+                url   = '{{ url('EA_superadmin_delete') }}',
+                data  = { id: getID };
+
+            if (confirm('Are you sure you want to delete this?')) {
+                $.ajax({
+                    type: "POST", url: url, data: data,
+                    beforeSend: function() { $('.display-loader').html('deleting....'); },
+                    success: function(datas) {
+                        $('.display-loader').html('');
+                        if (datas.id == '' || datas.id == null) {
+                            window.location="{{ url('EA_superadmin_addaccount') }}";
+                            console.log('sulod');
+                        } else {
+                            var view  = "{{ url('EA_superadmin_displayaccount', { 'id' : 'idnumber' }) }}",
+                                view  = view.replace('idnumber', datas.id);
+                            window.location = view;
+                            console.log('sulod2');
+                        }
+                    }
+                });
+            }
+            e.preventDefault();
+        });
+	});
+</script>
+{% endblock %}

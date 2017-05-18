@@ -1,0 +1,33 @@
+Arcanys\EasyAppBundle\Entity\Chartofaccounts:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\ChartofaccountsRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        chartname:
+            type: string
+            length: 255
+        accountnumber:
+            type: string
+            length: 255
+        accountname:
+            type: string
+            length: 255
+        addedby:
+            type: integer
+        dateadded:
+            type: datetime
+        dateupdated:
+            type: datetime
+            nullable: true
+        company:
+            type: string
+            column: company_id
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

@@ -1,0 +1,4 @@
+services:
+#    command.example:
+#        class: Arcanys\CommandBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]

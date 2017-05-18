@@ -1,0 +1,119 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Revenue Dashboard' %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% set an_admin = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+		{% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' %}
+			{% set an_admin = true %}
+		{% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'revenue' } %}
+{% endblock %}
+
+{% block revenuenav %}
+	<div class="second-nav">
+		<ul class="cUL fl">
+			{% include 'ArcanysEasyAppBundle::navtab-revenue.html.twig' with { 'activetab' : 'wire' } %}
+		</ul>
+	</div>
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container">
+            <div class="blue-header forapproval">
+				<div class="revenue-select-div fl" style="padding-top: 25px; padding-bottom: 25px;">
+					<span style="display: block; color: #999;">Show Wire for:</span>
+					<form id="entity_form" method="get" action="">
+					<select class="revenue-select" name="entity_id">
+						<option value="">All Entities</option>
+						{% for list in entity %}
+							{% if list.id == curr_entid %}
+								<option value="{{ list.id }}" selected='selected'>{{ list.entityName }}</option>
+							{% else %}
+								<option value="{{ list.id }}">{{ list.entityName }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+					</form>
+				</div>
+				{% if not an_admin %}
+				<div class="header-list-button fr" style="margin-top: 30px;">
+					<a href="{{ url('Revenue_add_wire') }}" class="blue"><i class="icons add" style="float: none;"></i>Record Wire Transfers</a>
+				</div>
+				{% endif %}
+				<table class="pending-tbl">
+					<tr>
+						<th width="15%">Date</th>
+						<th width="15%">Entity</th>
+						<th width="30%">Description</th>
+						<th width="10%">Status</th>
+						<th width="15%" style="text-align:center">Amount</th>
+						<th width="15%" style="text-align:center">Balance</th>
+					</tr>
+					{% if rev is empty %}
+						<tr>
+							<td colspan="13" align="center">No Wire Transfers available</td>
+						</tr>
+					{% else %}
+						{% for list in rev %}
+							<tr>
+								<td>{{ list.0.dateadded }}</td>
+								<td><a href="{{ url('Revenue_edit_wire', {'id': list.0.id}) }}">{{ list.entityName|length > 25 ? list.entityName|slice(0, 25) ~ '...' : list.entityName }}</a></td>
+								<td>{{ list.0.description|length > 60 ? list.0.description|slice(0, 60) ~ '...' : list.0.description }}</td>
+								<td>
+									{% if list.0.status == 0 %}
+										For Approval
+									{% endif %}
+									{% if list.0.status == 1 %}
+										Approved
+									{% endif %}
+									{% if list.0.status == 2 %}
+										Submitted
+									{% endif %}		
+									{% if list.0.status == 3 %}
+										Not Approved
+									{% endif %}											
+								</td>
+								<td><span class="dollar-position">$</span> <span class="amt-position">{% if list.0.wiretype == 1 %}-{% endif %}{{ list.0.amount|number_format(2, '.', ',')|length > 15 ? list.0.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.0.amount|number_format(2, '.', ',') }}</span></td>
+								<td><span class="dollar-position">$</span> <span class="amt-position">{{ list.0.balance|number_format(2, '.', ',')|length > 15 ? list.0.balance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.0.balance|number_format(2, '.', ',') }}</span></td>
+							</tr>
+						{% endfor %}
+					{% endif %}
+				</table>
+				<table>
+					<tr>
+						<td style="border: 0">{{ knp_pagination_render(rev) }}</td>
+					</tr>
+				</table>
+			</div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('.revenue-select').change(function() {
+				$('#entity_form').submit();
+			});
+		});
+	</script>
+{% endblock %}

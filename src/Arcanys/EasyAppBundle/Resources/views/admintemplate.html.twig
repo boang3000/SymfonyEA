@@ -1,0 +1,38 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = '' %}
+
+    {% block header_second %}
+    <!-- Second nav -->
+    <div class="second-nav">
+        <div class="settings fl">
+            <a href="#"><i class="icons gear2"></i>
+                {% if (app.user.roles[0] == 'ROLE_SUPER_ADMIN') or (app.user.roles[0] == 'ROLE_ADMIN') %}
+                    Admin
+                {% elseif app.user.roles[0] == 'ROLE_ACCOUNTANT' %}
+                    Accountant
+                {% elseif app.user.roles[0] == 'ROLE_MANAGER' %}
+                    Manager
+                {% endif %}
+            </a>
+        </div>
+        <ul class="cUL fl">
+            {% block adminnav %}
+            {% endblock %}
+        </ul>
+    </div>
+    {% endblock %}
+
+    {% block container %}
+        {% block content_btn %}
+            {% block content_tab_title %}{% endblock %}
+        {% endblock %}
+    {% endblock %}
+
+    {% block footer %}
+        <!-- Footer -->
+        <div class="footer">
+            <p class="copyright">Copyright &copy; Easy AP, All Rights Reserved</p>
+        </div>
+    {% endblock %}
+{% block footerjavascript %}
+{% endblock %}

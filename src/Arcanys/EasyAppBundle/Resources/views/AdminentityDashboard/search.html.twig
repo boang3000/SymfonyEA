@@ -1,0 +1,145 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block title %}Search Entity{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'entity' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    <div class="container">
+        <div class="header-form">
+            <form action="{{ url('EA_admin_entitysearch') }}" method="get">
+                <input type="text" name="searchkey" />
+                <input type="submit" class="button">
+            </form>
+        </div>
+        <div class="header-list">
+            <div class="header-list-alpha">
+                <ul>
+                    <li class="active"><a href="{{ url('EA_admin_entity_registry') }}">All</a></li>
+                    {% for i in 0..25 %}
+                        <li><a href="{{ url('EA_admin_entity_registryview', { 'page' : letters[i] }) }}">{{ letters[i]|capitalize }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="header-list-button">
+                {% if is_admin_accountant %}
+                    <button type="button" class="blue" onclick="window.location='{{ url('EA_admin_entity') }}';"><i class="icons add"></i>New Entity</button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="blue-header forapproval content-module">
+            <table class="registry-list entity-tbl-list">
+                <tr>
+                    <th width="15%">Entity</th>
+                    <th width="10%">Bank Name</th>
+                    <th width="10%">Acct. No.</th>
+                    <th width="10%">Balance</th>
+                    <th width="25%">Entity</th>
+                    <th width="10%">Bank Name</th>
+                    <th width="10%">Acct. No.</th>
+                    <th width="10%">Balance</th>
+                </tr>
+                {% if entity is empty %}
+                    <tr>
+                        <td colspan="8" align="center">No Entity available</td>
+                    </tr>
+                {% else %}
+                    {% for list in entity|batch(2) %}
+                        <tr>
+                            {% for column in list %}
+                                <td class="list-{{ column.id }} list-data" data-id="{{ column.id }}" data-position="{% if loop.index == 1 %}left{% else %}right{% endif %}">
+                                    <a href="{{ url('EA_admin_entitydetails', { 'id' : column.id }) }}">
+                                        <strong>{{ column.entityName|length > 18 ? column.entityName|slice(0, 18) ~ '...' : column.entityName }}</strong>
+                                    </a>
+                                </td>
+                                <td class="list-{{ column.id }} list-data" data-id="{{ column.id }}" data-position="{% if loop.index == 1 %}left{% else %}right{% endif %}">{{ column.bankName|length > 15 ? column.bankName|slice(0, 15) ~ '...' : column.bankName }}</td>
+                                <td class="list-{{ column.id }} bank-acct list-data" data-id="{{ column.id }}" data-position="{% if loop.index == 1 %}left{% else %}right{% endif %}">{{ column.bankAcct }}</td>
+                                <td class="list-{{ column.id }} list-data" data-id="{{ column.id }}" data-position="{% if loop.index == 1 %}left{% else %}right{% endif %}">
+                                    <span class="dollar-position">$</span>
+                                    <span class="amt-position">{{ column.curBalance|number_format(2, '.', ',')|length > 15 ? column.curBalance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : column.curBalance|number_format(2, '.', ',') }}
+                                    </span>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+            <table>
+                <tr>
+                    <td style="border: 0">{{ knp_pagination_render(entity) }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/entity/entity-function.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.validate.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            var bankaccount = $('.bank-acct');
+            bankaccount.each(function() {
+                var getbankaccount  = $(this).html(),
+                    renewNum        = (getbankaccount.length - 4)+1,
+                    string          = '';
+
+                for ( var i = 0; i < renewNum; i++) {
+                    string = getbankaccount.charAt(i);
+                    string = string.replace(string, '.');
+                }
+
+                $(this).html('...' + getbankaccount.slice(-4));
+            });
+
+            $('.list-data').on('click', function() {
+                var getid = $(this).data('id'),
+                        pos   = $(this).data('position'),
+                        url   = '{{ path('retrieve_bankinfo_by_id') }}';
+
+                $.ajax({
+                    type: 'POST', url: url, data: { id: getid }, dataType: "json",
+                    beforeSend: function() {
+                        if ( pos == 'left' ) {
+                            displayLoaderEntity(getid, 'left');
+                        } else {
+                            displayLoaderEntity(getid, 'right');
+                        }
+                    },
+                    success: function(data) {
+                        $('.column-list').remove();
+                        var viewarray = [], length = [];
+                        $.each( data, function( key, value ) {
+                            viewarray[key] = value;
+                            length = viewarray[key].length;
+                        });
+
+                        if ( $('.parent-list').length ) {
+                            $('.parent-list').remove();
+                        }
+
+                        for ( var key = 0; key < length; key++ ) {
+                            if ( pos == 'left' ) {
+                                if ( $('.parent-list-' + viewarray.id[key]).length ) {
+                                    $('.parent-list-' + viewarray.id[key]).remove();
+                                    displayListonLeft(getid, viewarray.id[key], viewarray.bankname[key], viewarray.acctno[key], viewarray.balance[key]);
+                                } else {
+                                    displayListonLeft(getid, viewarray.id[key], viewarray.bankname[key], viewarray.acctno[key], viewarray.balance[key]);
+                                }
+                            } else {
+                                if ( $('.parent-list-' + viewarray.id[key]).length ) {
+                                    $('.parent-list-' + viewarray.id[key]).remove();
+                                    displayListonRight(getid, viewarray.id[key], viewarray.bankname[key], viewarray.acctno[key], viewarray.balance[key]);
+                                } else {
+                                    displayListonRight(getid, viewarray.id[key], viewarray.bankname[key], viewarray.acctno[key], viewarray.balance[key]);
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

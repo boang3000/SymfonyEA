@@ -1,0 +1,21 @@
+parameters:
+    entity.values.handler.class: Arcanys\EasyAppBundle\Components\EntityRevenueCapitalValues
+    service.mailer.class: Arcanys\EasyAppBundle\Service\Mailer
+    email:
+        pending_invoice_subject: 'Easy Ap Pending Invoice for Approval'
+        email_from:
+            'no-reply@easyapp.com': 'EasyApp'
+
+services:
+    entity.values.handler:
+        class:  %entity.values.handler.class%
+        arguments:  [@doctrine.orm.entity_manager]
+    service.mailer:
+        class: %service.mailer.class%
+        arguments:
+            - @mailer
+            - @templating
+            - %email%
+    logout_listener:
+       class:  Arcanys\EasyAppBundle\Service\LogoutListener
+       arguments:  [@security.context, @router, @service_container, @service.mailer]

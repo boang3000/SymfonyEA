@@ -1,0 +1,17 @@
+Arcanys\EasyAppBundle\Entity\InvoiceImages:
+    properties:
+        file:
+            - File:
+                maxSize: 6000000
+
+Arcanys\EasyAppBundle\Entity\Userimages:
+    properties:
+        file:
+            - File:
+                maxSize: 6000000
+
+Arcanys\EasyAppBundle\Entity\User:
+    properties:
+        file:
+            - File:
+                maxSize: 6000000

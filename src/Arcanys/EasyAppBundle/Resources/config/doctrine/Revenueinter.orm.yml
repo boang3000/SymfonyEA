@@ -1,0 +1,37 @@
+Arcanys\EasyAppBundle\Entity\Revenueinter:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        dateadded:
+            type: string
+            nullable: true
+        entityIdFrom:
+            type: string
+            column: entity_id_from
+        entitybanknameIdFrom:
+            type: integer
+            column: entitybankname_id_from
+        entityIdTo:
+            type: string
+            column: entity_id_to
+        entitybanknameIdTo:
+            type: integer
+            column: entitybankname_id_to
+        amount:
+            type: string
+            length: 255
+        description:
+            type: text
+        upltoken:
+            type: string
+            length: 255
+        company:
+            type: string
+            column: company_id
+    lifecycleCallbacks: {  }

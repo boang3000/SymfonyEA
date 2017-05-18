@@ -1,0 +1,737 @@
+<div class="input-head">
+    {#<span><a href="#" class="edit-user" id="{{ entity.id }}"><i class="icons edit"></i>edit</a></span>#}
+    <span><a href="#" class="remove-user" id="{{ entity.id }}"><i class="icons rem"></i>remove</a></span>
+</div>
+<form id="formId" method="post" data-id="{{ entity.id }}" action="{{ url('EA_admin_entityupdate', { 'id' : entity.id }) }}" class="update-entity-form"> <!-- class="update-entity-form"-->
+    <div class="fields">
+        <div class="full">
+            <label for="textName">Name</label>
+            <input type="text" name="entityname" id="textName" value="{{ entity.entityName }}" placeholder="Entity Name" class="validate[required]" />
+            <span class="entityname-error field-error"></span>
+        </div>
+    </div>
+</form>
+<!-- START OF MULTIPLE BANK INFO ------------------------>
+<!-- BANK 1 -->
+<div id="tt" class="easyui-tabs" style="width:96%;">
+<div title="
+    <span class='tabentity-title tabentity-title-1' data-id='1'>
+    {% if bankinfo|length >= 1 %}
+        {% if bankinfo[0].bankName is not empty or bankinfo[0].bankName is not null %}
+            {% if bankinfo[0].entityTabname is not null %}
+                {{ bankinfo[0].entityTabname }}
+            {% else %}
+                ZZ{{ bankinfo[0].bankAcct|slice(-4) }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        Bank 1
+    {% endif %}
+    </span>
+    <input type='text' name='tabentityname' data-id='1' class='tabentity-text tabentity-text-1' value='{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityTabname|trim(' ') }}{% elseif bankinfo|length >= 1 %}{% if bankinfo[0].bankName is empty %}ZZ{{ bankinfo[0].entityTabname|slice(-4) }}{% endif %}{% else %}Bank 1{% endif %}' />
+    <button type='button' data-id='1' data-value='{% if bankinfo|length >= 1 %}{{ bankinfo[0].entitybankId }} {% endif %}' class='submit-tabentity-btn submit-tabentity-btn-1'></button>
+    <button type='button' data-id='1' data-value='{% if bankinfo|length >= 1 %}{{ bankinfo[0].entitybankId }} {% endif %}' class='exit-tabentity-btn exit-tabentity-btn-1'></button>
+    <a href='#' class='tabentity-edit' data-id='1'>edit</a>
+    " style="padding:10px">
+    <form id="bank-1">
+        <input type="hidden" name="entitybankId" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].entitybankId }}{% endif %}">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">Bank</label>
+                <input type="text" name="bankname" id="textBank" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].bankName }} {% endif %}" placeholder="Bank Name" class="textBank validate[required]" />
+            </div>
+            <div class="half">
+                <label for="textBankContact">Bank Contact</label>
+                <input type="text" name="bankcontact" id="textBankContact" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].bankContact }} {% endif %}" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">Bank Phone Number</label>
+                <input type="text" name="bankphonenum" id="textBankPhoneNum" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityContact }} {% endif %}" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankphone-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">Contact Email Address</label>
+                <input type="text" name="bankemail" id="textBankEmail" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityEmailaddress }} {% endif %}" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                <span class="bankemail-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="forth">
+                <label for="textBankAddress">Street Name</label>
+                <input type="text" name="bankaddress" id="textBankAddress" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityAddress }} {% endif %}" placeholder="Street Name" class="textBankAddress validate[required]" />
+                <span class="bankaddress-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textCity">City</label>
+                <input type="text" name="city" id="textCity" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityCity }} {% endif %}" placeholder="City" class="textCity validate[required]" />
+                <span class="city-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textState">State</label>
+                <select name="state" id="textState" class="textState validate[required]">
+                    <option value="">Select a state</option>
+                    {% for key,list in state %}
+                        <option value="{{ key }}" {% if bankinfo|length >= 1 %}{% if key == bankinfo[0].entityState %}selected="selected"{% endif %}{% endif %}>{{ list }}</option>
+                    {% endfor %}
+                </select>
+                <span class="state-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textZipcode">Zip Code</label>
+                <input type="text" name="zipcode" id="textZipcode" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].entityZip }} {% endif %}" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                <span class="zipcode-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankAccountNum">Bank Account No.</label>
+                <input type="text" name="bankaccount" id="textBankAccountNum" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].bankAcct }} {% endif %}" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankacct-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankRoutingNum">Bank Routing No.</label>
+                <input type="text" name="bankroute" maxlength="9" id="textBankRoutingNum" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].routingBalance }} {% endif %}" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                <span class="bankroute-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textStartCheckNum">Starting Check No.</label>
+                <input type="text" name="startbalance" id="textStartCheckNum" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].startBalance }} {% endif %}" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                <span class="startbalance-error"></span>
+            </div>
+            <div class="half">
+                <label for="textPresentBalance">Present Balance</label>
+                <input type="text" name="curbalance" id="textPresentBalance" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].curBalance }} {% endif %}" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                <span class="curbalance-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">Comments</label>
+                <textarea name="comments" id="textComments" placeholder="Your comment here" class="textComments">{% if bankinfo|length >= 1 %}{{ bankinfo[0].comments }} {% endif %}</textarea>
+            </div>
+        </div>
+        <input type="hidden" name="token" class="token" value="{% if bankinfo|length >= 1 %}{{ bankinfo[0].token }} {% endif %}" />
+        </form>
+</div>
+<!-- BANK 2 -->
+<div title="
+    <span class='tabentity-title tabentity-title-2' data-id='2'>
+    {% if bankinfo|length >= 2 %}
+        {% if bankinfo[1].bankName is not empty or bankinfo[1].bankName is not null %}
+            {% if bankinfo[1].entityTabname is not null %}
+                {{ bankinfo[1].entityTabname }}
+            {% else %}
+                ZZ{{ bankinfo[1].bankAcct|slice(-4) }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        Bank 2
+    {% endif %}
+    </span>
+    <input type='text' name='tabentityname' data-id='2' class='tabentity-text tabentity-text-2' value='{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityTabname|trim(' ') }}{% elseif bankinfo|length >= 2 %}{% if bankinfo[1].bankName is empty %}ZZ{{ bankinfo[1].entityTabname|slice(-4) }}{% endif %}{% else %}Bank 2{% endif %}' />
+    <button type='button' data-id='2' data-value='{% if bankinfo|length >= 2 %}{{ bankinfo[1].entitybankId }} {% endif %}' class='submit-tabentity-btn submit-tabentity-btn-2'></button>
+    <button type='button' data-id='2' data-value='{% if bankinfo|length >= 2 %}{{ bankinfo[1].entitybankId }} {% endif %}' class='exit-tabentity-btn exit-tabentity-btn-2'></button>
+    <a href='#' class='tabentity-edit' data-id='2'>edit</a>
+" style="padding:10px">
+    <form id="bank-2">
+        <input type="hidden" name="entitybankId" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].entitybankId }}{% endif %}">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank2">Bank</label>
+                <input type="text" name="bankname" id="textBank2" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].bankName }} {% endif %}" placeholder="Bank Name" class="textBank validate[required]" />
+            </div>
+            <div class="half">
+                <label for="textBankContact2">Bank Contact</label>
+                <input type="text" name="bankcontact" id="textBankContact2" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].bankContact }} {% endif %}" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">Bank Phone Number</label>
+                <input type="text" name="bankphonenum" id="textBankPhoneNum" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityContact }} {% endif %}" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankphone-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">Contact Email Address</label>
+                <input type="text" name="bankemail" id="textBankEmail" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityEmailaddress }} {% endif %}" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                <span class="bankemail-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="forth">
+                <label for="textBankAddress">Street Name</label>
+                <input type="text" name="bankaddress" id="textBankAddress" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityAddress }} {% endif %}" placeholder="Street Name" class="textBankAddress validate[required]" />
+                <span class="bankaddress-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textCity">City</label>
+                <input type="text" name="city" id="textCity" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityCity }} {% endif %}" placeholder="City" class="textCity validate[required]" />
+                <span class="city-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textState">State</label>
+                <select name="state" id="textState" class="textState validate[required]">
+                    <option value="">Select a state</option>
+                    {% for key,list in state %}
+                        <option value="{{ key }}" {% if bankinfo|length >= 2 %}{% if key == bankinfo[1].entityState %}selected="selected"{% endif %}{% endif %}>{{ list }}</option>
+                    {% endfor %}
+                </select>
+                <span class="state-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textZipcode">Zip Code</label>
+                <input type="text" name="zipcode" id="textZipcode" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].entityZip }} {% endif %}" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                <span class="zipcode-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankAccountNum2">Bank Account No.</label>
+                <input type="text" name="bankaccount" id="textBankAccountNum2" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].bankAcct }} {% endif %}" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankacct-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankRoutingNum2">Bank Routing No.</label>
+                <input type="text" name="bankroute" maxlength="9" id="textBankRoutingNum2" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].routingBalance }} {% endif %}" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                <span class="bankroute-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textStartCheckNum2">Starting Check No.</label>
+                <input type="text" name="startbalance" id="textStartCheckNum2" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].startBalance }} {% endif %}" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                <span class="startbalance-error"></span>
+            </div>
+            <div class="half">
+                <label for="textPresentBalance2">Present Balance</label>
+                <input type="text" name="curbalance" id="textPresentBalance2" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].curBalance }} {% endif %}" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                <span class="curbalance-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments2">Comments</label>
+                <textarea name="comments" id="textComments2" placeholder="Your comment here" class="textComments">{% if bankinfo|length >= 2 %}{{ bankinfo[1].comments }} {% endif %}</textarea>
+            </div>
+        </div>
+        <input type="hidden" name="token" class="token" value="{% if bankinfo|length >= 2 %}{{ bankinfo[1].token }} {% endif %}" />
+    </form>
+</div>
+<!-- BANK 3 -->
+<div title="
+    <span class='tabentity-title tabentity-title-3' data-id='3'>
+    {% if bankinfo|length >= 3 %}
+        {% if bankinfo[2].bankName is not empty or bankinfo[2].bankName is not null %}
+            {% if bankinfo[2].entityTabname is not null %}
+                {{ bankinfo[2].entityTabname }}
+            {% else %}
+                ZZ{{ bankinfo[2].bankAcct|slice(-4) }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        Bank 3
+    {% endif %}
+    </span>
+    <input type='text' name='tabentityname' data-id='3' class='tabentity-text tabentity-text-3' value='{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityTabname|trim(' ') }}{% elseif bankinfo|length >= 3 %}{% if bankinfo[2].bankName is empty %}ZZ{{ bankinfo[2].entityTabname|slice(-4) }}{% endif %}{% else %}Bank 3{% endif %}' />
+    <button type='button' data-id='3' data-value='{% if bankinfo|length >= 3 %}{{ bankinfo[2].entitybankId }} {% endif %}' class='submit-tabentity-btn submit-tabentity-btn-3'></button>
+    <button type='button' data-id='3' data-value='{% if bankinfo|length >= 3 %}{{ bankinfo[2].entitybankId }} {% endif %}' class='exit-tabentity-btn exit-tabentity-btn-3'></button>
+    <a href='#' class='tabentity-edit' data-id='3'>edit</a>
+" style="padding:10px">
+    <form id="bank-3">
+        <input type="hidden" name="entitybankId" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].entitybankId }}{% endif %}">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">Bank</label>
+                <input type="text" name="bankname" id="textBank3" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].bankName }} {% endif %}" placeholder="Bank Name" class="textBank validate[required]" />
+            </div>
+            <div class="half">
+                <label for="textBankContact">Bank Contact</label>
+                <input type="text" name="bankcontact" id="textBankContact3" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].bankContact }} {% endif %}" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">Bank Phone Number</label>
+                <input type="text" name="bankphonenum" id="textBankPhoneNum" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityContact }} {% endif %}" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankphone-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">Contact Email Address</label>
+                <input type="text" name="bankemail" id="textBankEmail" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityEmailaddress }} {% endif %}" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                <span class="bankemail-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="forth">
+                <label for="textBankAddress">Street Name</label>
+                <input type="text" name="bankaddress" id="textBankAddress" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityAddress }} {% endif %}" placeholder="Street Name" class="textBankAddress validate[required]" />
+                <span class="bankaddress-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textCity">City</label>
+                <input type="text" name="city" id="textCity" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityCity }} {% endif %}" placeholder="City" class="textCity validate[required]" />
+                <span class="city-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textState">State</label>
+                <select name="state" id="textState" class="textState validate[required]">
+                    <option value="">Select a state</option>
+                    {% for key,list in state %}
+                        <option value="{{ key }}" {% if bankinfo|length >= 3 %}{% if key == bankinfo[2].entityState %}selected="selected"{% endif %}{% endif %}>{{ list }}</option>
+                    {% endfor %}
+                </select>
+                <span class="state-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textZipcode">Zip Code</label>
+                <input type="text" name="zipcode" id="textZipcode" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].entityZip }} {% endif %}" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                <span class="zipcode-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankAccountNum">Bank Account No.</label>
+                <input type="text" name="bankaccount" id="textBankAccountNum3" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].bankAcct }} {% endif %}" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankacct-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankRoutingNum">Bank Routing No.</label>
+                <input type="text" name="bankroute" maxlength="9" id="textBankRoutingNum3" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].routingBalance }} {% endif %}" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                <span class="bankroute-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textStartCheckNum">Starting Check No.</label>
+                <input type="text" name="startbalance" id="textStartCheckNum3" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].startBalance }} {% endif %}" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                <span class="startbalance-error"></span>
+            </div>
+            <div class="half">
+                <label for="textPresentBalance">Present Balance</label>
+                <input type="text" name="curbalance" id="textPresentBalance3" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].curBalance }} {% endif %}" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                <span class="curbalance-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">Comments</label>
+                <textarea name="comments" id="textComments3" placeholder="Your comment here" class="textComments">{% if bankinfo|length >= 3 %}{{ bankinfo[2].comments }} {% endif %}</textarea>
+            </div>
+        </div>
+        <input type="hidden" name="token" class="token" value="{% if bankinfo|length >= 3 %}{{ bankinfo[2].token }} {% endif %}" />
+    </form>
+</div>
+<!-- BANK 4 -->
+<div title="
+    <span class='tabentity-title tabentity-title-4' data-id='4'>
+    {% if bankinfo|length >= 4 %}
+        {% if bankinfo[3].bankName is not empty or bankinfo[3].bankName is not null %}
+            {% if bankinfo[3].entityTabname is not null %}
+                {{ bankinfo[3].entityTabname }}
+            {% else %}
+                ZZ{{ bankinfo[3].bankAcct|slice(-4) }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        Bank 4
+    {% endif %}
+    </span>
+    <input type='text' name='tabentityname' data-id='4' class='tabentity-text tabentity-text-4' value='{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityTabname|trim(' ') }}{% elseif bankinfo|length >= 4 %}{% if bankinfo[3].bankName is empty %}ZZ{{ bankinfo[3].entityTabname|slice(-4) }}{% endif %}{% else %}Bank 4{% endif %}' />
+    <button type='button' data-id='4' data-value='{% if bankinfo|length >= 4 %}{{ bankinfo[3].entitybankId }} {% endif %}' class='submit-tabentity-btn submit-tabentity-btn-4'></button>
+    <button type='button' data-id='4' data-value='{% if bankinfo|length >= 4 %}{{ bankinfo[3].entitybankId }} {% endif %}' class='exit-tabentity-btn exit-tabentity-btn-4'></button>
+    <a href='#' class='tabentity-edit' data-id='4'>edit</a>
+" style="padding:10px">
+    <form id="bank-4">
+        <input type="hidden" name="entitybankId" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].entitybankId }}{% endif %}">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">Bank</label>
+                <input type="text" name="bankname" id="textBank4" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].bankName }} {% endif %}" placeholder="Bank Name" class="textBank validate[required]" />
+            </div>
+            <div class="half">
+                <label for="textBankContact">Bank Contact</label>
+                <input type="text" name="bankcontact" id="textBankContact4" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].bankContact }} {% endif %}" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">Bank Phone Number</label>
+                <input type="text" name="bankphonenum" id="textBankPhoneNum" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityContact }} {% endif %}" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankphone-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">Contact Email Address</label>
+                <input type="text" name="bankemail" id="textBankEmail" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityEmailaddress }} {% endif %}" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                <span class="bankemail-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="forth">
+                <label for="textBankAddress">Street Name</label>
+                <input type="text" name="bankaddress" id="textBankAddress" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityAddress }} {% endif %}" placeholder="Street Name" class="textBankAddress validate[required]" />
+                <span class="bankaddress-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textCity">City</label>
+                <input type="text" name="city" id="textCity" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityCity }} {% endif %}" placeholder="City" class="textCity validate[required]" />
+                <span class="city-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textState">State</label>
+                <select name="state" id="textState" class="textState validate[required]">
+                    <option value="">Select a state</option>
+                    {% for key,list in state %}
+                        <option value="{{ key }}" {% if bankinfo|length >= 4 %}{% if key == bankinfo[3].entityState %}selected="selected"{% endif %}{% endif %}>{{ list }}</option>
+                    {% endfor %}
+                </select>
+                <span class="state-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textZipcode">Zip Code</label>
+                <input type="text" name="zipcode" id="textZipcode" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].entityZip }} {% endif %}" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                <span class="zipcode-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankAccountNum">Bank Account No.</label>
+                <input type="text" name="bankaccount" id="textBankAccountNum4" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].bankAcct }} {% endif %}" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankacct-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankRoutingNum">Bank Routing No.</label>
+                <input type="text" name="bankroute" maxlength="9" id="textBankRoutingNum4" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].routingBalance }} {% endif %}" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                <span class="bankroute-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textStartCheckNum">Starting Check No.</label>
+                <input type="text" name="startbalance" id="textStartCheckNum4" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].startBalance }} {% endif %}" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                <span class="startbalance-error"></span>
+            </div>
+            <div class="half">
+                <label for="textPresentBalance">Present Balance</label>
+                <input type="text" name="curbalance" id="textPresentBalance4" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].curBalance }} {% endif %}" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                <span class="curbalance-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">Comments</label>
+                <textarea name="comments" id="textComments4" placeholder="Your comment here" class="textComments">{% if bankinfo|length >= 4 %}{{ bankinfo[3].comments }} {% endif %}</textarea>
+            </div>
+        </div>
+        <input type="hidden" name="token" class="token" value="{% if bankinfo|length >= 4 %}{{ bankinfo[3].token }} {% endif %}" />
+    </form>
+</div>
+<!-- BANK 5 -->
+<div title="
+    <span class='tabentity-title tabentity-title-5' data-id='5'>
+    {% if bankinfo|length >= 5 %}
+        {% if bankinfo[4].bankName is not empty or bankinfo[4].bankName is not null %}
+            {% if bankinfo[4].entityTabname is not null %}
+                {{ bankinfo[4].entityTabname }}
+            {% else %}
+                ZZ{{ bankinfo[4].bankAcct|slice(-4) }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        Bank 5
+    {% endif %}
+    </span>
+    <input type='text' name='tabentityname' data-id='5' class='tabentity-text tabentity-text-5' value='{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityTabname|trim(' ') }}{% elseif bankinfo|length >= 5 %}{% if bankinfo[4].bankName is empty %}ZZ{{ bankinfo[4].entityTabname|slice(-4) }}{% endif %}{% else %}Bank 5{% endif %}' />
+    <button type='button' data-id='5' data-value='{% if bankinfo|length >= 5 %}{{ bankinfo[4].entitybankId }} {% endif %}' class='submit-tabentity-btn submit-tabentity-btn-5'></button>
+    <button type='button' data-id='5' data-value='{% if bankinfo|length >= 5 %}{{ bankinfo[4].entitybankId }} {% endif %}' class='exit-tabentity-btn exit-tabentity-btn-5'></button>
+    <a href='#' class='tabentity-edit' data-id='5'>edit</a>
+    " style="padding:10px">
+    <form id="bank-5">
+        <input type="hidden" name="entitybankId" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].entitybankId }}{% endif %}">
+        <div class="fields">
+            <div class="half">
+                <label for="textBank">Bank</label>
+                <input type="text" name="bankname" id="textBank5" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].bankName }}{% endif %}" placeholder="Bank Name" class="textBank validate[required]" />
+            </div>
+            <div class="half">
+                <label for="textBankContact">Bank Contact</label>
+                <input type="text" name="bankcontact" id="textBankContact5" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].bankContact }} {% endif %}" placeholder="Bank Name Contact" class="textBankContact validate[required]" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankPhoneNum">Bank Phone Number</label>
+                <input type="text" name="bankphonenum" id="textBankPhoneNum" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityContact }} {% endif %}" maxlength="10" placeholder="00000" class="textBankPhoneNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankphone-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankEmail">Contact Email Address</label>
+                <input type="text" name="bankemail" id="textBankEmail" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityEmailaddress }} {% endif %}" placeholder="Email" class="textBankEmail validate[required,custom[email]]" />
+                <span class="bankemail-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="forth">
+                <label for="textBankAddress">Street Name</label>
+                <input type="text" name="bankaddress" id="textBankAddress" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityAddress }} {% endif %}" placeholder="Street Name" class="textBankAddress validate[required]" />
+                <span class="bankaddress-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textCity">City</label>
+                <input type="text" name="city" id="textCity" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityCity }} {% endif %}" placeholder="City" class="textCity validate[required]" />
+                <span class="city-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textState">State</label>
+                <select name="state" id="textState" class="textState validate[required]">
+                    <option value="">Select a state</option>
+                    {% for key,list in state %}
+                        <option value="{{ key }}" {% if bankinfo|length >= 5 %}{% if key == bankinfo[4].entityState %}selected="selected"{% endif %}{% endif %}>{{ list }}</option>
+                    {% endfor %}
+                </select>
+                <span class="state-error"></span>
+            </div>
+            <div class="forth">
+                <label for="textZipcode">Zip Code</label>
+                <input type="text" name="zipcode" id="textZipcode" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].entityZip }} {% endif %}" placeholder="Zip Code" class="textZipcode validate[required]" maxlength="5" />
+                <span class="zipcode-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textBankAccountNum">Bank Account No.</label>
+                <input type="text" name="bankaccount" id="textBankAccountNum5" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].bankAcct }} {% endif %}" maxlength="12" placeholder="00000" class="textBankAccountNum validate[required,custom[number],maxSize[12],minSize[1]]" />
+                <span class="bankacct-error"></span>
+            </div>
+            <div class="half">
+                <label for="textBankRoutingNum">Bank Routing No.</label>
+                <input type="text" name="bankroute" maxlength="9" id="textBankRoutingNum5" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].routingBalance }} {% endif %}" placeholder="00000" class="textBankRoutingNum validate[required,custom[number],maxSize[9],minSize[9]]" />
+                <span class="bankroute-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="half">
+                <label for="textStartCheckNum">Starting Check No.</label>
+                <input type="text" name="startbalance" id="textStartCheckNum5" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].startBalance }} {% endif %}" maxlength="10" placeholder="00000" class="textStartCheckNum validate[required,custom[number]]" />
+                <span class="startbalance-error"></span>
+            </div>
+            <div class="half">
+                <label for="textPresentBalance">Present Balance</label>
+                <input type="text" name="curbalance" id="textPresentBalance5" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].curBalance }} {% endif %}" maxlength="13" placeholder="00000" class="textPresentBalance validate[required]" />
+                <span class="curbalance-error"></span>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="full">
+                <label for="textComments">Comments</label>
+                <textarea name="comments" id="textComments5" placeholder="Your comment here" class="">{% if bankinfo|length >= 5 %}{{ bankinfo[4].comments }} {% endif %}</textarea>
+            </div>
+        </div>
+        <input type="hidden" name="token" class="token" value="{% if bankinfo|length >= 5 %}{{ bankinfo[4].token }} {% endif %}" />
+    </form>
+</div>
+</div>
+<br/>
+<div class="fields">
+    <input type="submit" class="entity-btn" value="Save" />
+    <br/>
+    <div class="full">
+        <div class="pluploader">
+            <div id="pl-container">
+                <input id="pickfiles" type="image" src="{{ asset('bundles/arcanyseasyapp/img/invoice-upload-btn.png') }}">
+            </div>
+            <div id="filelist" style="padding-bottom: 10px;">Your browser doesn't have HTML5 support.</div>
+        </div>
+        <div class="thumbnails">
+            <div id="invoice-thumbnails" class="owl-carousel img-wrap">
+                {% for list in inimg %}
+                    <div class="item imglist-{{ list.id }}">
+                        <span class="close" data-id="{{ list.id }}">&times;</span>
+                        <img class="lazyOwl" data-id="{{ list.id }}" data-src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+{% endblock %}
+
+<script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/entity/entity-function.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/jquery.easyui.min.js') }}"></script>
+
+<script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('bundles/arcanyseasyapp/js/plupload.full.min.js') }}"></script>
+<script>
+    var plupParams = {
+        imgs: "{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}",
+        upload: "{{ url('EA_entity_upload') }}",
+        delete: "{{ url('EA_entity_delete_image') }}",
+        uploadVendor: "{{ url('EA_update_invoice_image_vendor') }}",
+        images: "{{ url('EA_entity_image') }}",
+        entityId: "{{ entity.id }}"
+    };
+
+    $(function() {
+        $("#invoice-thumbnails").owlCarousel({
+            navigation : true,
+            pagination: true,
+            slideSpeed : 300,
+            paginationSpeed : 400,
+            singleItem : true,
+            autoHeight : true,
+            items : 1,
+            lazyLoad : true
+        });
+
+        var container = document.getElementById('pl-container'),
+                fileList = document.getElementById('filelist');
+
+        var uploader = new plupload.Uploader({
+            runtimes: 'html5',
+            browse_button: 'pickfiles',
+            drop_element : 'drop-target',
+            container: container,
+            url: plupParams.upload,
+            filters: {
+                max_file_size: '10mb',
+                mime_types: [
+                    {title: 'Image files', extensions: 'jpg,gif,png,pdf'}
+                ]
+            },
+            init: {
+                PostInit: function () {
+                    fileList.innerHTML = '';
+                },
+                BeforeUpload: function (up, file) {
+                    var pp = $('#tt').tabs('getSelected');
+                    var formId = pp.find('form').attr('id').split('-');
+                    var bankno = formId[1],
+                            token = pp.find('form').find('input[name="token"]').val();
+
+                    up.settings.multipart_params = {
+                        bankno : bankno,
+                        token : token,
+                        formtoken : $('.formtoken').val(),
+                        pagenumber : $('input.pagenumber').val(),
+                        entityId : plupParams.entityId
+                    };
+                },
+                FilesAdded: function (up, files) {
+                    fileList.innerHTML = '';
+
+                    plupload.each(files, function (file) {
+                        fileList.innerHTML += '<div id="' + file.id + '" class="file-info">' + file.name + ' <span></span></div>';
+                    });
+
+                    uploader.start();
+                },
+                UploadProgress: function (up, file) {
+                    if (document.getElementById(file.id)) {
+                        document.getElementById(file.id).getElementsByTagName('span')[0].innerHTML = '<progress max="100" value="' + file.percent + '">' + "</progress>";
+                    }
+                },
+                FileUploaded: function(up, file, info) {
+                    var response = $.parseJSON(info.response);
+                    if (!response.success) {
+                        fileList.innerHTML = response.msg;
+                        return;
+                    }
+
+                    var data = response.data,
+                            owl = $(".owl-carousel").data('owlCarousel'),
+                            content = "<div class=\"item imglist-" + data.id + "\">"
+                                    + "<span class=\"close\" data-id=\""
+                                    + data.id +"\">&times;</span><img class=\"lazyOwl\" data-src=\"" + plupParams.imgs + data.fileName
+                                    + "\" /></div>";
+                    owl.addItem(content, 0);
+
+                    $("#" + file.id).remove();
+                },
+                Error: function (up, err) {
+                    fileList.innerHTML = "\nError #" + err.code + ": " + err.message;
+                }
+            }
+        });
+        uploader.init();
+
+        $(document).on('click', '.close', function(e) {
+            var id = $(this).data('id'),
+                    index = 0,
+                    owl = $(".owl-carousel").data('owlCarousel'),
+                    images = $('.lazyOwl');
+
+            for (var i = 0; i < images.length; i++) {
+                if ($(images[i]).data('id') == id) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (confirm('Are you sure you want to delete this image?')) {
+                $.ajax({
+                    type: 'POST',
+                    url: plupParams.delete,
+                    data: {
+                        id : id
+                    },
+                    success: function(data, textStatus, jQxhr) {
+                        if (data.success) {
+                            owl.removeItem(index);
+                        }
+                    },
+                    error: function(jqXhr, textStatus, errorThrown) {
+                    }
+                });
+            }
+            e.preventDefault();
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        var pluploader = {
+            refresh : function(images) {
+                var owl = $(".owl-carousel").data('owlCarousel'),
+                        imgWrap = $('.img-wrap');
+
+                imgWrap.empty();
+
+                for (i in images) {
+                    var image = images[i];
+
+                    var content = "<div class=\"item imglist-" + image.id + "\">"
+                            + "<span class=\"close\" data-id=\""
+                            + image.id +"\">&times;</span><img class=\"lazyOwl\" data-src=\"" + plupParams.imgs + image.fileName
+                            + "\" /></div>";
+                    owl.addItem(content, 0);
+                }
+            }
+        };
+
+        $('#tt').tabs({
+            border:false,
+            onSelect:function(title, file) {
+                $.ajax({
+                    type: 'POST',
+                    url: plupParams.images,
+                    data: {
+                        bankno : (file + 1),
+                        entityId: plupParams.entityId
+                    },
+                    success: function(data, textStatus, jQxhr) {
+                        pluploader.refresh(data.images);
+                    },
+                    error: function(jqXhr, textStatus, errorThrown) {
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -1,0 +1,229 @@
+<div class="container">
+    <div class="blue-header forapproval">
+        <h4>Approved</h4>
+        <table class="tbl-dashboard">
+            <tr>
+                <th width="12%">Entity</th>
+                <th width="12%">Vendor</th>
+                <th width="20%">Description</th>
+                <th width="10%">Invoice No.</th>
+                <th width="8%" style="text-align:center">Invoice Date</th>
+                <th width="8%" style="text-align:center">Due Date</th>
+                <th width="19%" style="text-align:center">Status</th>
+                <th width="11%" style="text-align:center">Amount</th>
+            </tr>
+            {% if approved is empty %}
+                <tr>
+                    <td colspan="11" align="center">No Invoice available</td>
+                </tr>
+            {% else %}
+                {% for list in approved %}
+                    <tr id="list-{{ list.invoiceId }}">
+                        <td>{{ list.entityName|length > 13 ? list.entityName|slice(0, 13) ~ '...' : list.entityName }}</td>
+                        <td>{{ list.name|length > 13 ? list.name|slice(0, 13) ~ '...' : list.name }}</td>
+                        <td>{{ list.description|length > 30 ? list.description|slice(0, 30) ~ '...' : list.description }}</td>
+                        <td>
+                            {% if list.entityready == 0 %}
+                                <a href="{{ url('pending_bankinfo_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>
+                            {% elseif list.entityready == 1 and list.printready == 1 %}
+                                <a href="{{ url('EA_detail_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ list.invoicedate|date('m-d-Y') }}</td>
+                        <td align="center">{{ list.dueDate|date('m-d-Y') }}</td>
+                        <td align="center">
+                            {% if list.entityready == 0 %}
+                                Select Bank Account for Payment
+                            {% elseif list.entityready == 1 and list.printready == 1 %}
+                                Ready for Printing
+                            {% endif %}
+                        </td>
+                        <td align="left">
+                            {% if list.status == 44 %}
+                                <span class="dollar-position">$</span> <span class="amt-position">{{ list.outstandingbalance|number_format(2, '.', ',')|length > 15 ? list.outstandingbalance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.outstandingbalance|number_format(2, '.', ',') }}</span>
+                            {% else %}
+                                <span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',')|length > 15 ? list.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.amount|number_format(2, '.', ',') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        <table>
+            <tr>
+                <td style="border: 0">{{ knp_pagination_render(approved) }}</td>
+            </tr>
+        </table>
+        <a href="#inline_content" class="blue invoice-new"><i class="icons add"></i>New Invoice</a>
+    </div>
+    <div class="blue-header forapproval">
+        <h4>Pending Action</h4>
+        <div class="display-loader"></div>
+        <table class="pending-tbl">
+            <tr>
+                <th width="7%">Entity</th>
+                <th width="7%">Vendor</th>
+                <th width="13%">Comments</th>
+                <th width="7%">Task</th>
+                <th width="7%">Invoice No.</th>
+                <th width="7%" style="text-align:center">Invoice Date</th>
+                <th width="7%" style="text-align:center">Due Date</th>
+                <th width="17%" style="text-align:center">Status</th>
+                <th width="11%" style="text-align:center">Amount</th>
+                <th width="11%" style="text-align:center">Outstanding Balance</th>
+                <th width="5%">&nbsp;</th>
+            </tr>
+            {% if pagination is empty %}
+                <tr>
+                    <td colspan="13" align="center">No Pending invoice available</td>
+                </tr>
+            {% else %}
+                {% for list in pagination %}
+                    <tr id="list-{{ list.invoiceId }}">
+                        <td>{{ list.entityName|length > 13 ? list.entityName|slice(0, 13) ~ '...' : list.entityName }}</td>
+                        <td>{{ list.name|length > 12 ? list.name|slice(0, 12) ~ '...' : list.name }}</td>
+                        <td>
+                            {{ list.comments|length > 15 ? list.comments|slice(0, 15) ~ '...' : list.comments }}
+                            {% if list.count_id >= '2' %} <a href="{{ url('display_list_comments', { 'id' : list.invoiceId }) }}" class="more-comments"><i class="icon comments"></i></a> {% endif %}
+                        </td>
+                        <td>{{ list.firstname }}</td>
+                        <td>
+                            {% if list.status == 44 or list.status == 10 %}
+                                {% if list.entityready == 0 %}
+                                    <a href="{{ url('pending_bankinfo_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>
+                                {% elseif list.entityready == 1 and list.printready == 1 %}
+                                    <a href="{{ url('EA_detail_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>
+                                {% endif %}
+                            {% else %}
+                                {{ list.invoicenumber }}
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ list.invoicedate|date('m-d-Y') }}</td>
+                        <td align="center">{{ list.dueDate|date('m-d-Y') }}</td>
+                        <td align="center">
+                            {% if (list.status == 0) or (list.status == 1) or (list.status == 11) %}
+                                Pending
+                            {% elseif (list.status == 2) or (list.status == 22) %}
+                                Not Approved
+                            {% elseif (list.status == 3) or (list.status == 33) %}
+                                Manual Payment
+                            {% elseif list.status == 5 or list.status == 55 %}
+                                Partial Payment
+                            {% elseif list.status == 44 or list.status == 10 %}
+                                {% if list.entityready == 0 %}
+                                    Select Bank Account for Payment
+                                {% elseif list.entityready == 1 and list.printready == 1 %}
+                                    Ready
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td align="left"><span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',')|length > 15 ? list.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.amount|number_format(2, '.', ',') }}</span></td>
+                        <td align="left" class="outbal">
+                            {% if list.outstandingbalance == 0 %}
+                            <span class="dollar-position">$</span> <span class="amt-position">{{ list.remainingbalance|number_format(2, '.', ',')|length > 15 ? list.remainingbalance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.remainingbalance|number_format(2, '.', ',') }}</span>
+                            {% else %}
+                            <span class="dollar-position">$</span> <span class="amt-position">{{ list.outstandingbalance|number_format(2, '.', ',')|length > 15 ? list.outstandingbalance|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.outstandingbalance|number_format(2, '.', ',') }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="last">
+                            {% if list.status == 1 or list.status == 2 or list.status == 22 or list.status == 3 %}
+                                <a href="{{ url('EA_updatec_invoice', { 'id' : list.invoiceId }) }}" style="margin-right:-5px;" data-id="{{ list.invoiceId }}" class="modify-invoice"><i class="icons edit"></i></a>
+                                <a href="#" style="margin-right:4px;" data-id="{{ list.invoiceId }}" class="delete-invoice"><i class="icons del"></i></a>
+                            {% else %}
+                                <a href="#" style="margin-right:4px;" data-id="{{ list.invoiceId }}" class="delete-invoice"><i class="icons del"></i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        <table>
+            <tr>
+                <td style="border: 0">{{ knp_pagination_render(pagination) }}</td>
+            </tr>
+        </table>
+        <div class="print-div">
+            <button type="button" class="blue fr print-btn">Print</button>
+            <span class="print-label">Approved/Partial Payment</span>
+        </div>
+    </div>
+
+    <div class="blue-header forapproval">
+        <h4>Draft Action</h4>
+        <div class="display-draft-loader"></div>
+        <table class="pending-tbl">
+            <tr>
+                <th width="11%">Entity</th>
+                <th width="11%">Vendor</th>
+                <th width="15%">Comments</th>
+                <th width="7%">Invoice No.</th>
+                <th width="8%" style="text-align:center">Invoice Date</th>
+                <th width="7%" style="text-align:center">Due Date</th>
+                <th width="9%" style="text-align:center">Status</th>
+                <th width="11%" style="text-align:center">Amount</th>
+                <th width="5%">&nbsp;</th>
+            </tr>
+            {% if draft is empty %}
+                <tr>
+                    <td colspan="13" align="center">No Pending invoice available</td>
+                </tr>
+            {% else %}
+                {% for list in draft %}
+                    <tr id="draftlist-{{ list.invoiceId }}">
+                        <td>{{ list.entityName|length > 13 ? list.entityName|slice(0, 13) ~ '...' : list.entityName }}</td>
+                        <td>{{ list.name|length > 13 ? list.name|slice(0, 13) ~ '...' : list.name }}</td>
+                        <td>{{ list.comments|length > 25 ? list.comments|slice(0, 25) ~ '...' : list.comments }}</td>
+                        <td>{{ list.invoicenumber }}</td>
+                        <td align="center">{{ list.invoicedate|date('m-d-Y') }}</td>
+                        <td align="center">{% if list.dueDate is not empty %}{{ list.dueDate|date('m-d-Y') }}{% endif %}</td>
+                        <td align="center">
+                            {% if (list.status == 9) %}
+                                Draft
+                            {% endif %}
+                        </td>
+                        <td align="left"><span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',')|length > 15 ? list.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.amount|number_format(2, '.', ',') }}</span></td>
+                        <td class="last">
+                            <a href="{{ url('draft_updatec_invoice', { 'id' : list.invoiceId }) }}" style="float:left;margin-left:8px;" data-id="{{ list.invoiceId }}"><i class="icons edit"></i></a>
+                            <a href="#" style="float:left;margin-left:-4px;" data-id="{{ list.invoiceId }}" class="draft-invoice"><i class="icons del"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        <table>
+            <tr>
+                <td style="border: 0">{{ knp_pagination_render(draft) }}</td>
+            </tr>
+        </table>
+
+        <!-- DISPLAY MANAGER'S INVOICE DATA -->
+        <div class="manager-content-view">
+            <div class="display-loader"></div>
+            <select class="manager-select">
+                <option value="">Select a Manager</option>
+                {% for list in manager %}
+                    <option value="{{ list.id }}">{{ list.firstname }} {{ list.lastname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="display-manager-invoices"></div>
+        <div class="spacer"></div>
+    </div>
+</div>
+<!-- This contains the hidden content for inline calls -->
+<div style="display:none">
+    <div id="inline_content" style="padding:10px; background:#fff;">
+        <ul class="multiple-buttons">
+            <li><button class="blue" onclick="window.location.href='{{ url('EA_create_invoice') }}';">Create Single Invoice</button></li>
+            <li><button class="blue multiple-invoice">Create Multiple Invoice</button></li>
+            <li><button class="blue" onclick="window.location.href='{{ url('EA_createpartial_invoice') }}';">Create Manual Payment Invoice</button></li>
+        </ul>
+        <div class="create-multiform">
+            <form class="form-multiple" method="post">
+                <input type="text" name="q" class="multiform-txt" placeholder="Numbers of invoices?" />
+                <span class="multiform-text" style="display:block"></span>
+                <input type="submit" class="form-multiple-btn" value="Create" />
+            </form>
+        </div>
+    </div>
+</div>

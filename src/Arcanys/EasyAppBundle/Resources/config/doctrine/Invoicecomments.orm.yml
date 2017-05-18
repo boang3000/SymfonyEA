@@ -1,0 +1,32 @@
+Arcanys\EasyAppBundle\Entity\Invoicecomments:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\InvoicecommentsRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        invoicecommentId:
+            type: integer
+        comments:
+            type: text
+        addedby:
+            type: integer
+        status:
+            type: integer
+        token:
+            type: string
+            length: 255
+            nullable: true
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

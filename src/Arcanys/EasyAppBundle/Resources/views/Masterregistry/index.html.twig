@@ -1,0 +1,144 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Invoice Dashboard' %}
+
+{# FILTER VIEW FOR ADMIN AND ACCOUNTANT #}
+{% set is_admin_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ADMIN' or roles == 'ROLE_SUPER_ADMIN' or roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_admin_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'registry' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    {% if is_admin_accountant %}
+        <div class="container">
+            <div class="blue-header forapproval">
+                <h4>Approved</h4>
+                <div class="display-loader"></div>
+				<div class="header-list-button fr" style="margin-top: -50px;">
+					<a href="#" class="blue" id="export_button"></i>Export</a>
+				</div>
+				<div style="display: none">
+					<form id="export_form" method="post" action="{{ url('EA_master_registry_download') }}">
+						<input type='checkbox' name="header[date]" checked='checked' />
+						<input type='checkbox' name="header[entity]" checked='checked' />
+						<input type='checkbox' name="header[vendor]" checked='checked' />
+						<input type='checkbox' name="header[description]" checked='checked' />
+						<input type='checkbox' name="header[status]" checked='checked' />
+						<input type='checkbox' name="header[invoice]" checked='checked' />
+						<input type='checkbox' name="header[bank]" checked='checked' />
+						<input type='checkbox' name="header[check]" checked='checked' />
+						<input type='checkbox' name="header[expense]" checked='checked' />
+						<input type='checkbox' name="header[revenue]" checked='checked' />
+						<input type='checkbox' name="header[capital]" checked='checked' />
+					</form>
+				</div>
+				<table>
+					<tr>
+					    <th width="7%"><input type='checkbox' class="headermain" rel="date" checked='checked' /> Date</th>
+                        <th width="11%"><input type='checkbox' rel="entity" class="headermain" checked='checked' /> Entity</th>
+                        <th width="11%"><input type='checkbox' rel="vendor" class="headermain" checked='checked' /> Vendor</th>
+                        <th width="12%"><input type='checkbox' rel="description" class="headermain" checked='checked' /> Description</th>
+                        <th width="9%" style="text-align:center"><input type='checkbox' rel="status" class="headermain" checked='checked' /> Status</th>
+                        <th width="7%" style="text-align:center"><input type='checkbox' rel="invoice" class="headermain" checked='checked' /> Invoice No.</th>
+                        <th width="8%" style="text-align:center"><input type='checkbox' rel="bank" class="headermain" checked='checked' /> Bank Name</th>
+                        <th width="8%" style="text-align:center"><input type='checkbox' rel="check" class="headermain" checked='checked' /> Check No.</th>
+                        <th width="9%" style="text-align:right"><input type='checkbox' rel="expense" class="headermain" checked='checked' /> Expense</th>
+                        <th width="9%" style="text-align:right"><input type='checkbox' rel="revenue" class="headermain" checked='checked' /> Revenue</th>
+                        <th width="9%" style="text-align:right"><input type='checkbox' rel="capital" class="headermain" checked='checked' /> Capital</th>
+					</tr>
+					{% if data is empty %}
+                        <tr>
+                            <td colspan="11" align="center">No Invoice available</td>
+                        </tr>
+                    {% else %}
+                        {% for list in data %}
+                            <tr id="list-{% if list.invoiceId is defined %}{{ list.invoiceId }}{% else %} {{ random() }} {% endif %}">
+                                <td>{{ list.dateadded }}</td>
+                                <td>{{ list.entityName|length > 14 ? list.entityName|slice(0, 14) ~ '...' : list.entityName }}</td>
+                                <td>{% if list.name is defined %}{{ list.name|length > 14 ? list.name|slice(0, 14) ~ '...' : list.name }}{% endif %}</td>
+                                <td>{{ list.description|length > 20 ? list.description|slice(0, 20) ~ '...' : list.description }}</td>
+                                <td style="text-align:center">
+                                    {% if list.status is defined %}
+                                        {% if list.status == 10 %}
+                                            Manual Payment
+                                        {% elseif list.status == 33 %}
+                                            Manual Payment
+                                        {% elseif list.status == 55 or list.status == 54 or list.status == 44 %}
+                                            Partial Payment
+                                        {% elseif list.status == 4 %}
+                                            Approved
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td style="text-align:center">{% if list.bankName is defined %}<a href="{{ url('EA_detail_invoice', { 'id' : list.invoiceId }) }}">{{ list.invoicenumber }}</a>{% endif %}</td>
+                                <td style="text-align:center">{% if list.bankName is defined %}{{ list.bankName|length > 8 ? list.bankName|slice(0, 8) ~ '...' : list.bankName }}{% endif %}</td>
+                                <td class="checknum" style="text-align:center">{% if list.checkNo is defined %}{{ list.checkNo|length > 12 ? list.checkNo|slice(0, 12) ~ '...' : list.checkNo }}{% endif %}</td>
+                                <td>{% if list.amount is defined %}<span class="dollar-position">$</span> <span class="amt-position">{{ list.amount|number_format(2, '.', ',')|length > 15 ? list.amount|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.amount|number_format(2, '.', ',') }}</span>{% endif %}</td>
+                                <td>{% if list.rev is defined %}<span class="dollar-position">$</span> <span class="amt-position">{{ list.rev|number_format(2, '.', ',')|length > 15 ? list.rev|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.rev|number_format(2, '.', ',') }}</span>{% endif %}</td>
+                                <td>{% if list.cap is defined %}<span class="dollar-position">$</span> <span class="amt-position">{{ list.cap|number_format(2, '.', ',')|length > 15 ? list.cap|number_format(2, '.', ',')|slice(0, 15) ~ '...' : list.cap|number_format(2, '.', ',') }}</span>{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+                <table style="width:100%;"><tr><td align="center" style="border:0">{{ knp_pagination_render(data) }}</td></tr></table>
+            </div>
+        </div>
+        <div class="container">
+            <div class="total-amount">
+                <div class="total-txt"><h2>Total</h2></div>
+                <div class="total-option">
+                    <ul>
+                        <li><a href="#" class="getYear"><span class="year"></span> Year to Date</a></li>
+                        <li><a href="#" class="getMonth"><span class="year"></span> Month to Date</a></li>
+                        <li>
+                            <a href="#" class="dateTodate"><span class="month"></span>From Date to Date</a>
+                            <div class="month-to-date">
+                                <form method="post" action="{{ url('EA_master_registry_datetodate_expense') }}" class="month-go">
+                                    <input type="text" id="from" name="from" placeholder="From" />
+                                    <input type="text" id="to" name="to" placeholder="To" />
+                                    <input type="submit" value="Go" />
+                                    <input type="button" value="Cancel" />
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="total-sum">
+                    <table>
+                        <tr>
+                            <td align="right">Expense <div class="total-expense">Not yet available</div></td>
+                            <td align="right">Revenue <div class="total-revenue">Not yet available</div></td>
+                            <td align="right">Capital <div class="total-capital">Not yet available</div></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        You cannot access
+    {% endif %}
+{% endblock %}
+
+{% block footerjavascript %}
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/arcanyseasyapp/js/registry/registry.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            getMonthValue('{{ url('EA_master_registry_month_expense') }}');
+            getYearValue('{{ url('EA_master_registry_year_expense') }}');
+            getMonthToMonthValue();
+        });
+    </script>
+{% endblock %}

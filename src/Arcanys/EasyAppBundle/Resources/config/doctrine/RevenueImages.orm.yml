@@ -1,0 +1,34 @@
+Arcanys\EasyAppBundle\Entity\RevenueImages:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        upltoken:
+            type: string
+            length: 255
+        fileName:
+            type: string
+            length: 255
+            column: filename
+        path:
+            type: string
+            length: 255
+            nullable: true
+            column: imagepath
+        status:
+            type: integer
+            column: revenuetype
+        dateadded:
+            type: datetime
+            nullable: false
+        dateupdated:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks:
+            prePersist: [ prePersist ]
+            preUpdate: [ preUpdate ]

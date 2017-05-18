@@ -1,0 +1,95 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+
+{% block title %}Search Vendor{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'vendor' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    <div class="container">
+        <div class="header-form">
+            <form action="{{ url('EA_admin_vendorsearch') }}" method="get">
+                <input type="text" name="searchkey" />
+                <input type="submit" class="button">
+            </form>
+        </div>
+        <div class="header-list">
+            <div class="header-list-alpha">
+                <ul>
+                    <li class="active"><a href="{{ url('EA_admin_vendor_registry') }}">All</a></li>
+                    {% for i in 0..25 %}
+                        <li><a href="{{ url('EA_admin_vendor_registryview', { 'page' : letters[i] }) }}">{{ letters[i]|capitalize }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="header-list-button">
+                <button type="button" class="blue" onclick="window.location='{{ url('EA_admin_vendor') }}';"><i class="icons add"></i>New Vendor</button>
+            </div>
+        </div>
+        <div class="blue-header forapproval content-module">
+            <h4 class="registry-title">Vendor</h4>
+            <table class="registry-list">
+                {% if vendor is empty %}
+                    <tr><td colspan="4" align="center">No Results found</td></tr>
+                {% else %}
+                    {% if vendor|length == '4' or vendor|length > 4 %}
+                        {% for row in vendor|batch(4) %}
+                            <tr>
+                                {% for column in row %}
+                                    {% if column.name is not null %}
+                                        <td width="25%"><a href="{{ url('EA_admin_vendordetails', { 'id' : column.id }) }}">{{ column.name|length > 18 ? column.name|slice(0, 18) ~ '...' : column.name }}</a></td>
+                                    {% else %}
+                                        <td colspan="4">No results found</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% elseif vendor|length == '3' %}
+                        {% for row in vendor|batch(3) %}
+                            <tr>
+                                {% for column in row %}
+                                    {% if column.name is not null %}
+                                        <td width="33%"><a href="{{ url('EA_admin_vendordetails', { 'id' : column.id }) }}">{{ column.name|length > 18 ? column.name|slice(0, 18) ~ '...' : column.name }}</a></td>
+                                    {% else %}
+                                        <td colspan="4">No results found</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% elseif vendor|length == '2' %}
+                        {% for row in vendor|batch(2) %}
+                            <tr>
+                                {% for column in row %}
+                                    {% if column.name is not null %}
+                                        <td width="50%"><a href="{{ url('EA_admin_vendordetails', { 'id' : column.id }) }}">{{ column.name|length > 18 ? column.name|slice(0, 18) ~ '...' : column.name }}</a></td>
+                                    {% else %}
+                                        <td colspan="4">No results found</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% elseif vendor|length == '1' %}
+                        {% for row in vendor|batch(1) %}
+                            <tr>
+                                {% for column in row %}
+                                    {% if column.name is not null %}
+                                        <td><a href="{{ url('EA_admin_vendordetails', { 'id' : column.id }) }}">{{ column.name|length > 18 ? column.name|slice(0, 18) ~ '...' : column.name }}</a></td>
+                                    {% else %}
+                                        <td colspan="4">No results found</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block footerjavascript %}
+    <script type="text/javascript">
+        lettersOnly($('input[name="searchkey"]'));
+    </script>
+{% endblock %}

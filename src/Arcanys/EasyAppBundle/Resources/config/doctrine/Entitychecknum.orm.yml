@@ -1,0 +1,19 @@
+Arcanys\EasyAppBundle\Entity\Entitychecknum:
+    type: entity
+    table: null
+    repositoryClass: Arcanys\EasyAppBundle\Entity\EntitychecknumRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        chkInvoiceid:
+            type: bigint
+        status:
+            type: integer
+        checknum:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }

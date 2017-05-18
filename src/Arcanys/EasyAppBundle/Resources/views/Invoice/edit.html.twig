@@ -1,0 +1,284 @@
+{% extends 'ArcanysEasyAppBundle::template.html.twig' %}
+{% set pageTitle = 'Invoice Dashboard' %}
+
+{# FILTER VIEW FOR ADMIN #}
+{% set is_accountant = false %}
+{% if app.security.token.user.roles is iterable %}
+    {% for roles in app.security.token.user.roles %}
+        {% if roles == 'ROLE_ACCOUNTANT'  %}
+            {% set is_accountant = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% block addtl_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/datepicker.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/cs-select.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/jquery-ui.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/colorbox.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.carousel.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/arcanyseasyapp/css/owl/owl.theme.css') }}" />
+{% endblock %}
+
+{% block nav %}
+    {% include 'ArcanysEasyAppBundle::nav.html.twig' with { 'active' : 'invoice' } %}
+{% endblock %}
+
+{% block container %}
+    <!-- Container -->
+    <div id="dialog-confirm" class="dialog-confirm" title="Overdraft Warning">
+        <p>
+            Processing this check will overdraw the account.
+        </p>
+    </div>
+    <form method="post" class="edit-invoice-form" action="{{ url('EA_update_invoice', { 'id' : invoice.invoiceId }) }}" enctype="multipart/form-data">
+        <div class="container">
+            <div class="breadcrumbs">
+                <ul class="cUL">
+                    <li><a href="{{ url('EA_index_invoice') }}" class="backtoinvoice">Back to Invoices</a></span></li>
+                </ul>
+            </div>
+            <div class="invoice">
+                <div class="display-status invoice-status"><span class="icon exit-btn"></span></div>
+                <div class="contents">
+                    <div class="content-display">
+                        <div class="top clearfix">
+                            <div class="display-notapproved"></div>
+                            <div class="editable_in entity">
+                                <em>Entity:</em>
+                                <label>
+                                    {% if entity.entityName is not empty %}
+                                        <a href="{{ url('EA_admin_entitydetails', { 'id': entity.id }) }}">{{ entity.entityName }}</a>
+                                    {% else %}
+                                        Entity not found
+                                    {% endif %}
+                                </label>
+                                <div class="error-message" style="display: block">
+                                    {% if entity.curBalance is not empty %}
+                                        <span class="red display-message entity-curbalance">$ {{ entity.curBalance|number_format(2, '.', ',') }}</span>
+                                    {% endif %}
+                                    {% if entity.bankAcct is not empty %}
+                                        <span class="red display-message-ba checknum" style="margin-left:20px;">{{ entity.bankAcct }}</span>
+                                        <a href="#inline_content" class="info-popup"><span class="icons info"></span></a>
+                                    {% else %}
+                                        <span class="red display-message-ba checknum" style="display:none">0</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="editable_in check">
+                                <em>check no:</em>
+                                <div class="check-number-view">
+                                    {% if invoice.checkNo is empty %}
+                                        Check Number not available
+                                    {% else %}
+                                        {{ invoice.checkNo }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="editable_in date">
+                                <em>date due:</em>
+                                <label>{{ invoice.dueDate|replace({'-': '/'}) }}</label>
+                            </div>
+                            <div class="editable_in date date-issued">
+                                <em>date issued:</em>
+                                <div class="modified">{{ invoice.dateadded|date("m/d/Y") }}</div>
+                            </div>
+                        </div>
+                        <div class="mid_1 clearfix">
+                            <div class="editable_in pay view">
+                                <em>Pay To The Order Of:</em>
+                                <em>Vendor:</em><br/>
+                                <label><a href="{{ url('EA_admin_vendordetails', { 'id': vendor.id }) }}">{{ vendor.name }}</a></label>
+                            </div>
+                            <div class="editable_in price">
+                                <em>$</em>
+                                <input type="text" name="amount" value="{{ invoice.amount|number_format(2, '.', ',') }}" maxlength="13" placeholder="0.00" class="cur-ammount validate[required]" id="input-cur-amount" tabindex="3" />
+                                <span class="amt-validate" ></span>
+                                <label class="currentamt" style="display:none">{{ invoice.amount|number_format(2, '.', ',') }}</label>
+                            </div>
+                            <div class="editable_in money-char">
+                                <span class="numbertowords" id="output-cur-amount"></span><span class="cents-amt"></span>
+                            </div>
+                        </div>
+                        <div class="mid_1 clearfix">
+                            <div class="bank-name">
+                                {% if entity.bankName is not empty %}
+                                    {{ entity.bankName }}
+                                {% else %}
+                                    Entity bankname not found
+                                {% endif %}
+                            </div>
+                            <div class="editable_in datepick sig1">
+                                <div class="editable_in price">
+                                    <em>Invoice No.</em>
+                                    <label>{{ invoice.invoicenumber }}</label>
+                                </div>
+                                <div class="editable_in price">
+                                    <em>Invoice Date</em>
+                                    <label>{{ invoice.invoicedate }}</label>
+                                </div>
+                            </div>
+                            <div class="editable_in sig2">
+                                <div class="select-container">
+                                    {% if userimage is empty %}
+                                        No signature available
+                                    {% else %}
+                                        <img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ userimage[0].filename }}" />
+                                    {% endif %}
+                                    <em>Manager Approval:<span></span></em>
+                                </div>
+                                <div class="editable_in admin-approval">
+                                    {% if getadmin is empty %}
+                                        No signature available
+                                    {% else %}
+                                        <img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ getadmin[0].filename }}" />
+                                    {% endif %}
+                                    <em>&nbsp;<span>MJS</span></em>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mid_1 clearfix">
+                            <div class="vendor-details editable_in datepick sig1" style="display:block">
+                                <div class="vendorname editable_in price">
+                                <span>
+                                    {% if vendor.name is not empty %}
+                                        {{ vendor.name }}
+                                    {% else %}
+                                        Vendor name not found
+                                    {% endif %}
+                                </span>
+                                </div>
+                                <div class="vendoraddress editable_in price" style="width: 100%;">
+                                <span>
+                                    {% if vendor.address is not empty %}
+                                        {{ vendor.address }}<br/>
+                                        {{ vendor.city }}, {{ vendor.state }} {{ vendor.zip }}
+                                    {% else %}
+                                        Vendor address not found
+                                    {% endif %}
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="textareas clearfix">
+                            <label>Description:</label>
+                            {{ invoice.description }}
+                        </div>
+                        <div class="editable_in chart">
+                            <em>Chart of Accounts</em>
+                            <label>
+                                {% if charts is empty %}
+                                    Charts of account not available
+                                {% else %}
+                                    {{ charts[0].accountnumber }} {{ charts[0].accountname }} {{ charts[0].chartname }}
+                                {% endif %}
+                            </label>
+                        </div>
+                        <div class="textareas clearfix">
+                            <label><strong>Comments:</strong></label>
+                            <ul class="comment-list">
+                                <li></li>
+                                {% if comment is empty %}
+                                    <li>No Comment Available</li>
+                                {% else %}
+                                    {% for list in comment %}
+                                        {% set role     = list.roles[0] %}
+                                        {% if role == 'ROLE_SUPER_ADMIN' or role == 'ROLE_ADMIN' %}
+                                            {% set setrole = 'Admin' %}
+                                            {% set styles = 'admin' %}
+                                            {% set username = '' %}
+                                            {% set data = list.comments %}
+                                        {% elseif role == 'ROLE_ACCOUNTANT' %}
+                                            {% set setrole = '[Acct]' %}
+                                            {% set styles = 'acct' %}
+                                            {% set username = list.firstname %}
+                                            {% set data = list.comments %}
+                                        {% elseif role == 'ROLE_MANAGER' %}
+                                            {% set setrole = '[Mgr]' %}
+                                            {% set styles = 'mgr' %}
+                                            {% set username = list.firstname %}
+                                            {% set data = list.comments %}
+                                        {% endif %}
+                                        <li><strong><label class="{{ styles }}">{{ setrole }} {{ username }}:</label></strong> {{ data }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-invoice">
+                <div class="thumbnails">
+                    <div id="invoice-thumbnails" class="owl-carousel">
+
+                        {% if invoiceimg is empty %}
+                            <div class="empty-list">No image available</div>
+                        {% else %}
+                            {% for list in invoiceimg %}
+                                <div class="item imglist-{{ list.id }}">
+                                    <img class="lazyOwl" data-src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+            <div class="invoicedetail-footer">
+                <input type="submit" name="updateinvoice" value="Update Invoice" class="updateamt-btn blue" />
+            </div>
+            <div class="spacer"></div>
+        </div>
+    </form>
+    <div style='display:none'>
+        <div id='inline_content' style='padding:10px; background:#fff;'>
+            <p>This is the last 4 digits of the bank account number.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footerjavascript %}
+    <script src="{{ asset('bundles/arcanyseasyapp/js/vendor/jquery-ui.min-1.11.1.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/toword.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/jquery.colorbox-min.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/invoice/approvalinvoice.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/chartofaccounts.js') }}"></script>
+    <script src="{{ asset('bundles/arcanyseasyapp/js/owl/owl.carousel.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.datepicker').datepicker({
+                autoclose: true,
+                startDate: new Date()
+            });
+
+            displayAddchart('.add-icon');
+            displayModifychart('.modify-icon');
+            addChartdata('.charts-add-btn', '{{ url('Chartsofaccounts_add') }}');
+            modifyChartdata('{{ url('Chartsofaccounts_modify') }}');
+
+            $(document.body).on('submit', '.edit-invoice-form', function(e) {
+                var getValue    = $('.cur-ammount').val(),
+                    url         = $(this).attr('action'),
+                    data        = { id: getValue },
+                    currentamt  = parseFloat($('.entity-curbalance').html().replace(/[$,]/g, '')),
+                    invoiceamt  = getValue.replace(/,|$/g, '');
+
+                if ( currentamt < invoiceamt ) {
+                    $('.cur-ammount').focus();
+                    $('.amt-validate').html('Value inputted has exceeded the current bank balance.').show();
+                    setTimeout(function() {
+                        $('.amt-validate').fadeOut(300, function() {
+                            $(this).hide();
+                        })
+                    }, 2500);
+                    return false;
+                } else {
+                    return true;
+                }
+                e.preventDefault();
+            });
+        });
+    </script>
+{% endblock %}

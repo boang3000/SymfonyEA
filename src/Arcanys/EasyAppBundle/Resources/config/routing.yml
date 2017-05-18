@@ -1,0 +1,492 @@
+EA_default_path:
+    path:     /
+    defaults: { _controller: ArcanysEasyAppBundle:Login:index }
+
+EA_login:
+    path:     /login
+    defaults: { _controller: ArcanysEasyAppBundle:Login:index }
+
+EA_main_dashboard:
+    path:     /dashboard
+    defaults: { _controller: ArcanysEasyAppBundle:Secretary:index }
+
+login_check:
+    path:     /login_check
+    defaults: { _controller: ArcanysEasyAppBundle:Login:check }
+
+# SUPER ADMIN
+EA_superadmin_addaccount:
+    path:     /superadmin/addaccount
+    defaults: { _controller: ArcanysEasyAppBundle:Superadminaccount:create }
+
+EA_superadmin_displayaccount:
+    path:     /superadmin/account/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Superadminaccount:view }
+
+EA_superadmin_viewaccount:
+    path:     /superadmin/viewaccount
+    defaults: { _controller: ArcanysEasyAppBundle:Superadminaccount:viewajax }
+
+EA_superadmin_delete:
+    path:     /superadmin/delete/
+    defaults: { _controller: ArcanysEasyAppBundle:Superadminaccount:delete }
+
+#
+# ADMIN SECTION
+#---------------------------------------------------------------------------------
+
+# ADMIN - ACCOUNT
+check_email:
+    path:     /account/checkemail
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:checkemail }
+
+EA_admin_addaccount:
+    path:     /account/addaccount
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:create }
+
+EA_admin_updateaccount:
+    path:     /account/accountupdate/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:update }
+
+EA_admin_updatepassword:
+    path:     /account/updatepassword/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:updatepassword }
+
+EA_admin_viewaccount:
+    path:     /account/viewaccount
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:viewajax }
+
+EA_admin_displayaccount:
+    path:     /account/account/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:view }
+
+EA_admin_forgotpassword:
+    path:     /account/forgotpassword/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:forgotpassword }
+
+EA_admin_delete:
+    path:     /account/delete/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:delete }
+
+EA_admin_upload:
+    path:     /account/upload
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:upload }
+
+EA_admin_editupload:
+    path:     /account/editupload
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:editupload }
+
+EA_userretrieve_img:
+    path:     /account/retrieveaccountimg
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:retrieveaccountimg }
+
+# ADMIN - ENTITIES
+EA_admin_entity_registry:
+    path:     /entity/index
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:registry }
+
+EA_admin_entity_registryview:
+    path:     /entity/registry/{page}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:registryview }
+
+EA_admin_entitydetails:
+    path:     /entity/details/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:viewdetail }
+
+EA_admin_entity:
+    path:     /entity/entity
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:index }
+
+EA_admin_addentity:
+    path:     /entity/addentity
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:create }
+
+EA_admin_viewentity:
+    path:     /entity/viewentity
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:viewajax }
+
+EA_admin_displayentity:
+    path:     /entity/entity/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:view }
+
+EA_admin_entitysearch:
+    path:     /entity/search/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:search }
+
+EA_admin_entitydelete:
+    path:     /entity/delete/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:delete }
+
+EA_admin_entityupdate:
+    path:     /entity/update/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:update }
+
+EA_entity_get_year_expense:
+    path:    /entity/getyearexpense/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:getyearexpense }
+
+EA_entity_get_month_expense:
+    path:    /entity/getmonthexpense/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:getmonthexpense }
+
+EA_entity_datetodate_expense:
+    path:    /entity/getdatetodateexpense/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:getdatetodateexpense }
+
+EA_entity_validatecheckno:
+    path:    /entity/validatecheckno/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:validatecheckno }
+
+EA_entity_upload:
+    path:     /entity/upload
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:upload }
+
+EA_entity_update_upload:
+    path:     /entity/updateupload/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:updateupload }
+
+EA_entityretrieve_img:
+    path:     /entity/retrieveentityimg
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:retrieveentityimg }
+
+retrieve_bankinfo_by_id:
+    path:     /entity/retrievebankinfo
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:retrievebankinfo }
+
+tabentity_update:
+    path:     /entity/updatetabentity
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:updatetabentity }
+
+tabentity_create:
+    path:     /entity/createtabentity
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:createtabentity }
+
+entity_search_bankname:
+    path:     /entity/searchbankname
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:searchbankname }
+
+# ADMIN - VENDORS
+checkvendor_email:
+    path:     /vendor/checkemail
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:checkemail }
+
+EA_admin_vendor_registry:
+    path:     /vendor/index
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:registry }
+
+EA_admin_vendor_registryview:
+    path:     /vendor/registry/{page}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:registryview }
+
+EA_admin_vendor:
+    path:     /vendor/vendor
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:index }
+
+EA_admin_addvendor:
+    path:     /vendor/addvendor
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:create }
+
+EA_admin_viewvendor:
+    path:     /vendor/viewvendor
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:viewajax }
+
+EA_admin_displayvendor:
+    path:     /vendor/vendor/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:view }
+
+EA_admin_vendordetails:
+    path:     /vendor/details/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:viewdetail }
+
+EA_admin_vendorsearch:
+    path:     /vendor/search/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:search }
+
+EA_admin_vendordelete:
+    path:     /vendor/delete/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:delete }
+
+EA_admin_vendorupdate:
+    path:     /vendor/update/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:update }
+
+EA_vendor_get_year_expense:
+    path:    /vendor/getyearexpense/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:getyearexpense }
+
+EA_vendor_get_month_expense:
+    path:    /vendor/getmonthexpense/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:getmonthexpense }
+
+EA_vendor_datetodate_expense:
+    path:    /vendor/getdatetodateexpense/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:getdatetodateexpense }
+
+EA_vendor_download:
+    path:     /vendor/download/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Adminvendor:downloadcsv }
+
+# INVOICE
+
+EA_index_invoice:
+    path:     /invoice/index
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:index }
+
+EA_create_invoice:
+    path:     /invoice/create
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:create }
+
+EA_createmulti_invoice:
+    path:     /invoice/createmulti/{num}/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:createmulti }
+
+EA_retrieve_multi_invoice:
+    path:     /invoice/retrievemultidata/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:retrievemultidata }
+
+EA_submitmulti_invoice:
+    path:     /invoice/submitmulti/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:submitmulti }
+
+EA_createpartial_invoice:
+    path:     /invoice/createpartial/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:createpartial }
+
+EA_updatec_invoice:
+    path:     /invoice/updatecheck/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:updatecheck }
+
+EA_upload_invoice:
+    path:     /invoice/upload
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:upload }
+
+EA_uploadmultiform_invoice:
+    path:     /invoice/uploadmultiform
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:uploadmultiform }
+
+EA_retrieve_img:
+    path:     /invoice/retrieveimage
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:retrieveimage }
+
+EA_retrieve_created_img:
+    path:     /invoice/retrievenewimage
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:retrievenewimage }
+
+EA_update_upload_invoice:
+    path:     /invoice/updateupload/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:updateupload }
+
+EA_delete_image:
+    path:     /invoice/deleteimage/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:deleteimage }
+
+EA_update_invoice:
+    path:     /invoice/updateinvoice/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:update }
+
+EA_information_invoice:
+    path:     /invoice/approvaldetail/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:detail }
+
+EA_detail_invoice:
+    path:     /invoice/detail/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:detail }
+
+pending_bankinfo_invoice:
+    path:     /invoice/pendingbankinfo/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:detail }
+
+EA_delete_invoice:
+    path:     /invoice/delete/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:delete }
+
+EA_statusupdate_invoice:
+    path:     /invoice/updatestatus/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:statusupdate }
+
+EA_checkentity_balance:
+    path:     /invoice/checkcurrentbalance/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:checkcurrentbalance }
+
+EA_invoice_postcomment:
+    path:     /invoice/addcomment/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:addcomment }
+
+EA_invoice_checkbalance:
+    path:     /invoice/checkbalance/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:checkbalance }
+
+EA_vendor_details:
+    path:     /invoice/vendordetails/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:vendordetails }
+
+display_list_comments:
+    path:     /invoice/invoicecomments/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:invoicecomments }
+
+display_manager_data:
+    path:     /invoice/managerdata
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:managerdata }
+
+validate_invoice_duplicate:
+    path:     /invoice/invoiceduplicate/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:invoiceduplicate }
+
+validate_vendor_check_duplicate:
+    path:     /invoice/checkduplicate/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:checkduplicate }
+
+draft_delete_invoice:
+    path:     /invoice/draftdelete/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:draftdelete }
+
+draft_updatec_invoice:
+    path:     /invoice/draftupdatecheck/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:draftupdatecheck }
+
+update_invoice_notapproved:
+    path:     /invoice/updatetopending/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:updatetopending }
+
+send_comments_email:
+    path:     /invoice/sendemail/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:sendemail }
+
+update_manual_invoicebank:
+    path:     /invoice/manualbankinfo/
+    defaults: { _controller: ArcanysEasyAppBundle:Invoice:manualbankinfo }
+
+# MASTER REGISTRY
+
+EA_master_registry:
+    path:     /registry/index/
+    defaults: { _controller: ArcanysEasyAppBundle:Registry:index }
+
+EA_master_registry_year_expense:
+    path:    /registry/getyearexpense
+    defaults: { _controller: ArcanysEasyAppBundle:Registry:getyearexpense }
+
+EA_master_registry_month_expense:
+    path:    /registry/getmonthexpense
+    defaults: { _controller: ArcanysEasyAppBundle:Registry:getmonthexpense }
+
+EA_master_registry_datetodate_expense:
+    path:    /registry/getdatetodateexpense
+    defaults: { _controller: ArcanysEasyAppBundle:Registry:getdatetodateexpense }
+
+EA_master_registry_download:
+    path:     /registry/download/
+    defaults: { _controller: ArcanysEasyAppBundle:Registry:downloadcsv }
+
+# REVENUE / CAPITAL
+
+Revenue_index_revenue:
+    path:     /revenue/indexrevenue/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:indexRevenue }
+
+Revenue_add_revenue:
+    path:     /revenue/addrevenue/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:addRevenue }
+
+Revenue_edit_revenue:
+    path:     /revenue/editrevenue/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:editRevenue }
+
+Revenue_add_image:
+    path:     /revenue/addimage/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:upload }
+
+Revenue_retrieve_created_img:
+    path:     /revenue/retrievenewimage
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:retrievenewimage }
+
+Revenue_retrieve_all_img:
+    path:     /revenue/retrieveallimage
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:retrieveallimage }
+
+Revenue_index_wire:
+    path:     /revenue/indexwire/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:indexWire }
+
+Revenue_add_wire:
+    path:     /revenue/addwire/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:addWire }
+
+Revenue_edit_wire:
+    path:     /revenue/editwire/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:editWire }
+
+Revenue_status_wire:
+    path:     /revenue/statuswire/{id}/{status}
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:statusWire }
+
+Revenue_index_inter:
+    path:     /revenue/indexinter/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:indexInter }
+
+Revenue_add_inter:
+    path:     /revenue/addinter/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:addInter }
+
+Revenue_edit_inter:
+    path:     /revenue/editinter/{id}
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:editInter }
+
+Revenue_getyear:
+    path:     /revenue/getyear/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:getyearexpense }
+
+Revenue_getmonth:
+    path:     /revenue/getmonth/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:getmonthexpense }
+
+Revenue_getdate:
+    path:     /revenue/getdate/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:getdatetodateexpense }
+
+Revenue_delete:
+    path:     /revenue/delete/{id}/{where}/{landing}
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:delete }
+
+Revenue_entity_bankinfo:
+    path:     /revenue/entitybankinfo/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:entitybankinfo }
+
+Revenue_entity_bankinfo2:
+    path:     /revenue/entitybankinfo2/
+    defaults: { _controller: ArcanysEasyAppBundle:Revenue:entitybankinfo2 }
+
+# CHARTS OF ACCOUNTS
+
+Chartsofaccounts_add:
+    path:     /charts/add/
+    defaults: { _controller: ArcanysEasyAppBundle:Charts:insert }
+
+Chartsofaccounts_delete:
+    path:     /charts/delete/
+    defaults: { _controller: ArcanysEasyAppBundle:Charts:delete }
+
+Chartsofaccounts_modify:
+    path:     /charts/modify/
+    defaults: { _controller: ArcanysEasyAppBundle:Charts:modify }
+
+# SEARCH
+search_index:
+    path:     /search/info/
+    defaults: { _controller: ArcanysEasyAppBundle:Search:index }
+
+EA_update_invoice_image_vendor:
+    path:     /invoice/images/update
+    defaults: { _controller: ArcanysEasyAppBundle:InvoiceImages:updateVendor }
+
+EA_entity_delete_image:
+    path:     /entity/deleteimage/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:deleteimage }
+
+EA_entity_image:
+    path:     /entity/image/
+    defaults: { _controller: ArcanysEasyAppBundle:Adminentity:image }
+
+EA_admin_delete_image:
+    path:     /account/deleteimage
+    defaults: { _controller: ArcanysEasyAppBundle:Adminaccount:deleteimage }

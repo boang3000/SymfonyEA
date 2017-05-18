@@ -1,0 +1,323 @@
+<div id="dialog-confirm" class="dialog-confirm" title="Overdraft Warning">
+    <p>
+        Processing this check will overdraw the account.
+    </p>
+</div>
+<form method="post" action="" enctype="multipart/form-data">
+    <div class="container">
+        <div class="breadcrumbs">
+            <ul class="cUL">
+                <li><a href="{{ url('EA_index_invoice') }}" class="backtoinvoice">Back to Invoices</a></span></li>
+            </ul>
+        </div>
+        <div class="invoice">
+            <div class="display-status invoice-status"><span class="icon exit-btn"></span></div>
+            <div class="contents">
+                <div class="content-display">
+                    <div class="top clearfix">
+                        <div class="display-notapproved"></div>
+                        <div class="editable_in entity">
+                            <em>Entity:</em>
+                            <label>
+                                {% if entity.entityName is not empty %}
+                                    <a href="{{ url('EA_admin_entitydetails', { 'id': entity.id }) }}">{{ entity.entityName }}</a>
+                                {% else %}
+                                    Entity not found
+                                {% endif %}
+                            </label>
+                            <div class="error-message" style="display:block">
+                                {% if invoice.bankinfo == 1 %}
+                                    <span class="red display-message-ba checknum" style="display:none">0</span>
+                                    <span class="red display-message-ba">Other</span>
+                                {% elseif invoice.bankinfo == 0 or invoice.bankinfo is empty %}
+                                    {% if curbal is not empty %}
+                                        <span class="red display-message">$ {{ curbal|number_format(2, '.', ',') }}</span>
+                                    {% endif %}
+                                    {% if invoiceinfo[0].bankAcct is not empty %}
+                                        <span class="red display-message-ba checknum">{{ invoiceinfo[0].bankAcct }}</span>
+                                        <a href="#inline_content" class="info-popup"><span class="icons info"></span></a>
+                                    {% else %}
+                                        <span class="red display-message-ba checknum">0</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="editable_in check">
+                            <em>check no:</em>
+                            <div class="check-number-view">
+                                {% if invoice.checkNo is empty %}
+                                    Check Number not available
+                                {% else %}
+                                    {{ invoice.checkNo }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="editable_in date">
+                            <em>date due:</em>
+                            <label>{{ invoice.dueDate|replace({'-': '/'}) }}</label>
+                        </div>
+                        <div class="editable_in date date-issued">
+                            <em>date issued:</em>
+                            <div class="modified">{{ invoice.dateadded|date("m/d/Y") }}</div>
+                        </div>
+                    </div>
+                    <div class="mid_1 clearfix">
+                        <div class="editable_in pay view">
+                            <em>Pay To The Order Of:</em>
+                            <em>Vendor:</em><br/>
+                            <label>
+                                {% if vendor.name is not empty %}
+                                    <a href="{{ url('EA_admin_vendordetails', { 'id': vendor.id }) }}">{{ vendor.name }}</a>
+                                {% else %}
+                                    Vendor name not found
+                                {% endif %}
+                            </label>
+                        </div>
+                        <div class="editable_in price view">
+                            <em>$</em>
+                            <label class="currentamt">{{ invoice.amount|number_format(2, '.', ',') }}</label>
+                        </div>
+                        <div class="editable_in money-char">
+                            <span class="numbertowords"></span>
+                        </div>
+                    </div>
+                    <div class="mid_1 clearfix">
+                        <div class="bank-name">
+                            {% if invoiceinfo[0].bankName is not empty %}
+                                {{ invoiceinfo[0].bankName }}
+                            {% else %}
+                                Entity bankname not found
+                            {% endif %}
+                        </div>
+                        <div class="editable_in datepick sig1">
+                            <div class="editable_in price">
+                                <em>Invoice No.</em>
+                                <label>{{ invoice.invoicenumber }}</label>
+                            </div>
+                            <div class="editable_in price">
+                                <em>Invoice Date</em>
+                                <label>{{ invoice.invoicedate }}</label>
+                            </div>
+                        </div>
+                        <div class="editable_in sig2">
+                            <div class="select-container {% if adminsign is empty %}empty-image{% else %}has-image{% endif %}">
+                                {% if userimage is empty %}
+                                    No signature available
+                                {% elseif userimage == 99999 %}
+                                    No Manager
+                                {% else %}
+                                    {{ userimage[0].firstname }} {{ userimage[0].lastname }}
+                                {% endif %}
+                                <em>Manager Approval:<span></span></em>
+                            </div>
+                            <div class="editable_in admin-approval">
+                                {% if getadmin is empty %}
+                                    Admin not available
+                                {% else %}
+                                    {% if adminsign is not empty %}
+                                        <img src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ adminsign[0].filename }}" />
+                                    {% else %}
+                                        {{ getadmin[0].firstname }} {{ getadmin[0].lastname }}
+                                    {% endif %}
+                                {% endif %}
+                                <em>&nbsp;<span>MJS</span></em>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mid_1 clearfix vendor-wrapper">
+                        <div class="vendor-details editable_in datepick sig1" style="display:block">
+                            <div class="vendorname editable_in price">
+                                <span>
+                                    {% if vendor.name is not empty %}
+                                        {{ vendor.name }}
+                                    {% else %}
+                                        Vendor name not found
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="vendoraddress editable_in price" style="width: 100%;">
+                                <span>
+                                    {% if vendor.address is not empty %}
+                                        {{ vendor.address }}<br/>
+                                        {% if vendor.city is not empty %}
+                                            {{ vendor.city }}, {{ vendor.state }} {{ vendor.zip }}
+                                        {% endif %}
+                                    {% else %}
+                                        Vendor address not found
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="textareas clearfix">
+                        <label>Description:</label>
+                        {{ invoice.description }}
+                    </div>
+                    <div class="editable_in chart">
+                        <em>Chart of Accounts</em>
+                        <label>
+                            {% if charts is empty %}
+                                Charts of account not available
+                            {% else %}
+                                {{ charts[0].accountnumber }} {{ charts[0].accountname }} {{ charts[0].chartname }}
+                            {% endif %}
+                        </label>
+                    </div>
+                    <div class="textareas clearfix">
+                        <label><strong>Comments:</strong></label>
+                        <ul class="comment-list">
+                            <li></li>
+                            {% if comment is empty %}
+                                <li>No Comment Available</li>
+                            {% else %}
+                                {% for list in comment %}
+                                    {% set role     = list.roles[0] %}
+                                    {% if role == 'ROLE_SUPER_ADMIN' or role == 'ROLE_ADMIN' %}
+                                        {% set setrole = 'Admin' %}
+                                        {% set styles = 'admin' %}
+                                        {% set username = '' %}
+                                        {% set data = list.comments %}
+                                    {% elseif role == 'ROLE_ACCOUNTANT' %}
+                                        {% set setrole = '[Acct]' %}
+                                        {% set styles = 'acct' %}
+                                        {% set username = list.firstname %}
+                                        {% set data = list.comments %}
+                                    {% elseif role == 'ROLE_MANAGER' %}
+                                        {% set setrole = '[Mgr]' %}
+                                        {% set styles = 'mgr' %}
+                                        {% set username = list.firstname %}
+                                        {% set data = list.comments %}
+                                    {% endif %}
+                                    <li><strong><label class="{{ styles }}">{{ setrole }} {{ username }}:</label></strong> {{ data }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="archive-btn clearfix">
+                        <a href="#inline_content" class="send-comment-btn">Send Comments as Email</a>
+                        <!-- This contains the hidden content for inline calls -->
+                        <div style="display:none">
+                            <div id="inline_content" class="email-holder">
+                                <div class="header-email"><h3>Send Comments as Email</h3></div>
+                                <div class="body-email">
+                                    <div class="display-notification"></div>
+                                    <form class="email-form" action="{{ url('send_comments_email') }}" method="post">
+                                        <ul>
+                                            <li>
+                                                <label>To:</label>
+                                                <select class="text-email" name="email" multiple="multiple">
+                                                    <option value=""></option>
+                                                    {% for list in email %}
+                                                        <option value="{{ list.email }}">{{ list.email }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <input type="hidden" class="hidden-email-value" name="email-value" />
+                                            </li>
+                                            <li>
+                                                <label>CC:</label>
+                                                <input type="checkbox" id="for_manager" name="manager-email" class="manager-email" value="{% if user is null %}{{ user[0].email }}{% endif %}" /> <label for="for_manager">Manager</label>
+                                                <input type="checkbox" id="for_admin" name="admin-email" class="admin-email" value="0" /> <label for="for_admin">MJS</label>
+                                            </li>
+                                            <li>
+                                                <label>Comments:</label>
+                                                <textarea name="description" class="body-email">{% if comment is not empty %}
+--- Comment Transcript ---
+                                                        {% for list in comment %}
+                                                            {% set role = list.roles[0] %}
+                                                            {% if role == 'ROLE_SUPER_ADMIN' or role == 'ROLE_ADMIN' %}
+                                                                {% set setrole = 'Admin' %}
+                                                                {% set username = '' %}
+                                                                {% set data = list.comments %}
+                                                            {% elseif role == 'ROLE_ACCOUNTANT' %}
+                                                                {% set setrole = '[Acct]' %}
+                                                                {% set username = list.firstname %}
+                                                                {% set data = list.comments %}
+                                                            {% elseif role == 'ROLE_MANAGER' %}
+                                                                {% set setrole = '[Mgr]' %}
+                                                                {% set username = list.firstname %}
+                                                                {% set data = list.comments %}
+                                                            {% endif %}{{ setrole }} {{ username }}: {{ data }}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </textarea>
+                                            </li>
+                                            <li>
+                                                <input type="button" value="Send" class="send-email-btn" />
+                                            </li>
+                                        </ul>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-invoice">
+            <div class="thumbnails">
+                <div id="invoice-thumbnails" class="owl-carousel">
+
+                    {% if invoiceimg is empty %}
+                        <div class="empty-list">No image available</div>
+                    {% else %}
+                        {% for list in invoiceimg %}
+                            <div class="item imglist-{{ list.id }}">
+                                <img class="lazyOwl" data-src="{{ app.request.getSchemeAndHttpHost() }}{{ target_folder }}{{ list.fileName }}" />
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(function() {
+        $(".send-comment-btn").colorbox({inline:true, width:"60%", height: "70%"});
+        $(".text-email").select2();
+        $('.send-email-btn').on('click', function(e) {
+            $('.hidden-email-value').val($(".text-email").select2("val"));
+
+            var url    = '{{ url('send_comments_email') }}',
+                email  = $(".hidden-email-value").val(),
+                memail = $('.manager-email').val(),
+                aemail = $('.admin-email').val(),
+                body   = $('textarea').val(),
+                data   = { email: email, manager: memail, admin: aemail, body: body };
+
+            if ( $('.manager-email').prop('checked') &&  $('.admin-email').prop('checked') ) {
+                data = { email: email, manager: memail, admin: aemail, body: body }
+            }
+
+            else if ( !$('.manager-email').prop('checked') && $('.admin-email').prop('checked') ) {
+                data = { email: email, manager: 0, admin: 1, body: body }
+            }
+
+            else if ( $('.manager-email').prop('checked') && !$('.admin-email').prop('checked') ) {
+                data = { email: email, manager: memail, admin: aemail, body: body }
+            }
+
+            else {
+                data = { email: email, manager: 0, admin: aemail, body: body }
+            }
+
+            $(this).val('Sending email...');
+            $(this).find(':button').attr('disabled','disabled');
+            $.post(url, data, function() {
+                $(this).find(':button').removeAttr('disabled');
+                $('.send-email-btn').val('Send');
+                $(".text-email").select2("val", "");
+                $('.display-notification').fadeIn(300, function() {
+                    $(this).html('Your comment has been sent by email').show();
+                });
+                setTimeout(function() {
+                    $('.display-notification').fadeOut(800, function() {
+                        $(this).hide();
+                    });
+                }, 3500);
+            });
+            e.preventDefault();
+        })
+    });
+</script>
